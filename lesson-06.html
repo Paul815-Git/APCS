@@ -1,0 +1,50 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>用 while 控制何時結束｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 06 · HTML 講義</p><h1>用 while 控制何時結束<span>。</span></h1><p class="lead">先讀一段、預測範例，再到自己的 Colab 副本完成對應題目。可以分兩次學習，每次完成 2–3 段。</p><p class="meta">約 60–90 分鐘 · 能寫出會停止的 while，處理結束記號與逐步更新。</p><div class="workflow"><span>01　本站看講義</span><span>02　Colab 做 A–E 題</span><span>03　分享作業副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-06.ipynb" target="_blank" rel="noopener noreferrer">開啟第 6 課 Colab 作業本 ↗</a><a href="#assignment">第一次使用與交作業方式 ↓</a></div><p class="small">只需開啟一次並保存副本；每完成一段講義，就切回同一份副本作答。本站不記錄答案，Colab 副本才是你的作業。</p><nav class="contents" aria-label="講義段落"><a href="#unit-a">01　條件成立就繼續</a><a href="#unit-b">02　不知道筆數的輸入</a><a href="#unit-c">03　break 立即離開迴圈</a><a href="#unit-d">04　每一步改變剩餘量</a><a href="#unit-e">05　逐位拆開整數</a></nav><section id="unit-a"><p class="eyebrow">01 / 05</p><h2>條件成立就繼續</h2><p>for 適合已知次數；while 在每次執行前檢查條件。範例由 3 倒數到 1，每輪都讓 n 減少。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>n = 3
+while n &gt; 0:
+    print(n)
+    n -= 1</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>3
+2
+1</pre></details><p>先找出三件事：初始值、繼續條件、更新方式。漏掉 n -= 1，n 永遠是 3，就不會結束。在 Colab 可按執行區的停止按鈕中止。</p>
+<aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>倒數出發</h3><p>輸入 n（0–20），逐行印 n 到 1，最後印 GO。</p>
+<p class="criterion"><strong>完成標準：</strong>n=2 輸出 2、1、GO；n=0 只印 GO。</p><p class="handoff">切回你已保存的 Colab 副本，找到「A 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>while n &gt; 0；每輪減 1；GO 在迴圈外。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-b"><p class="eyebrow">02 / 05</p><h2>不知道筆數的輸入</h2><p>資料以特殊值結束時，不必先知道筆數。下例依序輸入 <code>5</code>、<code>8</code>、<code>-1</code>；-1 只當結束記號，不加入總和。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>total = 0
+value = int(input())
+while value != -1:
+    total += value
+    value = int(input())
+print(total)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>13</pre></details><p>迴圈前先讀第一筆，迴圈尾再讀下一筆。如果忘了讀下一筆，就會一直用同一筆值。測試「第一筆就是結束記號」。</p>
+<aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>累積存款</h3><p>每行輸入一筆非負整數存款，以 -1 結束（一定會出現）。輸出所有存款總和，不包含 -1。</p>
+<p class="criterion"><strong>完成標準：</strong>10、20、-1 得 30；直接 -1 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「B 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>沿用先讀一筆、判斷、累加、再讀的順序。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-c"><p class="eyebrow">03 / 05</p><h2>break 立即離開迴圈</h2><p><code>while True</code> 本身不會因條件變假而停止，要明確安排 break。下方輸入 1 到 3 之間的整數才結束；例如先輸入 <code>8</code>，再輸入 <code>2</code>。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>while True:
+    choice = int(input())
+    if choice &gt;= 1 and choice &lt;= 3:
+        break
+print(choice)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>2</pre></details><p>break 只離開它所在的那一層迴圈。這種輸入練習需保證最後會提供可結束的值，不要把 break 寫在永遠到不了的分支。</p>
+<aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>數出有效資料</h3><p>每行輸入非負整數，以 0 結束，且一定有 0。用 while True 與 break 計算 0 之前共有幾筆。</p>
+<p class="criterion"><strong>完成標準：</strong>5、8、0 得 2；第一筆 0 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「C 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>先讀，若等於 0 立刻 break，否則 count += 1。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-d"><p class="eyebrow">04 / 05</p><h2>每一步改變剩餘量</h2><p>每次拿掉相同數量，直到剩餘量不再大於 0，也可以用 while 模擬。以下每天讀 4 頁，要讀完 10 頁需 3 天。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>remaining = 10
+days = 0
+while remaining &gt; 0:
+    remaining -= 4
+    days += 1
+print(days)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>3</pre></details><p>最後一天即使不到 4 頁，也算一天。更新後剩餘量可以為負，條件就會停止；不需強迫剛好等於 0。</p>
+<aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>讀完一本書</h3><p>分兩行輸入總頁數 p（0–10000）及每天頁數 k（1–100）。用 while 算需要幾天。</p>
+<p class="criterion"><strong>完成標準：</strong>10、4 得 3；12、4 得 3；0、4 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「D 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>剩餘頁數 &gt; 0 時扣掉 k，再增加一天。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-e"><p class="eyebrow">05 / 05</p><h2>逐位拆開整數</h2><p>非負整數的個位數是 n % 10；n // 10 可以去掉個位數。重複這兩步即可逐位處理。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>n = 352
+total = 0
+while n &gt; 0:
+    total += n % 10
+    n //= 10
+print(total)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>10</pre></details><p>352 → 35 → 3 → 0，取出的數字依序是 2、5、3。這裡會改變 n；若後面還需要原數字，先用另一個變數保存。</p>
+<aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>數字和</h3><p>輸入 n（0–1000000000），輸出各位數字的總和，使用 while 與整除、餘數。</p>
+<p class="criterion"><strong>完成標準：</strong>507 得 12；1000 得 1；0 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「E 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>total 初始為 0，n 為 0 時迴圈不執行，答案已經正確。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="assignment"><p class="eyebrow">交作業</p><h2>把你寫的程式交給老師</h2><ol><li>開啟 Colab 作業本，選「檔案 → 在雲端硬碟中儲存副本」，改名為「第6課_暱稱」。</li><li>依 A–E 題作答，確認程式、結果及學習紀錄已保存。</li><li>點「分享」，加入老師帳號，授予檢視或加註權限，再交出自己的副本連結。</li></ol><p>只複製網址不會自動開放權限。要分享的是你寫過的副本，不是本頁的原始教材網址。</p><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-06.ipynb" target="_blank" rel="noopener noreferrer">開啟原始作業本 ↗</a><a href="lesson-06.ipynb" download>下載作業本</a></div><details><summary>已經存過副本，或還在做舊版作業？</summary><p>請從自己的 Google Drive 開啟原有副本，不要反覆建立新副本。舊版的程式仍在你自己的副本中；這次更新不會改掉你的答案。若要使用新的精簡版，另存新副本再自行搬移需要的程式。</p></details><details><summary>Colab 找不到檔案？</summary><p>教師需先將新版 ipynb 上傳到 GitHub main 分支。也可下載作業本，在 <a href="https://colab.research.google.com/?hl=zh-tw" target="_blank" rel="noopener noreferrer">Colab</a> 使用「檔案 → 上傳筆記本」。本課不需要安裝套件或付費 GPU。</p></details><p class="small">本課採自我檢核與老師查看，未提供自動評分或後台進度紀錄。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-07.html">下一課：用字串與串列管理資料 →</a></div></main><footer>講義在本站閱讀，程式在 Colab 練習。<a href="courses.html">課程目錄</a> · <a href="https://research.google.com/colaboratory/faq.html" target="_blank" rel="noopener noreferrer">Colab 使用說明</a></footer></body></html>

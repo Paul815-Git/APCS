@@ -1,0 +1,55 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>用字串與串列管理資料｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 07 · HTML 講義</p><h1>用字串與串列管理資料<span>。</span></h1><p class="lead">先讀一段、預測範例，再到自己的 Colab 副本完成對應題目。可以分兩次學習，每次完成 2–3 段。</p><p class="meta">約 60–90 分鐘 · 能讀取一行多個數字，走訪串列並找出最大值。</p><div class="workflow"><span>01　本站看講義</span><span>02　Colab 做 A–E 題</span><span>03　分享作業副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-07.ipynb" target="_blank" rel="noopener noreferrer">開啟第 7 課 Colab 作業本 ↗</a><a href="#assignment">第一次使用與交作業方式 ↓</a></div><p class="small">只需開啟一次並保存副本；每完成一段講義，就切回同一份副本作答。本站不記錄答案，Colab 副本才是你的作業。</p><nav class="contents" aria-label="講義段落"><a href="#unit-a">01　字串也是一串資料</a><a href="#unit-b">02　for 也能逐字讀取</a><a href="#unit-c">03　串列與 split</a><a href="#unit-d">04　最大值從第一筆開始</a><a href="#unit-e">05　先求總和，再走訪一次</a></nav><section id="unit-a"><p class="eyebrow">01 / 05</p><h2>字串也是一串資料</h2><p>字串可以用 len() 取得長度，用索引取得某個字元。索引從 0 開始，最後一個位置是長度減 1。以下先用英文字母說明。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>word = &quot;python&quot;
+print(len(word))
+print(word[0])
+print(word[5])</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>6
+p
+n</pre></details><p>長度為 6，卻沒有 word[6]，超出範圍會出現 IndexError。空字串不能取第一個字元。本課題目會明確說明字串是否為空。</p>
+<aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>讀取單字</h3><p>輸入一個非空英文字串（1–100 個字母）。依序分三行輸出長度、第一個字元、最後一個字元。</p>
+<p class="criterion"><strong>完成標準：</strong>cat 得 3／c／t；A 得 1／A／A。</p><p class="handoff">切回你已保存的 Colab 副本，找到「A 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>最後一個位置用 len(word) - 1。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-b"><p class="eyebrow">02 / 05</p><h2>for 也能逐字讀取</h2><p>不一定要自己計算索引；for ch in word 可以依序取得每一個字元。用 if 選出要計數的字元。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>word = &quot;banana&quot;
+count = 0
+for ch in word:
+    if ch == &quot;a&quot;:
+        count += 1
+print(count)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>3</pre></details><p>大小寫不同：A 不等於 a。計數的變數放在迴圈外初始化，做法和前面的成績計數相同。</p>
+<aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>有幾個 a</h3><p>輸入一行由英文字母組成的字串（可以為空），計算小寫 a 出現幾次。</p>
+<p class="criterion"><strong>完成標準：</strong>banana 得 3；AAA 得 0；空行得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「B 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>逐字比較 ch == &quot;a&quot;，符合才加 1。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-c"><p class="eyebrow">03 / 05</p><h2>串列與 split</h2><p>串列用中括號存放多筆資料。<code>split()</code> 依空白切開字串，得到文字的串列；再用迴圈搭配 int()，建立整數串列。範例輸入一行 <code>8 3 10</code>。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>parts = input().split()
+nums = []
+for part in parts:
+    nums.append(int(part))
+print(nums)
+print(nums[0])</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>[8, 3, 10]
+8</pre></details><p><code>[]</code> 建立空串列，append() 把新資料加到最後。<code>&quot;10&quot;</code> 是文字，10 才是整數；轉好型別才能進行數字運算。</p>
+<aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>一行數字的總和</h3><p>輸入一行 1–100 個整數，以空白分隔，每個值介於 -1000 和 1000。建立整數串列後，用迴圈加總並輸出。</p>
+<p class="criterion"><strong>完成標準：</strong>8 3 10 得 21；-2 2 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「C 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>先 split，再逐個 int，total 從 0 開始。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-d"><p class="eyebrow">04 / 05</p><h2>最大值從第一筆開始</h2><p>找最大值時，先假設第一筆最大，逐一比較並更新。若資料可能都是負數，不能擅自以 0 當最大值。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>nums = [-8, -3, -10]
+best = nums[0]
+for value in nums:
+    if value &gt; best:
+        best = value
+print(best)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>-3</pre></details><p>這種方法需要至少一筆資料。每次迴圈結束時，best 都是「目前看過」的最大值。這是逐步維護答案的方法。</p>
+<aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>找出最高值</h3><p>輸入一行 1–100 個整數，每個值介於 -1000 和 1000。用迴圈找出最大值，本題先不使用 max()。</p>
+<p class="criterion"><strong>完成標準：</strong>-8 -3 -10 得 -3；5 得 5；2 2 得 2。</p><p class="handoff">切回你已保存的 Colab 副本，找到「D 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>轉成整數串列後，以 nums[0] 初始化 best。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="unit-e"><p class="eyebrow">05 / 05</p><h2>先求總和，再走訪一次</h2><p>某些問題要先看完整批資料才能判斷每一筆。例如先算平均，再數出超過平均的人數。可用 value × 人數 &gt; 總和 避免小數比較。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>nums = [10, 20, 30]
+total = 0
+for v in nums:
+    total += v
+count = 0
+for v in nums:
+    if v * len(nums) &gt; total:
+        count += 1
+print(count)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>1</pre></details><p>第一輪取得總和，第二輪判斷每筆；不需要巢狀迴圈。剛好等於平均不算「超過」。</p>
+<aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>高於平均的人數</h3><p>輸入一行 1–100 個整數成績（0–100）。輸出嚴格高於全體平均分數的人數。</p>
+<p class="criterion"><strong>完成標準：</strong>50 60 100 得 1；80 80 得 0；100 得 0。</p><p class="handoff">切回你已保存的 Colab 副本，找到「E 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>先累積 total，再以 score * len(nums) &gt; total 判斷。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>先用題目給的資料測試，再換一組資料。每題的程式要能獨立執行，不依賴前一題的變數。</p>
+</details></aside></section><section id="assignment"><p class="eyebrow">交作業</p><h2>把你寫的程式交給老師</h2><ol><li>開啟 Colab 作業本，選「檔案 → 在雲端硬碟中儲存副本」，改名為「第7課_暱稱」。</li><li>依 A–E 題作答，確認程式、結果及學習紀錄已保存。</li><li>點「分享」，加入老師帳號，授予檢視或加註權限，再交出自己的副本連結。</li></ol><p>只複製網址不會自動開放權限。要分享的是你寫過的副本，不是本頁的原始教材網址。</p><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-07.ipynb" target="_blank" rel="noopener noreferrer">開啟原始作業本 ↗</a><a href="lesson-07.ipynb" download>下載作業本</a></div><details><summary>已經存過副本，或還在做舊版作業？</summary><p>請從自己的 Google Drive 開啟原有副本，不要反覆建立新副本。舊版的程式仍在你自己的副本中；這次更新不會改掉你的答案。若要使用新的精簡版，另存新副本再自行搬移需要的程式。</p></details><details><summary>Colab 找不到檔案？</summary><p>教師需先將新版 ipynb 上傳到 GitHub main 分支。也可下載作業本，在 <a href="https://colab.research.google.com/?hl=zh-tw" target="_blank" rel="noopener noreferrer">Colab</a> 使用「檔案 → 上傳筆記本」。本課不需要安裝套件或付費 GPU。</p></details><p class="small">本課採自我檢核與老師查看，未提供自動評分或後台進度紀錄。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-08.html">下一課：把解題步驟整理成函式 →</a></div></main><footer>講義在本站閱讀，程式在 Colab 練習。<a href="courses.html">課程目錄</a> · <a href="https://research.google.com/colaboratory/faq.html" target="_blank" rel="noopener noreferrer">Colab 使用說明</a></footer></body></html>
