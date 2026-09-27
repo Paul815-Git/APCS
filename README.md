@@ -1,36 +1,59 @@
-# APCS 程式設計檢測準備指南
+# APCS 指南與 Colab 自學課程
 
-可直接使用 GitHub Pages 發布的靜態網站，不需要安裝套件或執行建置。
+網站保留 APCS 考試與升學資料（36 所大學、62 筆招生組別），Python 課程改用 Google Colab 筆記本。
 
-包含 APCS 介紹、考科與級分試算、8 週準備計畫、練習資源，以及 116 學年度官方採計表全部 36 所大學、62 筆招生組別（APCS 組 49 筆、資安組 13 筆）。支援校系搜尋、組別與門檻篩選。
+## 更新你的 GitHub 網站
 
-## 用 GitHub 網頁上傳並發布
+1. 解壓縮 `apcs-colab-lesson01.zip`。
+2. 開啟 https://github.com/Paul815-Git/APCS ，選 **Add file → Upload files**。
+3. 上傳解壓縮後的全部五個檔案，放在 `main` 分支最外層；更新同名檔案並提交變更。不要上傳 ZIP，也不要多包一層資料夾。
+4. 沿用現有 Pages 設定，等待部署完成。
+5. 開啟 https://paul815-git.github.io/APCS/ ，點「Colab 自學：開始 Python 第 1 課」。
 
-1. 解壓縮 `apcs-github-pages.zip`。
-2. 登入 GitHub，建立新的儲存庫（New repository），名稱可填 `apcs-guide`，選擇 **Public**。可勾選新增 README，方便看到上傳選單。
-3. 在儲存庫的 **Code** 頁面，選 **Add file → Upload files**。若是空白儲存庫，點 **uploading an existing file**。
-4. 上傳解壓縮後的 `index.html`、`README.md`、`.nojekyll`，按 **Commit changes**。請上傳檔案本身，不要上傳 ZIP，也不要多包一層資料夾；`index.html` 必須直接出現在儲存庫最外層。若檔案選擇器未顯示 `.nojekyll`，先上傳其他兩個檔案也能發布此單頁網站。
-5. 進入 **Settings → Pages**。
-6. **Build and deployment → Source** 選 **Deploy from a branch**。
-7. **Branch** 選 **main**，資料夾選 **/ (root)**，按 **Save**。若你的預設分支名稱不同，選實際放置 `index.html` 的分支。
-8. 等待部署完成，在 Pages 設定頁開啟網站連結。以儲存庫 `apcs-guide` 為例，網址通常為 `https://你的帳號.github.io/apcs-guide/`。
-
-若尚未出現網頁，查看儲存庫 **Actions** 的 Pages 部署是否完成；也確認發布分支和 `index.html` 的位置。日後上傳新版 `index.html` 並提交變更，GitHub Pages 會重新發布。
-
-設定依據：[GitHub 官方 Pages 發布來源說明](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)。GitHub Free 可使用公開儲存庫發布 Pages。
-
-## 本機閱讀與資料說明
-
-- 直接用瀏覽器開啟 `index.html` 即可預覽。
-- 網頁樣式與互動程式都在 `index.html` 內；外部資料來源連結需要網路。
-- 勾選進度儲存在目前瀏覽器；本機檔案與線上網站的進度不會自動同步。
-- 資料整理日期為 2026-09-27。級分門檻不等於錄取分數；年度、未核實項目與來源已標示於網頁。
-- [116 學年度官方 APCS 採計表](https://www.cac.edu.tw/apply116/document/116APCS_asdf_20260831.pdf)。
-
-## 檔案
+本次檔案：
 
 ```text
-index.html    網站首頁，保留完整內容與互動功能
-README.md     本說明
-.nojekyll     告知 GitHub Pages 直接提供靜態檔案
+index.html        原指南，加入 Colab 課程入口
+lesson-01.html    第 1 課介紹、Colab 直達與匯入說明
+lesson-01.ipynb   學生教材：說明、範例、空白練習、提示與自我檢核
+README.md        本說明
+.nojekyll        GitHub Pages 靜態檔案設定
 ```
+
+新課程不載入舊版 `lesson.js`、`lesson.css`、`lesson-worker.js` 或 `lesson-rules.js`。如果曾上傳過舊檔，留著不影響新課程。舊版瀏覽器學習紀錄不會匯入 Colab。
+
+## 第 1 課直達連結
+
+https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-01.ipynb
+
+**必須先把本次 `lesson-01.ipynb` 上傳至 main 分支，這個連結才有教材可開啟。** 本壓縮檔不會自動上傳或發布。
+
+在上傳前也能試用：開啟 https://colab.research.google.com/?hl=zh-tw ，選 **檔案 → 上傳筆記本**，匯入 `lesson-01.ipynb`。
+
+## 學生使用流程
+
+1. 登入 Google 帳號，開啟教材。
+2. 選 **檔案 → 在雲端硬碟中儲存副本**，確認已存進自己的 Google Drive，改名為 `第1課_暱稱`。
+3. 先讀說明、寫預測，再逐格執行。不要從「全部執行」開始。
+4. 完成空白練習、除錯紀錄與三行介紹卡。自我檢核是手動確認，沒有自動批改或後台成績紀錄。
+5. 確認已保存，依老師要求分享自己的副本。分享前確認老師有檢視權限。
+
+程式在 Colab 的雲端環境執行，需要網路。筆記本可以保存，但運算環境可能中斷或重建；後續教變數時需從上往下重新執行。手機可開始短練習，之後在電腦上開啟同一份副本接續。
+
+## 老師試教重點
+
+- 第一次使用 Colab 預留約 30–40 分鐘；熟悉介面後約 20 分鐘。
+- 本課只需 Python 3，不需安裝套件、掛載 Drive 或使用 GPU。
+- 修錯題為刻意缺引號的程式。預設以 `#` 註解，學生依題意移除 `#` 後，會看到預期的 SyntaxError，再修正。請勿將這個教學錯誤誤認為教材損壞。
+- 請學生現場換一組文字重新寫，判斷能否獨立完成，而不只看輸出。
+- 第 2 課以後尚未製作；目前僅交付第 1 課。
+
+## 驗證與來源
+
+筆記本已通過 nbformat 格式驗證、Python 3 本地核心逐格執行，以及五個練習參考解的輸出檢查。發布的學生版保留空白作答區，清除輸出以避免提前揭露預測答案。未代替學生登入 Google 帳號測試雲端保存或分享。
+
+- [Google Colab 官方 FAQ](https://research.google.com/colaboratory/faq.html)
+- [Google 官方 GitHub 筆記本開啟示例](https://colab.research.google.com/github/googlecolab/colabtools/blob/main/notebooks/colab-github-demo.ipynb)
+- [GitHub Pages 發布設定](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+原 APCS 資料整理日期：2026-09-27。各校門檻不等於錄取分數，來源與限制仍保留在原指南。
