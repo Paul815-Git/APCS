@@ -1,0 +1,100 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>讓 Python 幫你算｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 02 · HTML 講義</p><h1>讓 Python 幫你算<span>。</span></h1><p class="lead">從四則運算到變數，用程式算出購物金額。先在這裡看懂，再去 Colab 寫出來。</p><p class="meta">約 40–50 分鐘 · 能用變數保存單價與數量，計算總價與找零，並理解重新執行的必要性。</p><div class="workflow"><span>01　本站看講義</span><span>02　Colab 做 A–E 題</span><span>03　分享作業副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-02.ipynb" target="_blank" rel="noopener noreferrer">開啟第 2 課 Colab 作業本 ↗</a><a href="#assignment">第一次使用與交作業方式 ↓</a></div><p class="small">只需開啟一次並保存副本；每完成一段講義，就切回同一份副本作答。本站不記錄答案，Colab 副本才是你的作業。</p><nav class="contents" aria-label="講義段落"><a href="#arithmetic">01　把 Python 當成計算機</a><a href="#brackets">02　括號決定先算哪裡</a><a href="#variables">03　替數值取名字</a><a href="#order">04　改了程式，記得重新執行</a><a href="#shopping">05　把問題拆成小計、總價與找零</a></nav><section id="arithmetic"><p class="eyebrow">01 / 05</p><h2>把 Python 當成計算機</h2><p>第 1 課學過：<code>print(6 + 2)</code> 會計算，<code>print(&quot;6 + 2&quot;)</code> 會顯示文字。</p>
+<table>
+<thead>
+<tr>
+  <th>工作</th>
+  <th>Python 符號</th>
+  <th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>加法</td>
+  <td><code>+</code></td>
+  <td><code>8 + 2</code></td>
+</tr>
+<tr>
+  <td>減法</td>
+  <td><code>-</code></td>
+  <td><code>8 - 2</code></td>
+</tr>
+<tr>
+  <td>乘法</td>
+  <td><code>*</code></td>
+  <td><code>8 * 2</code></td>
+</tr>
+<tr>
+  <td>除法</td>
+  <td><code>/</code></td>
+  <td><code>8 / 2</code></td>
+</tr>
+</tbody>
+</table>
+<p>乘法用 <code>*</code>，不是 x 或 ×；除法用 <code>/</code>，不是 ÷。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>print(8 + 2)
+print(8 - 2)
+print(8 * 2)
+print(8 / 2)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>10
+6
+16
+4.0</pre></details><p><code>/</code> 的結果是浮點數；這裡的 <code>4.0</code> 和數學上的 4 表示相同數值。</p>
+<p>需要計算的算式不要放進引號。</p>
+<aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>點心與平均分攤</h3><p>寫兩行程式：每份點心 35 元、買 3 份的總價；120 元由 4 人平均分攤的金額。</p>
+<p class="criterion"><strong>完成標準：</strong>結果依序為 <code>105</code>、<code>30.0</code>。</p><p class="handoff">切回你已保存的 Colab 副本，找到「A 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>買幾份用乘法，平均分攤用除法。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>把算式放進 print，不加引號。</p>
+</details></aside></section><section id="brackets"><p class="eyebrow">02 / 05</p><h2>括號決定先算哪裡</h2><p>這些運算和數學一樣：先乘除、後加減；括號內先算。比較下方兩行，多出的一組括號改變了什麼？</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>print(2 + 3 * 4)
+print((2 + 3) * 4)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>14
+20</pre></details><p>第一行先算 3 × 4。第二行先算 2 + 3，再乘以 4。</p>
+<p>外層括號屬於 <code>print()</code>；第二行的內層括號用來控制計算順序。</p>
+<aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>三組餐點</h3><p>麵包每個 25 元、牛奶每瓶 15 元，買 3 組「麵包＋牛奶」。用含括號的一行算式計算總價。</p>
+<p class="criterion"><strong>完成標準：</strong>結果為 <code>120</code>；麵包和牛奶各買 3 份。</p><p class="handoff">切回你已保存的 Colab 副本，找到「B 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>先加出一組的價格，再乘以組數。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>類似例子：<code>print((10 + 20) * 2)</code>，請換成本題數值。</p>
+</details></aside></section><section id="variables"><p class="eyebrow">03 / 05</p><h2>替數值取名字</h2><p><code>price = 30</code> 是把右邊的數值 30 指定給左邊的變數 <code>price</code>。</p>
+<p><strong><code>=</code> 是賦值，不是在詢問兩邊是否相等。</strong> 用名字記錄數值，價格或數量改變時，就能找到要改的位置。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>price = 30
+quantity = 2
+total = price * quantity
+print(total)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>60</pre></details><p>程式由上往下執行：設定單價 → 設定數量 → 算出總價 → 顯示結果。</p>
+<ul>
+<li><code>price</code> 是單價，<code>quantity</code> 是數量，<code>total</code> 是總價。</li>
+<li>變數名稱不加引號。<code>print(&quot;total&quot;)</code> 只會顯示文字 total。</li>
+<li>用清楚的英文名稱，多字以底線分隔，例如 <code>cookie_price</code>。</li>
+<li>名稱不能有空格或以數字開頭；<code>price</code> 和 <code>Price</code> 不同。不要把 <code>print</code> 當變數名稱。</li>
+</ul>
+<aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>修改購買條件</h3><p>先將數量改成 3，執行應得 90；再將單價改成 25、數量改成 4，重新執行。最後保留第二次的程式與結果。</p>
+<p class="criterion"><strong>完成標準：</strong>第一次為 <code>90</code>，第二次為 <code>100</code>。</p><p class="handoff">切回你已保存的 Colab 副本，找到「C 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>要改的是 price 和 quantity，不是 print(total)。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>改完後重新執行整個程式區，讓 total 重新計算。</p>
+</details></aside></section><section id="order"><p class="eyebrow">04 / 05</p><h2>改了程式，記得重新執行</h2><p>Colab 的每一個程式區可以分開執行。<strong>編輯只改變畫面上的程式碼；執行才會更新運算環境。</strong></p>
+<p>假設第一格是：</p>
+<pre><code class="language-python">price = 30
+</code></pre>
+<p>第二格是：</p>
+<pre><code class="language-python">print(price * 2)
+</code></pre>
+<p>兩格依序執行，得到 60。若只把第一格的 30 改成 50，卻沒有執行第一格，第二格仍會使用舊的值。</p>
+<p><strong><code>total</code> 也不會自動更新。</strong> <code>total = price * quantity</code> 保存的是當下算出的值。改了單價後，還要重新執行計算 total 的那一行。</p>
+<p>運算環境中斷或重建後，變數可能消失；需要從上往下重新執行。若遇到 <code>NameError</code>，先檢查名稱和設定變數的區塊是否已執行。</p>
+<aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>執行順序實驗</h3><p>先依序執行 D-1、D-2。把 D-1 的 30 改成 50，先不要執行 D-1，只執行 D-2；記下結果。最後依序執行 D-1、D-2，再記下結果。</p>
+<p class="criterion"><strong>完成標準：</strong>兩次觀察分別為 <code>60</code> 和 <code>100</code>；能解釋差異。</p><p class="handoff">切回你已保存的 Colab 副本，找到「D 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>D-1 設定變數；D-2 只讀取目前環境裡的值。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>只改文字不會改變環境；必須執行 D-1 才能更新 price。</p>
+</details></aside></section><section id="shopping"><p class="eyebrow">05 / 05</p><h2>把問題拆成小計、總價與找零</h2><p>兩種商品的購物單可以拆成四步：</p>
+<ol>
+<li>記錄每種商品的單價、數量，以及付款金額。</li>
+<li>分別計算「單價 × 數量」。</li>
+<li>把兩個小計相加，得到總價。</li>
+<li>用付款金額減總價，得到找零。</li>
+</ol>
+<p>下方是<strong>單一商品</strong>的範例。作業 E 題有兩種商品，請自己補上另一種的小計。</p>
+<div class="sample"><div class="code-label">範例 · 先讀再預測</div><pre><code>price = 10
+quantity = 2
+paid = 50
+total = price * quantity
+change = paid - total
+print(total)
+print(change)</code></pre></div><details class="reveal"><summary>想好結果了？展開核對</summary><div class="code-label">執行結果</div><pre>20
+30</pre></details><p>執行後第一行是總價，第二行是找零。不要把固定答案直接印出來，否則數量改變時不會重新計算。</p>
+<aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>點心購物單</h3><p>餅乾每包 25 元、買 3 包；飲料每瓶 20 元、買 2 瓶，付 200 元。用變數保存單價、數量及付款金額，計算並用兩行 print 顯示總價、找零。記下第一次結果，再把餅乾改成 4 包重跑；最後保留第二次的程式與輸出。</p>
+<p class="criterion"><strong>完成標準：</strong>3 包時為 <code>115</code>／<code>85</code>；4 包時為 <code>140</code>／<code>60</code>。須使用變數與算式，不直接印固定答案。</p><p class="handoff">切回你已保存的 Colab 副本，找到「E 題」。完成後回來看下一段。</p><details><summary>提示 1 · 需要時再看</summary><p>總價＝餅乾小計＋飲料小計；找零＝付款−總價。</p>
+</details><details><summary>提示 2 · 需要時再看</summary><p>可用 cookie_price、cookie_quantity、drink_price、drink_quantity、paid、total、change。名稱前後保持一致。</p>
+</details></aside></section><section id="assignment"><p class="eyebrow">交作業</p><h2>把你寫的程式交給老師</h2><ol><li>開啟 Colab 作業本，選「檔案 → 在雲端硬碟中儲存副本」，改名為「第2課_暱稱」。</li><li>依 A–E 題作答，確認程式、結果及學習紀錄已保存。</li><li>點「分享」，加入老師帳號，授予檢視或加註權限，再交出自己的副本連結。</li></ol><p>只複製網址不會自動開放權限。要分享的是你寫過的副本，不是本頁的原始教材網址。</p><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-02.ipynb" target="_blank" rel="noopener noreferrer">開啟原始作業本 ↗</a><a href="lesson-02.ipynb" download>下載作業本</a></div><details><summary>已經存過副本，或還在做舊版作業？</summary><p>請從自己的 Google Drive 開啟原有副本，不要反覆建立新副本。舊版的程式仍在你自己的副本中；這次更新不會改掉你的答案。若要使用新的精簡版，另存新副本再自行搬移需要的程式。</p></details><details><summary>Colab 找不到檔案？</summary><p>教師需先將新版 ipynb 上傳到 GitHub main 分支。也可下載作業本，在 <a href="https://colab.research.google.com/?hl=zh-tw" target="_blank" rel="noopener noreferrer">Colab</a> 使用「檔案 → 上傳筆記本」。本課不需要安裝套件或付費 GPU。</p></details><p class="small">本課採自我檢核與老師查看，未提供自動評分或後台進度紀錄。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><span>第 3 課：輸入資料 · 尚未開放</span></div></main><footer>講義在本站閱讀，程式在 Colab 練習。<a href="courses.html">課程目錄</a> · <a href="https://research.google.com/colaboratory/faq.html" target="_blank" rel="noopener noreferrer">Colab 使用說明</a></footer></body></html>
