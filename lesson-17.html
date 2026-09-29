@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>前綴和：快速回答區間問題｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 17 · 進階自學</p><h1>前綴和：快速回答區間問題</h1><p class="lead">能建立前綴和，用兩個前綴差回答多次區間查詢。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 7 課串列、第 5 課累加</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-17.ipynb" target="_blank" rel="noopener noreferrer">開啟第 17 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　保存每一步的累積結果</a><a href="#unit-B">B　含端點的区間公式</a><a href="#unit-C">C　多次查詢只建立一次</a><a href="#unit-D">D　把條件換成 0 與 1</a><a href="#unit-E">E　固定長度的最佳區間</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>保存每一步的累積結果</h2><p>prefix[0]=0，prefix[i] 代表前 i 個元素的總和。比原串列多一格，是為了讓空的前綴也能表示。每次 append(prefix[-1]+value)。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>prefix = [0]
+for value in [3, 5, 2]:
+    prefix.append(prefix[-1] + value)
+print(*prefix)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>0 3 8 10</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>保存每一步的累積結果：自己做一次</h3><p>輸入一行 1–1000 個整數（-1000–1000），輸出含起始 0 的完整前綴和，以空格隔開。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 5 2</pre><div class="code-label">預期輸出</div><pre>0 3 8 10</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>-2 2</pre><div class="code-label">預期輸出</div><pre>0 -2 0</pre></details><details><summary>需要時再看提示</summary><p>prefix[-1] 是目前累積值；每筆都新增一格。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>含端點的区間公式</h2><p>本課題目位置從 1 起算。第 l 到第 r 個元素總和，是前 r 個的和減去前 l-1 個的和，也就是 p[r]-p[l-1]。不要和 Python 的切片終點混淆。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>p = [0, 3, 8, 10]
+l, r = 2, 3
+print(p[r] - p[l-1])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>7</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>含端點的区間公式：自己做一次</h3><p>第一行 1–1000 個整數，第二行合法 l r（1≤l≤r≤個數）。輸出第 l 到第 r 個的總和，含兩端。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 5 2
+2 3</pre><div class="code-label">預期輸出</div><pre>7</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>-3
+1 1</pre><div class="code-label">預期輸出</div><pre>-3</pre></details><details><summary>需要時再看提示</summary><p>l=1 時減 p[0]，剛好是 0。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>多次查詢只建立一次</h2><p>建立 p 需要 O(n)，每次查詢只做一次減法 O(1)，q 次總計 O(n+q)。這裡 n 是資料筆數，q 是查詢數；不要在每個查詢內重建前綴和。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>p = [0, 2, 6, 12]
+for l, r in [(1, 3), (2, 2)]:
+    print(p[r] - p[l-1])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>12
+4</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>多次查詢只建立一次：自己做一次</h3><p>第一行 n q（皆 1–10000），第二行 n 個整數（-1000–1000），接著 q 行合法 l r。逐行輸出各區間和。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 2
+2 4 6
+1 3
+2 2</pre><div class="code-label">預期輸出</div><pre>12
+4</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+0
+1 1</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>讀取資料建立 p 後，再用 for 處理 q 行。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>把條件換成 0 與 1</h2><p>前綴和不只加原數值。若每筆及格記 1、不及格記 0，區間和就代表區間及格人數。將問題轉成可累積的數值很有用。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>p = [0]
+for score in [50, 60, 90]:
+    flag = 0
+    if score &gt;= 60:
+        flag = 1
+    p.append(p[-1] + flag)
+print(p[3] - p[1])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>把條件換成 0 與 1：自己做一次</h3><p>第一行 n q（1–10000），第二行 n 個 0–100 的分數，接著 q 行合法 l r（1 起算、含兩端）。逐行輸出区間內至少 60 分的人數。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 2
+59 60 100
+1 3
+1 1</pre><div class="code-label">預期輸出</div><pre>2
+0</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+60
+1 1</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>需要時再看提示</summary><p>建立的不是分數總和，而是是否及格的總和。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>固定長度的最佳區間</h2><p>長度 k 的片段，若右端位置 r，左端就是 r-k+1，總和 p[r]-p[r-k]。右端從 k 到 n，每次前進一格即可。全負數時不要用 0 當最佳值。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [-5, -2, -3]
+p = [0]
+for v in nums:
+    p.append(p[-1]+v)
+k = 2
+best = p[k]
+for r in range(k, len(nums)+1):
+    best = max(best, p[r]-p[r-k])
+print(best)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>-5</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>固定長度的最佳區間：自己做一次</h3><p>第一行 n k（1≤k≤n≤10000），第二行 n 個整數（-1000–1000）。輸出恰好連續 k 個元素的最大總和。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 2
+-5 -2 -3</pre><div class="code-label">預期輸出</div><pre>-5</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3 3
+1 2 3</pre><div class="code-label">預期輸出</div><pre>6</pre></details><details><summary>需要時再看提示</summary><p>best 初始化為第一段 p[k]；max(a,b) 取較大值。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-17.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-17.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-18.html">第 18 課：二分搜尋：每次排除一半 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

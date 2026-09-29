@@ -1,0 +1,48 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>字典：用名稱查找與計次｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 14 · 進階自學</p><h1>字典：用名稱查找與計次</h1><p class="lead">能使用字典累積次數，處理查詢和同分規則。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 7 課串列、第 13 課字串</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-14.ipynb" target="_blank" rel="noopener noreferrer">開啟第 14 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　鍵與值</a><a href="#unit-B">B　get 提供預設值</a><a href="#unit-C">C　多次查詢不必每次重數</a><a href="#unit-D">D　指定輸出順序</a><a href="#unit-E">E　同分時也要有規則</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>鍵與值</h2><p>字典用 key 找 value，例如商品名稱找價格。{} 建立字典；d[key]=value 新增或更新。鍵不在字典內時直接 d[key] 會出錯，可先用 in 判斷。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>price = {&quot;tea&quot;: 20, &quot;milk&quot;: 30}
+print(price[&quot;tea&quot;])
+price[&quot;tea&quot;] = 25
+print(price[&quot;tea&quot;])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>20
+25</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>鍵與值：自己做一次</h3><p>已知 tea=20、milk=30、water=10。輸入一個品名，輸出價格；其他品名輸出 -1。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>tea</pre><div class="code-label">預期輸出</div><pre>20</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>juice</pre><div class="code-label">預期輸出</div><pre>-1</pre></details><details><summary>需要時再看提示</summary><p>先 if name in price，存在才用 price[name]。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>get 提供預設值</h2><p>d.get(key,0) 在 key 不存在時回傳 0，不會自動新增。配合賦值 d[key]=d.get(key,0)+1，就能建立次數表。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>count = {}
+for ch in &quot;aba&quot;:
+    count[ch] = count.get(ch, 0) + 1
+print(count[&quot;a&quot;])
+print(count.get(&quot;z&quot;, 0))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2
+0</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>get 提供預設值：自己做一次</h3><p>第一行輸入小寫英文字串（長度≤1000，可空），第二行一個小寫字母。用字典計次後輸出該字母次數。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>banana
+a</pre><div class="code-label">預期輸出</div><pre>3</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>
+a</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>每個 ch 更新 count；查詢用 get(target,0)。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>多次查詢不必每次重數</h2><p>先走訪全部資料建立字典，再回答多個查詢。建立一次計數表，可以避免每個查詢都重新掃描完整文字。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>count = {}
+for word in [&quot;tea&quot;, &quot;milk&quot;, &quot;tea&quot;]:
+    count[word] = count.get(word, 0) + 1
+for word in [&quot;tea&quot;, &quot;water&quot;]:
+    print(count.get(word, 0))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2
+0</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>多次查詢不必每次重數：自己做一次</h3><p>第一行有 1–1000 個小寫英文單字，以空格隔開；第二行 q（1–100）；接著 q 行各一個單字。逐行輸出出現次數，大小寫不需轉換。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>tea milk tea
+2
+tea
+water</pre><div class="code-label">預期輸出</div><pre>2
+0</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>a
+1
+a</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>需要時再看提示</summary><p>先建 count，再讀 q 次，每次查 get。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>指定輸出順序</h2><p>字典記錄順序不代表字母排序。sorted(d) 會取得排序後的鍵；逐一輸出 key 和 d[key]。本課限定小寫英文字，使用 Python 字串排序。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>d = {&quot;pear&quot;: 2, &quot;apple&quot;: 3}
+for key in sorted(d):
+    print(key, d[key])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>apple 3
+pear 2</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>指定輸出順序：自己做一次</h3><p>輸入一行 1–1000 個小寫英文單字。統計後依字母順序逐行輸出「單字 次數」。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>b a b</pre><div class="code-label">預期輸出</div><pre>a 1
+b 2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>z</pre><div class="code-label">預期輸出</div><pre>z 1</pre></details><details><summary>需要時再看提示</summary><p>for word in sorted(count): print(word,count[word])。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>同分時也要有規則</h2><p>最大次數可能不只一個字。先把鍵排序，再只在次數嚴格更大時更新，便能讓字母順序較前者在同分時保留。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>d = {&quot;b&quot;: 2, &quot;a&quot;: 2}
+best = &quot;&quot;
+best_count = -1
+for key in sorted(d):
+    if d[key] &gt; best_count:
+        best, best_count = key, d[key]
+print(best, best_count)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>a 2</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>同分時也要有規則：自己做一次</h3><p>輸入一行 1–1000 個小寫英文單字。輸出最常出現的單字及次數，同次數時選字母順序最前者。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>b a b a</pre><div class="code-label">預期輸出</div><pre>a 2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>tea tea milk</pre><div class="code-label">預期輸出</div><pre>tea 2</pre></details><details><summary>需要時再看提示</summary><p>依排序鍵走訪，更新條件用 &gt; 而非 &gt;=。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-14.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-14.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-15.html">第 15 課：集合：去重、交集與重複檢查 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

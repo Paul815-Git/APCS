@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>二分搜尋：每次排除一半｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 18 · 進階自學</p><h1>二分搜尋：每次排除一半</h1><p class="lead">能在已排序資料找下界，正確處理重複與找不到。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 16 課排序、while 與函式</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-18.ipynb" target="_blank" rel="noopener noreferrer">開啟第 18 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　先理解搜尋區間</a><a href="#unit-B">B　找第一個不小於目標的位置</a><a href="#unit-C">C　下界不代表一定相等</a><a href="#unit-D">D　標準函式與重複值</a><a href="#unit-E">E　在數值範圍內計數</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>先理解搜尋區間</h2><p>二分搜尋需要有序資料。使用左閉右開區間 [lo,hi)，lo 包含、hi 不包含。當 lo==hi 時區間為空。mid=(lo+hi)//2；若向右搜尋，lo=mid+1，才會真的縮小。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [2, 4, 6, 8]
+lo, hi = 0, len(nums)
+mid = (lo + hi) // 2
+print(mid, nums[mid])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2 6</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>先理解搜尋區間：自己做一次</h3><p>分兩行輸入 lo、hi（0≤lo&lt;hi≤10000），輸出區間的中間索引 (lo+hi)//2。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>0
+4</pre><div class="code-label">預期輸出</div><pre>2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3
+4</pre><div class="code-label">預期輸出</div><pre>3</pre></details><details><summary>需要時再看提示</summary><p>這題只計算中點，確認 hi 不包含在區間中。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>找第一個不小於目標的位置</h2><p>若 nums[mid]&lt;target，中點及更左都不可能是答案，移動 lo；否則中點可能是答案，令 hi=mid 保留它。最後 lo 是第一個 &gt;=target 的位置，可能等於長度，表示全都太小。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [2, 4, 4, 8]
+target = 4
+lo, hi = 0, len(nums)
+while lo &lt; hi:
+    mid = (lo+hi)//2
+    if nums[mid] &lt; target:
+        lo = mid+1
+    else:
+        hi = mid
+print(lo)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>1</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>找第一個不小於目標的位置：自己做一次</h3><p>第一行是 1–10000 個已遞增排序的整數（可重複），第二行 target。手寫二分搜尋，輸出第一個 &gt;=target 的 0 起算索引；不存在輸出 n。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4 4 8
+4</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4
+9</pre><div class="code-label">預期輸出</div><pre>2</pre></details><details><summary>需要時再看提示</summary><p>不要把 hi 設成 mid-1，本課使用的是右端不包含的版本。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>下界不代表一定相等</h2><p>找到 &gt;=target 的位置後，還要檢查 pos&lt;n 且 nums[pos]==target，才算找到。先查範圍再讀索引，避免 pos=n 時越界。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [2, 4, 8]
+pos = 1
+target = 3
+if pos &lt; len(nums) and nums[pos] == target:
+    print(&quot;YES&quot;)
+else:
+    print(&quot;NO&quot;)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>NO</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>下界不代表一定相等：自己做一次</h3><p>第一行是 1–10000 個已排序整數，第二行 target。用二分搜尋輸出第一次相等的索引，不存在則 -1。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4 4 8
+4</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4
+3</pre><div class="code-label">預期輸出</div><pre>-1</pre></details><details><summary>需要時再看提示</summary><p>沿用下界迴圈，結束後增加相等檢查。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>標準函式與重複值</h2><p>Python 標準函式庫 bisect 不需額外安裝。bisect_left 找第一個 &gt;=目標的位置，bisect_right 找第一個 &gt;目標的位置；兩者相減就是相等元素個數。每次搜尋約 O(log n)。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>from bisect import bisect_left, bisect_right
+nums = [2, 4, 4, 8]
+print(bisect_left(nums, 4))
+print(bisect_right(nums, 4))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>1
+3</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>標準函式與重複值：自己做一次</h3><p>第一行為 1–10000 個已排序整數，第二行 target。用 bisect 算出 target 出現次數。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4 4 8
+4</pre><div class="code-label">預期輸出</div><pre>2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4
+3</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>right-left，沒有出現時兩個位置相同。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>在數值範圍內計數</h2><p>數值範圍 [a,b] 不等於位置區間。第一個 &gt;b 的位置減去第一個 &gt;=a 的位置，就是 a 到 b 之間的元素數，包含重複。未排序資料先排序一次。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>from bisect import bisect_left, bisect_right
+nums = sorted([8, 2, 4, 4])
+print(bisect_right(nums, 4)-bisect_left(nums, 2))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>3</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>在數值範圍內計數：自己做一次</h3><p>第一行 n q（1–10000），第二行 n 個整數（-100000–100000，未排序），接著 q 行 a b（a≤b）。輸出各數值範圍 [a,b] 內的元素數。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>4 2
+8 2 4 4
+2 4
+5 7</pre><div class="code-label">預期輸出</div><pre>3
+0</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+0
+0 0</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>需要時再看提示</summary><p>排序放在查詢迴圈外；使用 right(b)-left(a)。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-18.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-18.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-19.html">第 19 課：堆疊與佇列：依順序處理事件 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

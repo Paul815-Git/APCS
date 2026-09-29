@@ -1,0 +1,65 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>堆疊與佇列：依順序處理事件｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 19 · 進階自學</p><h1>堆疊與佇列：依順序處理事件</h1><p class="lead">能用堆疊處理配對，用佇列模擬先來先服務。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 7 課串列、while 與條件判斷</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-19.ipynb" target="_blank" rel="noopener noreferrer">開啟第 19 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　堆疊：最後放入先取出</a><a href="#unit-B">B　退格是取消最近一個字</a><a href="#unit-C">C　左右括號的配對</a><a href="#unit-D">D　佇列：先放入先取出</a><a href="#unit-E">E　輪流處理直到完成</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>堆疊：最後放入先取出</h2><p>串列 append 加到尾端，pop() 取出並移除尾端。stack[-1] 只查看尾端。pop 空串列會出錯；if stack 可先判斷是否非空。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>stack = []
+stack.append(10)
+stack.append(20)
+print(stack.pop())
+print(stack[-1])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>20
+10</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>堆疊：最後放入先取出：自己做一次</h3><p>輸入一行 1–100 個整數，依序 append 到堆疊，再用 while 與 pop 逐行輸出，形成反向順序。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 2 3</pre><div class="code-label">預期輸出</div><pre>3
+2
+1</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>0</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>while stack: print(stack.pop())。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>退格是取消最近一個字</h2><p>可把一般字元推入堆疊，遇到 # 就移除最後字元。空堆疊遇到 # 依本題規則忽略，不是錯誤。最後 join 還原文字。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>stack = []
+for ch in &quot;ab#c&quot;:
+    if ch == &quot;#&quot;:
+        if stack:
+            stack.pop()
+    else:
+        stack.append(ch)
+print(&quot;&quot;.join(stack))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>ac</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>退格是取消最近一個字：自己做一次</h3><p>輸入一行小寫英文字母及 #（長度≤1000，可空），# 表示刪除前面最後一個保留字元；無字可刪則忽略。輸出最終文字。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>ab#c</pre><div class="code-label">預期輸出</div><pre>ac</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>###</pre><div class="code-label">預期輸出</div><pre>（空行）</pre></details><details><summary>需要時再看提示</summary><p>字母 append，# 且 stack 非空才 pop。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>左右括號的配對</h2><p>遇左括號推入；遇右括號必須有左括號可彈出。掃完也必須沒有剩餘左括號。只檢查左右總數相等不夠，)( 就不合法。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>stack = []
+valid = True
+for ch in &quot;(())&quot;:
+    if ch == &quot;(&quot;:
+        stack.append(ch)
+    elif stack:
+        stack.pop()
+    else:
+        valid = False
+        break
+print(valid and not stack)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>True</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>左右括號的配對：自己做一次</h3><p>輸入只含 ( 和 ) 的一行（長度≤1000，可空）。合法配對輸出 YES，否則 NO。空字串視為合法。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>(())</pre><div class="code-label">預期輸出</div><pre>YES</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>)(</pre><div class="code-label">預期輸出</div><pre>NO</pre></details><details><summary>需要時再看提示</summary><p>右括號遇空堆疊立即失敗；最後還有左括號也失敗。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>佇列：先放入先取出</h2><p>collections.deque 是標準函式庫的雙端佇列。append 從右邊加入，popleft 從左邊取出。比用串列 pop(0) 更適合大量前端移除，因為不用搬移後方全部元素。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>from collections import deque
+queue = deque([10, 20])
+queue.append(30)
+print(queue.popleft())
+print(queue.popleft())</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>10
+20</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>佇列：先放入先取出：自己做一次</h3><p>第一行 n（1–100），接著 n 行指令：ADD 名稱 或 SERVE。名稱無空格。ADD 排到隊尾，SERVE 輸出隊首並移除；無人則輸出 EMPTY。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>5
+ADD Amy
+ADD Bob
+SERVE
+SERVE
+SERVE</pre><div class="code-label">預期輸出</div><pre>Amy
+Bob
+EMPTY</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+SERVE</pre><div class="code-label">預期輸出</div><pre>EMPTY</pre></details><details><summary>需要時再看提示</summary><p>先 split 指令；只有 ADD 才讀第二個欄位。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>輪流處理直到完成</h2><p>剩餘工作量為正，就放回隊尾；完成則不放回。每輪至少減少一份工作，且起始工作有限，所以最終會停止。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>from collections import deque
+q = deque([[1, 2], [2, 1]])
+while q:
+    job, remaining = q.popleft()
+    remaining -= 1
+    if remaining == 0:
+        print(job)
+    else:
+        q.append([job, remaining])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2
+1</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>輪流處理直到完成：自己做一次</h3><p>輸入一行 1–100 個正整數（每個 1–100），為編號 1、2…工作的工作量。每輪隊首處理 1 單位，未完成放隊尾；完成則逐行輸出其編號。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 1</pre><div class="code-label">預期輸出</div><pre>2
+1</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1 1</pre><div class="code-label">預期輸出</div><pre>1
+2
+3</pre></details><details><summary>需要時再看提示</summary><p>佇列元素同時存編號和剩餘量；編號不會隨排隊位置改變。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-19.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-19.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-20.html">第 20 課：綜合實作：選擇方法並驗證答案 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

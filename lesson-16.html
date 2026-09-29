@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>排序與自訂排序規則｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 16 · 進階自學</p><h1>排序與自訂排序規則</h1><p class="lead">能依欄位與同分規則排序，理解排序後的相鄰關係。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 8 課函式、第 12 課二維串列</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-16.ipynb" target="_blank" rel="noopener noreferrer">開啟第 16 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　遞增與遞減</a><a href="#unit-B">B　key 決定比較依據</a><a href="#unit-C">C　用函式指定欄位</a><a href="#unit-D">D　多個排序條件</a><a href="#unit-E">E　最接近的兩數會相鄰</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>遞增與遞減</h2><p>sorted(nums,reverse=True) 回傳遞減排列。nums.sort() 則直接修改原串列，回傳 None；不要寫 nums=nums.sort()。本課統一用 sorted，保留原資料。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [2, 9, 4]
+print(*sorted(nums, reverse=True))
+print(*nums)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>9 4 2
+2 9 4</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>遞增與遞減：自己做一次</h3><p>輸入一行 1–1000 個整數，遞減排序後以空格隔開輸出，重複保留。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 9 4 4</pre><div class="code-label">預期輸出</div><pre>9 4 4 2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>-1</pre><div class="code-label">預期輸出</div><pre>-1</pre></details><details><summary>需要時再看提示</summary><p>使用 reverse=True，不是 reversed 參數。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>key 決定比較依據</h2><p>sorted(words,key=len) 依字串長度排序。長度相同時，Python 的穩定排序保留原先順序。key 傳的是函式本身，不是 len() 的執行結果。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>words = [&quot;pear&quot;, &quot;a&quot;, &quot;cat&quot;, &quot;dog&quot;]
+print(*sorted(words, key=len))</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>a cat dog pear</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>key 決定比較依據：自己做一次</h3><p>輸入一行 1–100 個英文單字，依長度由短到長輸出，等長保持原輸入順序。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>bb a cc d</pre><div class="code-label">預期輸出</div><pre>a d bb cc</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>abc</pre><div class="code-label">預期輸出</div><pre>abc</pre></details><details><summary>需要時再看提示</summary><p>key=len，輸出 print(*ordered)。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>用函式指定欄位</h2><p>記錄可用 [姓名,分數] 表示。定義 key 函式回傳分數，再傳給 sorted。以下例子中 key 函式每次接收一筆記錄。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>def score_of(row):
+    return row[1]
+rows = [[&quot;Amy&quot;, 80], [&quot;Bob&quot;, 60]]
+for row in sorted(rows, key=score_of):
+    print(*row)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>Bob 60
+Amy 80</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>用函式指定欄位：自己做一次</h3><p>第一行 n（1–100），接著 n 行各為不含空格的姓名與整數分數。依分數由高到低輸出姓名及分數；同分保留輸入順序。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3
+Amy 80
+Bob 90
+Cat 80</pre><div class="code-label">預期輸出</div><pre>Bob 90
+Amy 80
+Cat 80</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+A 0</pre><div class="code-label">預期輸出</div><pre>A 0</pre></details><details><summary>需要時再看提示</summary><p>讀到的分數先 int；key 回傳 row[1]，reverse=True。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>多個排序條件</h2><p>tuple（元組）可用 (第一條件,第二條件) 表示排序鍵，先比第一項，相同再比第二項。分數取負號可讓高分排前面，姓名保持正向字母序。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>def rank_key(row):
+    return (-row[1], row[0])
+rows = [[&quot;Bob&quot;, 80], [&quot;Amy&quot;, 80], [&quot;Cat&quot;, 90]]
+for row in sorted(rows, key=rank_key):
+    print(*row)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>Cat 90
+Amy 80
+Bob 80</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>多個排序條件：自己做一次</h3><p>第一行 n（1–100），接著 n 行為互不重複的小寫英文姓名與分數（0–100）。依分數遞減、同分姓名字母遞增輸出。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3
+bob 80
+amy 80
+cat 90</pre><div class="code-label">預期輸出</div><pre>cat 90
+amy 80
+bob 80</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+a 0</pre><div class="code-label">預期輸出</div><pre>a 0</pre></details><details><summary>需要時再看提示</summary><p>key 函式回傳 (-row[1],row[0])，不再使用 reverse=True。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>最接近的兩數會相鄰</h2><p>排好序後，最小差距一定能在相鄰兩數間找到，因為跨過中間值不會比其中相鄰差距更小。如此不用枚舉每一對。排序約 O(n log n)，再走訪約 O(n)。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = sorted([9, 2, 6])
+best = nums[1] - nums[0]
+for i in range(2, len(nums)):
+    gap = nums[i] - nums[i-1]
+    if gap &lt; best:
+        best = gap
+print(best)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>3</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>最接近的兩數會相鄰：自己做一次</h3><p>輸入一行 2–10000 個整數（-100000–100000），輸出任兩個不同位置元素的最小絕對差。相同值可得到 0。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>9 2 6</pre><div class="code-label">預期輸出</div><pre>3</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 2</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>排序後只看相鄰差；先用第一對初始化。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-16.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-16.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-17.html">第 17 課：前綴和：快速回答區間問題 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>巢狀迴圈：把重複工作分成兩層｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 11 · 進階自學</p><h1>巢狀迴圈：把重複工作分成兩層</h1><p class="lead">能追蹤兩層迴圈，完成表格與配對枚舉。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 5 課 for、第 7 課串列</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-11.ipynb" target="_blank" rel="noopener noreferrer">開啟第 11 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　外層一次，內層跑完一輪</a><a href="#unit-B">B　一列組好再輸出</a><a href="#unit-C">C　內層次數跟著列號變</a><a href="#unit-D">D　枚舉所有有順序的組合</a><a href="#unit-E">E　無序配對只選一次</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>外層一次，內層跑完一輪</h2><p>外層負責列，內層負責欄。每換一個 r，c 就重新從 1 開始。先在紙上列出 (r,c) 的順序，再看結果。縮排決定指令屬於哪一層。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>for r in range(1, 3):
+    for c in range(1, 3):
+        print(r, c)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>1 1
+1 2
+2 1
+2 2</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>外層一次，內層跑完一輪：自己做一次</h3><p>分兩行輸入列數 r、欄數 c（皆 1–10）。逐行輸出所有座位的列號與欄號，以一個空格隔開，列優先，編號從 1 開始。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2
+2</pre><div class="code-label">預期輸出</div><pre>1 1
+1 2
+2 1
+2 2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+1</pre><div class="code-label">預期輸出</div><pre>1 1</pre></details><details><summary>需要時再看提示</summary><p>外層 range(1,r+1)，內層 range(1,c+1)。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>一列組好再輸出</h2><p>空字串可以逐次加上文字。每列開始時要重新設定 line，內層加字，內層結束後才 print。若在內層 print，便會印出尚未完成的列。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>for r in range(2):
+    line = &quot;&quot;
+    for c in range(3):
+        line += &quot;*&quot;
+    print(line)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>***
+***</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>一列組好再輸出：自己做一次</h3><p>分兩行輸入 r、c（1–20），用巢狀迴圈輸出 r 列、每列 c 個 #，不得多空格。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2
+3</pre><div class="code-label">預期輸出</div><pre>###
+###</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+1</pre><div class="code-label">預期輸出</div><pre>#</pre></details><details><summary>需要時再看提示</summary><p>line 在外層內、內層前歸零。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>內層次數跟著列號變</h2><p>range 可以使用外層變數。第 1 列做 1 次，第 2 列做 2 次，總次數不再是固定的列數乘欄數。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>for r in range(1, 4):
+    line = &quot;&quot;
+    for c in range(r):
+        line += &quot;+&quot;
+    print(line)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>+
+++
++++</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>內層次數跟著列號變：自己做一次</h3><p>輸入 n（1–20），輸出 n 列星號，第 i 列恰有 i 個 *。使用兩層迴圈。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3</pre><div class="code-label">預期輸出</div><pre>*
+**
+***</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1</pre><div class="code-label">預期輸出</div><pre>*</pre></details><details><summary>需要時再看提示</summary><p>內層 range(i)，不用 i+1，因為 range(i) 已有 i 次。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>枚舉所有有順序的組合</h2><p>如果兩個選項都可重複選，兩層迴圈會列出所有有序配對。(1,2) 和 (2,1) 是不同結果。先枚舉，再用 if 篩選。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>count = 0
+for a in range(1, 4):
+    for b in range(1, 4):
+        if a + b == 4:
+            count += 1
+print(count)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>3</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>枚舉所有有順序的組合：自己做一次</h3><p>分兩行輸入 n（1–30）、目標 t（2–60）。計算 a、b 都在 1 到 n 且 a+b=t 的有序配對數，允許 a=b。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>3
+4</pre><div class="code-label">預期輸出</div><pre>3</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1
+2</pre><div class="code-label">預期輸出</div><pre>1</pre></details><details><summary>需要時再看提示</summary><p>count 在兩層外初始化；符合條件才加 1。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>無序配對只選一次</h2><p>串列中選兩個不同位置時，可令 j 從 i+1 開始。這樣不會選到自己，也不會把同一對顛倒計算。值相同但位置不同仍是不同元素。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>nums = [2, 2, 3]
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        print(nums[i], nums[j])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>2 2
+2 3
+2 3</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>無序配對只選一次：自己做一次</h3><p>第一行輸入 1–100 個整數（-1000–1000），第二行輸入 t。輸出 i&lt;j 且 nums[i]+nums[j]=t 的位置配對數。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 2 3
+5</pre><div class="code-label">預期輸出</div><pre>2</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>5
+10</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>j 用 range(i+1,len(nums))；一筆資料時答案是 0。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-11.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-11.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-12.html">第 12 課：二維串列：讀懂格子與座標 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>

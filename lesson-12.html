@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>二維串列：讀懂格子與座標｜APCS 自學</title><link rel="stylesheet" href="teaching.css"></head><body><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="index.html">考試與升學指南 ↗</a></div></header><main><p class="eyebrow">LESSON 12 · 進階自學</p><h1>二維串列：讀懂格子與座標</h1><p class="lead">能讀取矩陣，處理列、欄、轉置及鄰格邊界。</p><p class="meta">約 90–120 分鐘，可分兩次 · 先備：第 11 課巢狀迴圈</p><div class="workflow"><span>01　看講義與預測</span><span>02　Colab 完成 A–E</span><span>03　測試與分享副本</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-12.ipynb" target="_blank" rel="noopener noreferrer">開啟第 12 課 Colab 作業本 ↗</a><a href="#assignment">保存與交作業 ↓</a></div><p class="small">請保留講義與 Colab 兩個分頁，直接切換。若從 Colab 回講義出現重新導向通知，點通知中的目的網址即可。建議使用電腦打字；手機可先閱讀、作答，再補上 .py 操作。</p><nav class="contents" aria-label="本課段落"><a href="#unit-A">A　串列裡再放串列</a><a href="#unit-B">B　逐列統計</a><a href="#unit-C">C　逐欄統計</a><a href="#unit-D">D　轉置不是旋轉</a><a href="#unit-E">E　鄰格一定先檢查邊界</a></nav><section id="unit-A"><p class="eyebrow">單元 A / E</p><h2>串列裡再放串列</h2><p>grid[r][c] 先選第 r 列，再選該列第 c 欄；索引都從 0 開始。讀一行數字時，list(map(int,input().split())) 等同把 split 得到的每段文字逐個 int，再組成串列。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>grid = [[2, 4], [6, 8]]
+print(grid[0][1])
+print(grid[1][0])</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>4
+6</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB 練習 A</p><h3>串列裡再放串列：自己做一次</h3><p>固定讀兩行，每行恰好兩個整數（-100–100）。输出左上角加右下角的和。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 4
+6 8</pre><div class="code-label">預期輸出</div><pre>10</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>-1 0
+0 1</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>讀兩列到 grid，再用 grid[0][0]+grid[1][1]。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 A 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-B"><p class="eyebrow">單元 B / E</p><h2>逐列統計</h2><p>一列本身就是串列，for row in grid 取得整列，再用內層累加。每一列的 total 都要重新歸零。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>grid = [[1, 2], [3, 4]]
+for row in grid:
+    total = 0
+    for value in row:
+        total += value
+    print(total)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>3
+7</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB 練習 B</p><h3>逐列統計：自己做一次</h3><p>第一行 r c（1–20），接下來 r 行各 c 個整數（-100–100）。每行輸出一列的總和，共 r 行。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 2
+1 2
+3 4</pre><div class="code-label">預期輸出</div><pre>3
+7</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+-3</pre><div class="code-label">預期輸出</div><pre>-3</pre></details><details><summary>需要時再看提示</summary><p>每讀一列就可以加總，無須等全部讀完。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 B 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-C"><p class="eyebrow">單元 C / E</p><h2>逐欄統計</h2><p>要統計一欄，固定 c、改變 r。讀入時每次 append 一個新 row，不要用 [[0]*c]*r 建立可修改的矩陣，那會讓各列共用同一個串列。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>grid = [[1, 2, 3], [4, 5, 6]]
+for c in range(3):
+    total = 0
+    for r in range(2):
+        total += grid[r][c]
+    print(total)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>5
+7
+9</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB 練習 C</p><h3>逐欄統計：自己做一次</h3><p>第一行 r c（1–20），後面 r 行各 c 個整數（-100–100）。逐行輸出各欄總和，共 c 行。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 3
+1 2 3
+4 5 6</pre><div class="code-label">預期輸出</div><pre>5
+7
+9</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+9</pre><div class="code-label">預期輸出</div><pre>9</pre></details><details><summary>需要時再看提示</summary><p>先把所有 row 讀入 grid，再外層跑欄、內層跑列。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 C 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-D"><p class="eyebrow">單元 D / E</p><h2>轉置不是旋轉</h2><p>轉置把原本第 c 欄變成新矩陣的第 c 列。print(*row) 的星號會把串列拆成多個 print 參數，輸出空格分隔的值，不含中括號。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>grid = [[1, 2, 3], [4, 5, 6]]
+for c in range(3):
+    row = []
+    for r in range(2):
+        row.append(grid[r][c])
+    print(*row)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>1 4
+2 5
+3 6</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB 練習 D</p><h3>轉置不是旋轉：自己做一次</h3><p>第一行 r c（1–20），接著 r 行各 c 個整數。輸出轉置後的 c 行，每行 r 個值，以空格隔開。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 3
+1 2 3
+4 5 6</pre><div class="code-label">預期輸出</div><pre>1 4
+2 5
+3 6</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 2
+7 8</pre><div class="code-label">預期輸出</div><pre>7
+8</pre></details><details><summary>需要時再看提示</summary><p>每次固定一欄，收集所有列該欄的值再 print(*row)。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 D 題。完成後回到這個講義分頁。</p></aside></section><section id="unit-E"><p class="eyebrow">單元 E / E</p><h2>鄰格一定先檢查邊界</h2><p>上下左右可表示為四組位移 (-1,0)、(1,0)、(0,-1)、(0,1)。先確認新座標 0&lt;=nr&lt;列數 且 0&lt;=nc&lt;欄數，才讀 grid[nr][nc]。Python 的負索引有效，所以漏檢查可能悄悄讀到最後一列。</p>
+<div class="sample"><div class="code-label">範例 · 先預測，再核對</div><pre><code>r, c = 0, 0
+for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+    nr, nc = r + dr, c + dc
+    if 0 &lt;= nr &lt; 2 and 0 &lt;= nc &lt; 2:
+        print(nr, nc)</code></pre></div><details class="reveal"><summary>展開範例結果</summary><pre>1 0
+0 1</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB 練習 E</p><h3>鄰格一定先檢查邊界：自己做一次</h3><p>第一行 r c（1–20），接著 r 行各 c 個整數（-100–100），最後一行為合法座標 x y（從 0 開始）。輸出該格上下左右存在的鄰格總和，不含自身。</p>
+<p class="criterion"><strong>完成標準：</strong>程式能處理題目允許的資料，輸出格式正確；完成下面測試，再自選一組資料驗證，不直接印固定答案。</p><details><summary>測試 1：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>2 2
+1 2
+3 4
+0 0</pre><div class="code-label">預期輸出</div><pre>5</pre></details><details><summary>測試 2：輸入與預期輸出</summary><p class="small">每行對應一次輸入；「空行」表示直接按 Enter。</p><div class="code-label">輸入</div><pre>1 1
+9
+0 0</pre><div class="code-label">預期輸出</div><pre>0</pre></details><details><summary>需要時再看提示</summary><p>遍歷四組位移，合法才加進 total；1×1 沒有鄰格。</p>
+</details><p class="handoff">切到自己的 Colab 副本，找到 E 題。完成後回到這個講義分頁。</p></aside></section><section id="assignment"><h2>保存與交作業</h2><ol><li>Colab 先儲存自己的 Drive 副本，已有副本就繼續使用。</li><li>依序完成 A–E，每題自己讀取資料，保留程式、輸出與學習紀錄。</li><li>分享副本給老師，加入老師帳號並給檢視或加註權限，再交出副本網址。</li></ol><p>複製網址不會自動授權。本站不保存答案、不自動評分；已存的舊副本不會隨教材更新而改變。</p><div class="actions"><a href="lesson-12.ipynb" download>下載本課作業本</a><a href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-12.ipynb" target="_blank" rel="noopener noreferrer">開啟 Colab ↗</a></div><p class="small">若 GitHub 的作業本尚未上傳，可先下載，再於 Colab 使用「檔案 → 上傳筆記本」。</p></section><div class="endnav"><a href="courses.html">← 回課程目錄</a><a href="lesson-13.html">第 13 課：字串處理：從切片到回文 →</a></div></main><footer>自編 Python 進階練習 · <a href="courses.html">回課程目錄</a> · 講義與 Colab 請保留兩個分頁。</footer></body></html>
