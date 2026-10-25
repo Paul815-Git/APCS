@@ -1,0 +1,119 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第73課｜分治｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 73 / 120 · 教學</p><h1>分治</h1><p class="lead">能說出切分、子問題與合併結果，並辨識深度與工作量。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-69.html">第69課</a>、<a href="lesson-72.html">第72課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第69課合併與第72課回傳；本課用遞迴描述先拆小再合併。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-73.ipynb" target="_blank" rel="noopener noreferrer">開啟第73課Colab作業本 ↗</a><a href="lesson-73.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜兩半的最大值再比較</a><a href="#unit-B">B｜合併多項摘要資訊</a><a href="#unit-C">C｜遞迴只決定合併順序</a><a href="#unit-D">D｜同一個子答案只算一次</a><a href="#unit-E">E｜排序時順便數跨段逆序</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜兩半的最大值再比較</h2><p>分治把問題切成互不重疊的兩半，各自求答案，再合併。最大值的合併只要比較兩邊最大值，單一元素就是基底。使用半開區間時，中點同時是左半終點和右半起點，既不重複也不漏掉元素；空區間沒有最大值，本題因此保證非空。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def maximum(a, lo, hi):
+    if hi - lo == 1:
+        return a[lo]
+    mid = (lo + hi) // 2
+    return max(maximum(a, lo, mid), maximum(a, mid, hi))
+print(maximum([-4, -2, -9], 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行1～10000個整數（-10^9～10^9）。以區間二分的遞迴求最大值，不直接對完整串列使用 max；輸出最大值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-4 -2 -9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>基底回傳唯一元素，因此全負資料也不會錯用0。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜合併多項摘要資訊</h2><p>子問題可以回傳不只一個數，例如一段的最小值與最大值。把左右的最小值取小、最大值取大，就得到整段摘要，再計算範圍寬度。回傳元組後用兩個變數接收，能把每個結果的意義寫清楚；不需要重複遞迴兩次分別求最小與最大。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def bounds(a, lo, hi):
+    if hi - lo == 1:
+        return a[lo], a[lo]
+    mid = (lo + hi) // 2
+    low1, high1 = bounds(a, lo, mid)
+    low2, high2 = bounds(a, mid, hi)
+    return min(low1, low2), max(high1, high2)
+print(bounds([5, -1, 8], 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>(-1, 8)
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1～10000個整數（-10^9～10^9）。用分治函式回傳最小與最大值，主程式輸出「最小值 最大值 最大減最小」，三數空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 -1 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 8 9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">-3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-3 -3 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每個子問題只呼叫一次，接收兩項摘要再合併。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜遞迴只決定合併順序</h2><p>合併排序的合併步驟已在第六十九課學過；現在只將「先排好左右兩半」交給遞迴。長度零或一已經有序，可以直接回傳。每層合併仍用雙指標，不能因為改成遞迴就忘記尾段。遞迴負責工作順序，正確性仍依賴兩個輸入段有序。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def split_sizes(n):
+    if n &lt;= 1:
+        return [n]
+    mid = n // 2
+    return split_sizes(mid) + split_sizes(n - mid)
+print(*split_sizes(5))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 1 1 1 1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行0～20000個整數（-10^9～10^9，可空）。使用遞迴合併排序輸出遞增結果，不用 sort/sorted；空列輸出空行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 2 5 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 2 5 5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。
+預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>基底 len(a)&lt;=1；先取得 left、right 的排序結果，再雙指標合併。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜同一個子答案只算一次</h2><p>計算乘方時，偶數次方可由半次方相乘，奇數再多乘一次底數。先把半次方存進區域變數，再使用兩次，才能每層只做一次子呼叫；若直接寫兩個相同呼叫，就會重複展開。本題每步取餘數控制整數大小，底數與指數都可很大。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def power(a, k, m):
+    if k == 0:
+        return 1 % m
+    half = power(a, k // 2, m)
+    result = half * half % m
+    if k % 2:
+        result = result * a % m
+    return result
+print(power(3, 5, 7))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入 a k m（0≤a≤10^9，0≤k≤10^18，1≤m≤10^9）。用指數折半的遞迴輸出 a^k 除以 m 的餘數，不用 pow 或 **；約定0^0=1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>half 只算一次，基底要取 1%m，才能處理 m=1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜排序時順便數跨段逆序</h2><p>逆序對分成左半內、右半內與跨兩半三類，彼此不重複。合併時若右值小於左值，左半尚未取出的所有值都比它大，可一次增加剩餘個數。相等不算逆序，所以相等時先取左邊；這把第六十八課的逐次搬移，改成整批計數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>left, right_value, i = [2, 5, 8], 4, 1
+print(left[i] &gt; right_value)
+print(len(left) - i)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入一行0～20000個整數（-10^9～10^9，可空）。用分治合併計算 i&lt;j 且 a[i]&gt;a[j] 的位置對數，輸出整數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1 2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>函式回傳 (排序結果,逆序數)，跨段計數加 len(left)-i。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-72.html">← 第72課</a><a href="courses.html">課程目錄</a><a href="lesson-74.html">第74課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

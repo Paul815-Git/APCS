@@ -1,0 +1,128 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第24課｜函式契約：輸入、回傳與呼叫順序｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 24 / 120 · 教學</p><h1>函式契約：輸入、回傳與呼叫順序</h1><p class="lead">能以清楚的函式契約拆解程式，避免漏回傳及錯用區域變數。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-08.html">第8課</a>、<a href="lesson-20.html">第20課</a>、<a href="lesson-22.html">第22課</a>、<a href="lesson-23.html">第23課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>第8課已學def/return，第20課使用排序key函式。本課讓一個函式專心完成一項可測試的規則，再組合成完整程式。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-24.ipynb" target="_blank" rel="noopener noreferrer">開啟第24課Colab作業本 ↗</a><a href="lesson-24.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜回傳修正後數值</a><a href="#unit-B">B｜多個回傳值</a><a href="#unit-C">C｜布林函式檢查順序</a><a href="#unit-D">D｜搜尋函式與找不到的記號</a><a href="#unit-E">E｜規則作用在單筆還是整批</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜回傳修正後數值</h2><p>函式契約先寫參數範圍與回傳值意義。clamp把過低的值提高、過高的值降低，中間值保持；三個分支都要回傳。參數x是本次呼叫的區域名稱，主程式要接住回傳值，不能期待函式替外部的同名變數改值。print只顯示資料，不把結果交給呼叫者。將輸出留在主程式，方便同一函式連續處理多筆。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def clamp(x):
+    if x&lt;0:
+        return 0
+    if x&gt;100:
+        return 100
+    return x
+print(clamp(-2),clamp(60),clamp(150))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 60 100
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行1–1000個整數（-1000–1000）。寫clamp(x)將每筆限制在0到100，輸出修正後的一行數字，順序不變。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-2 60 150
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 60 100
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 100
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 100
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>低於0回傳0，高於100回傳100，其餘回傳x；用迴圈收集結果。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜多個回傳值</h2><p>函式可回傳一個tuple，呼叫者用多個變數解包。寫return low,high時，真正回傳的是一對結果；不要分成兩個return，因為第一次return就結束函式。先保證輸入非空，才能以第一筆初始化最大與最小。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def bounds(a):
+    return min(a),max(a)
+lo,hi=bounds([5,-1,3])
+print(lo,hi,hi-lo)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-1 5 6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1–1000個整數（|值|≤10^6）。寫bounds(a)回傳最小值與最大值，主程式輸出最小值、最大值及差距。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 -1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 5 6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7 7 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>可用min/max，但函式本身不要print；由主程式一次輸出三個結果。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜布林函式檢查順序</h2><p>回傳布林值的函式可以在發現一個反例時立即return False；只有檢查完所有相鄰位置才能return True。若True放在迴圈內，第一對合法就停止，後面可能仍亂序。單一元素沒有違規相鄰對，按本題定義視為有序。輸出時可用普通if/else，也可寫條件運算式：&quot;YES&quot; if ordered(a) else &quot;NO&quot;，意思是條件成立選前面的值，否則選後面的值；只會求出被選中的那一邊。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def ordered(a):
+    for i in range(1,len(a)):
+        if a[i]&lt;a[i-1]:
+            return False
+    return True
+print(ordered([1,1,2]))
+print(ordered([1,3,2]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+False
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行q（1–100），接著q行，每行1–1000個整數。寫ordered(a)判斷是否非遞減，相等允許。逐行輸出YES或NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 1 2
+1 3 2
+9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+NO
+YES
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+-3 -2 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>只要某相鄰位置下降就回傳False；迴圈全部結束才回傳True。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜搜尋函式與找不到的記號</h2><p>函式回傳索引時，合法索引包含0，因此不能用if pos判斷有沒有找到。本題使用-1代表不存在，呼叫者要比較pos!=-1。寫出契約後，找第一個符合的位置就能return，其餘情況在迴圈結束後統一回傳-1。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>pos=0
+print(bool(pos))
+print(pos!=-1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+True
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行1–1000個整數，第二行門檻t（數值與t絕對值≤10^6）。寫find_first(a,t)回傳第一個至少t的0起算索引；不存在回傳-1。主程式輸出索引。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 1 8
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1 5 5
+4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>從前往後掃，發現符合就return i，全部不符合才return -1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜規則作用在單筆還是整批</h2><p>相同函式套用的位置不同，結果可能不同。若運費依整張訂單總額決定，就應先累加每項商品再呼叫費用函式，而不是每項商品都收一次運費。先畫資料流：商品明細→總額→運費規則→應付金額，避免把正確函式放錯位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def shipping(total):
+    return 0 if total&gt;=100 else 10
+print(60+60+shipping(120))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>120
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（1–1000），接著n行單價p與數量q（0≤p,q≤1000）。整單原價至少100免運，否則運費10。寫shipping(total)回傳運費，主程式輸出原價總額與含運應付額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+60 1
+60 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">120 120
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+99 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">99 109
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 10
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>迴圈只累加p*q，結束後才呼叫shipping；即使總額0，本題仍收10運費。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-23.html">← 第23課</a><a href="courses.html">課程目錄</a><a href="lesson-25.html">第25課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

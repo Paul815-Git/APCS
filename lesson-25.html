@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第25課｜串列別名與副本：保留原始資料｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 25 / 120 · 教學</p><h1>串列別名與副本：保留原始資料</h1><p class="lead">能判斷資料是否共用，建立真正需要的副本並驗證原值不被修改。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-07.html">第7課</a>、<a href="lesson-12.html">第12課</a>、<a href="lesson-16.html">第16課</a>、<a href="lesson-19.html">第19課</a>、<a href="lesson-24.html">第24課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>第12課提醒二維串列共用列，第16課使用排序。本課用修改前後的結果觀察參照，為後續同步更新和操作復原準備。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-25.ipynb" target="_blank" rel="noopener noreferrer">開啟第25課Colab作業本 ↗</a><a href="lesson-25.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜原地排序與新串列</a><a href="#unit-B">B｜一維快照與後續修改</a><a href="#unit-C">C｜每一列都要獨立建立</a><a href="#unit-D">D｜複製外層不等於複製每列</a><a href="#unit-E">E｜保存可還原的編輯狀態</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜原地排序與新串列</h2><p>b=a只增加一個名稱，不複製內容。a.sort()直接改a，sorted(a)則建立新串列；兩者都能排序，但保留原順序的能力不同。本題在排序後再次輸出原資料，讓你直接檢查是否不小心改到原件。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[3,1]
+b=sorted(a)
+print(*a)
+print(*b)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 1
+1 3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行1–1000個整數。第一行輸出遞增排序結果，第二行輸出原順序。請保存兩份獨立的一維串列。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3
+3 1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+5
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用b=sorted(a)，不要b=a.sort()；sort的回傳值是None。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜一維快照與後續修改</h2><p>快照記住的是某個時間點的資料。對只含整數的一維串列，a[:]複製外層便足夠；之後改a的元素不會改snapshot。若使用snapshot=a，兩者會共用物件，快照就失去意義。用先修改再比較的測試證明獨立性。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[1,2]
+snapshot=a[:]
+a[0]=9
+print(*snapshot)
+print(*a)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+9 2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n q（1≤n,q≤1000），第二行n個整數。保存初始快照，接著q行合法0起算索引i與新值v，依序設定a[i]=v。先輸出初始串列，再輸出最終串列。所有數值絕對值≤10^6。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+1 2 3
+0 9
+2 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3
+9 2 -1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+5
+0 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+5
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>只在更新前做一次snapshot=a[:]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜每一列都要獨立建立</h2><p>用[[0]*C]*R會把同一列參照重複多次，修改一格可能讓多列一起改。你可以用迴圈每次append一個新的[0]*C，這和原第12課逐行讀取的原理相同。先從全零矩陣開始，連續設定兩列同欄最容易看出共用錯誤。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g=[]
+for _ in range(2):
+    g.append([0]*2)
+g[0][0]=7
+print(*g[0])
+print(*g[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>7 0
+0 0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行R C q（1≤R,C≤50，0≤q≤1000），初始矩陣全零。接著q行合法0起算r c v（|v|≤1000），設定該格。最後輸出R行矩陣，每行C個整數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2 2
+0 0 7
+1 1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7 0
+0 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先用for建立R個獨立row，之後才進行更新。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜複製外層不等於複製每列</h2><p>二維整數矩陣g[:]只有新外層，每列仍與原件共用。需要逐列row[:]再加入新外層，才能安全修改副本。這裡格子是整數，所以複製到列就足夠；若格子還放串列，就得再分析更深一層。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[[1,2],[3,4]]
+b=[]
+for row in a:
+    b.append(row[:])
+b[0][0]=9
+print(a[0][0],b[0][0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 9
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行R C（1≤R,C≤50），接著R行各C個整數（|值|≤1000），最後一行合法0起算r c v。複製矩陣並只改副本該格，輸出原矩陣總和與副本總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+1 2
+3 4
+0 0 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10 18
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-2
+0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用兩層迴圈加總也可以；重要的是每列都複製，不是只複製外層。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜保存可還原的編輯狀態</h2><p>第19課的堆疊可以保存每次修改前的完整快照。UNDO彈出最近快照，直接回到上一個狀態；UNDO本身不再新增快照。這種方法容易理解但會複製整個串列，適合本題小限制，之後再學只保存反操作來節省空間。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[1,2]
+history=[a[:]]
+a[0]=8
+a=history.pop()
+print(*a)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1≤n,q≤100），第二行n個整數。接著q行SET i v或UNDO；i為合法0起算索引、|v|≤1000。每次SET先保存舊狀態再修改；UNDO恢復最近未撤銷的SET前狀態，無歷史則忽略。輸出最終串列。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 4
+1 2
+SET 0 9
+SET 1 8
+UNDO
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2
+5
+UNDO
+SET 0 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>SET使用history.append(a[:])；UNDO時若history非空，a=history.pop()。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-24.html">← 第24課</a><a href="courses.html">課程目錄</a><a href="lesson-26.html">第26課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第81課｜連通分量｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 81 / 120 · 延伸選修</p><h1>連通分量</h1><p class="lead">能以多次走訪分組，回答同區與群組統計。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-77.html">第77課</a>、<a href="lesson-79.html">第79課</a>、<a href="lesson-80.html">第80課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>選修入口：第79課圖BFS。增加從未訪點重新搜尋；首考可暫回第91課，不必先完成本課。</p>
+</aside><p class="small">選修延伸：第一次應考若基礎仍需提示，可先完成第91–120課核心複習，再回來加深。是否學到這些方法不直接對應官方級分。</p><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-81.ipynb" target="_blank" rel="noopener noreferrer">開啟第81課Colab作業本 ↗</a><a href="lesson-81.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜從每個未發現節點開始</a><a href="#unit-B">B｜每次走訪有自己的大小</a><a href="#unit-C">C｜群組加總不能只看節點數</a><a href="#unit-D">D｜格子也能分連通群</a><a href="#unit-E">E｜預先編號回答同區查詢</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜從每個未發現節點開始</h2><p>一次搜尋只涵蓋一個連通分量，圖可能還有其他互不相通的群組。依編號掃描節點，遇到未發現者就啟動新搜尋並增加群組數，直到所有節點都標記。孤立節點雖沒有邊，自己也算一個分量；不能只從邊的端點開始統計。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>adj = [[], [2], [1], []]
+seen = set()
+groups = 0
+for start in range(1, 4):
+    if start in seen:
+        continue
+    groups += 1
+    stack = [start]
+    seen.add(start)
+    while stack:
+        u = stack.pop()
+        for v in adj[u]:
+            if v not in seen:
+                seen.add(v); stack.append(v)
+print(groups)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行 n m（1≤n≤10000，0≤m≤20000），接著m行無向簡單邊u v（1～n）。輸出連通分量數，孤立節點也算一個。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+1 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層掃所有節點，內層用堆疊走完一個分量。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜每次走訪有自己的大小</h2><p>群組大小只計算這一次搜尋取出的節點，因此計數器必須在每個新起點重新歸零。將每個分量大小收集後排序，得到整張圖的群組分布。全域標記要保留，局部大小要重設；兩者生命週期不同，混用會把前面群組的節點重複加入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>sizes = [3, 1, 2]
+sizes.sort()
+print(*sizes)
+print(sum(sizes))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2 3
+6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n m（1≤n≤10000，0≤m≤20000），接著m行無向簡單邊。輸出所有連通分量的節點數，由小到大排列，一行空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 2
+1 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每次搜尋 size=0，每 pop 一點加1，搜尋完 append(size)。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜群組加總不能只看節點數</h2><p>每個節點帶有重量時，最大群組不一定是節點最多的群組。搜尋時把本群節點重量累加，完成後再比較不同群的總和。若重量可為負，最佳答案不能從零開始，因為所有群組可能皆為負；用尚無答案的狀態表示第一次更新較清楚。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>weights = [0, -5, -2, -1]
+group1 = weights[1] + weights[2]
+group2 = weights[3]
+print(max(group1, group2))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行 n m（1≤n≤10000，0≤m≤20000），第二行n個節點重量（-1000～1000），接著m行無向簡單邊。輸出各連通分量總重量中的最大值，不可選空群組。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1
+-5 -2 -1
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+-8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-8
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>best=None；第一群直接賦值，其後取 max。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜格子也能分連通群</h2><p>格子是一種鄰居由座標產生的圖，同樣可以從每個未走訪的陸地開始搜尋，數出島嶼。題目指定四方向時，斜角相碰的兩格仍是不同島。全海地圖沒有起點，島數自然為零；不要為了初始化答案而預設至少一座島。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>grid = [&#x27;10&#x27;, &#x27;01&#x27;]
+print(grid[0][0] == &#x27;1&#x27;)
+print(abs(0 - 1) + abs(0 - 1) == 1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+False
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行 r c（1～100），接著r行長c的01字串，1陸地、0海。僅上下左右相連，輸出島嶼數，全部為0時輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+10
+01
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層掃r×c，遇未見1才啟動堆疊並把島數加1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜預先編號回答同區查詢</h2><p>若有很多是否相通的查詢，不必每次重新搜尋。先為每個分量配置一個編號，走訪時把所有到達節點標成同號。之後兩點編號相同就相通，查詢只需一次比較。編號本身沒有大小意義，只代表群組身分，因此不應以編號差距推測圖上距離。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>component = [0, 1, 1, 2]
+print(component[1] == component[2])
+print(component[1] == component[3])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+False
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n m q（1≤n,q≤10000，0≤m≤20000），接著m行無向簡單邊，再q行u v。每次輸出兩節點是否相通，相通 YES，否則 NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1 2
+1 2
+1 2
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0 1
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>component初始0，每次新搜尋群號加1；查詢迴圈只比較群號。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-80.html">← 第80課</a><a href="courses.html">課程目錄</a><a href="lesson-82.html">第82課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

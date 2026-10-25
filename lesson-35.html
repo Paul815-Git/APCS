@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第35課｜座標與轉向｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 35 / 120 · 教學</p><h1>座標與轉向</h1><p class="lead">能區分位置與朝向，先計算候選位置，再按規則決定移動。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-12.html">第12課</a>、<a href="lesson-29.html">第29課</a>、<a href="lesson-34.html">第34課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第12課四鄰格與第19課依序處理指令，本課增加方向編碼、轉彎及位置合法性的狀態管理。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-35.ipynb" target="_blank" rel="noopener noreferrer">開啟第35課Colab作業本 ↗</a><a href="lesson-35.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜平面上的絕對方向</a><a href="#unit-B">B｜朝向與前進分開存</a><a href="#unit-C">C｜超出邊界就拒絕移動</a><a href="#unit-D">D｜起點也是一個走過的位置</a><a href="#unit-E">E｜轉彎不受邊界限制</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜平面上的絕對方向</h2><p>先固定座標約定才能正確模擬：本題x向東增加、y向北增加，因此北移改y，東移改x。每個指令是一個位移向量，位置就是目前值加位移。這種數學座標與矩陣列號向下增加的慣例不同，不能看到N就直接搬用矩陣的列位移。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>x, y = 0, 0
+move = {&quot;N&quot;: (0, 1), &quot;E&quot;: (1, 0)}
+for ch in &quot;NEN&quot;:
+    dx, dy = move[ch]
+    x += dx
+    y += dy
+print(x, y)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行只含N、E、S、W的指令，長度0–10000。從(0,0)出發，每字移動一單位，東為x正向、北為y正向。輸出最終x y。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">NENW
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>用字典保存四種(dx,dy)，每次累加。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜朝向與前進分開存</h2><p>方向按照北、東、南、西排成循環，用0到3表示。右轉增加一，左轉減少一，再對4取餘數；轉向只改方向，不改座標。前進時才按照目前方向取得位移。分開保存位置與方向，可以避免把「朝東」誤解成「已經向東移動一步」。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>direction = 0
+direction = (direction + 1) % 4
+print(&quot;NESW&quot;[direction])
+direction = (direction - 1) % 4
+print(&quot;NESW&quot;[direction])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>E
+N
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行F、L、R指令，長度0–10000。從(0,0)朝北開始，F前進一格，L左轉90度，R右轉90度。輸出最終x y與方向字母N/E/S/W。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">FFRFLF
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 3 N
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">LLLL
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0 N
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>位移串列順序與NESW一致；只有F更新位置。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜超出邊界就拒絕移動</h2><p>有邊界時先計算候選位置，確認合法後才寫回目前位置。若先移動再補救，容易只修正一個座標或忘記保留原狀。矩形寬w、高h的合法座標是0≤x&lt;w且0≤y&lt;h，右上角是(w-1,h-1)，不是(w,h)，兩個維度都要檢查。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>x, y = 0, 0
+nx, ny = x - 1, y
+if 0 &lt;= nx &lt; 3 and 0 &lt;= ny &lt; 2:
+    x, y = nx, ny
+print(x, y)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行w h（1–100），第二行N/E/S/W指令（長度0–10000）。從(0,0)出發，x向東、y向北，越界指令忽略。輸出最終x y。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+WNNNEEES
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+NESW
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>把候選nx、ny與目前x、y分開。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜起點也是一個走過的位置</h2><p>集合適合記錄曾經出現的座標，重走不會增加集合大小。座標要用不可變的tuple，例如(x,y)，才能放進集合；串列[x,y]不能作集合元素。起點在讀指令之前就已走過，必須先加入，這樣空指令或繞回起點時才會得到正確數量。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>visited = {(0, 0)}
+visited.add((1, 0))
+visited.add((0, 0))
+print(len(visited))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入一行N/E/S/W指令，長度0–10000。從(0,0)在無邊界平面移動。輸出曾到達的不同座標數，包含起點。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">NESW
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先建立只含起點的集合，每走一步add((x,y))。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜轉彎不受邊界限制</h2><p>整合方向與邊界時，各指令的有效條件不同：轉向永遠成功，只有前進需要檢查候選位置。被邊界擋住的前進不改位置，也不改方向，但可以增加失敗次數。將這些規則逐一放入對應分支，比在所有指令之後統一處理邊界更容易維持正確狀態。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>direction = 0
+blocked = 0
+# 面向北、位在最北列，前進被拒絕。
+blocked += 1
+direction = (direction + 1) % 4
+print(&quot;NESW&quot;[direction], blocked)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>E 1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行w h（1–100），第二行F/L/R指令（長度0–10000）。從(0,0)朝北，矩形座標0≤x&lt;w、0≤y&lt;h。F越界就拒絕，L/R正常轉向。輸出x y方向及被拒絕的F次數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+FFRFF
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1 E 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+RFLF
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0 N 2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>沿用方向串列；只在F分支計算nx、ny並增加blocked。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-34.html">← 第34課</a><a href="courses.html">課程目錄</a><a href="lesson-36.html">第36課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,132 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第83課｜heapq｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 83 / 120 · 延伸選修</p><h1>heapq</h1><p class="lead">能使用最小堆處理反覆取最小值、前k大與排程。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-19.html">第19課</a>、<a href="lesson-65.html">第65課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>選修入口：第19課容器與第65課貪心。新增標準庫heapq；首考可暫回第91課，無須安裝套件。</p>
+</aside><p class="small">選修延伸：第一次應考若基礎仍需提示，可先完成第91–120課核心複習，再回來加深。是否學到這些方法不直接對應官方級分。</p><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-83.ipynb" target="_blank" rel="noopener noreferrer">開啟第83課Colab作業本 ↗</a><a href="lesson-83.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜堆頂最小不代表整列有序</a><a href="#unit-B">B｜每次合併最短兩段</a><a href="#unit-C">C｜只保留目前最大的k個</a><a href="#unit-D">D｜相同優先權依加入順序</a><a href="#unit-E">E｜最早空閒機器的排程</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜堆頂最小不代表整列有序</h2><p>heapq以一般串列保存最小堆，heappush加入，heappop取出最小值，heap[0]只查看最小值。它只保證堆頂最小，不保證整份串列遞增，不能直接輸出內部串列當排序。取出前仍要檢查是否為空；反覆插入與取出約需對數時間，因此適合持續到達的新資料。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+heap = []
+for x in [5, 2, 7]:
+    heapq.heappush(heap, x)
+print(heap[0])
+print(heapq.heappop(heap))
+print(heapq.heappop(heap))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+2
+5
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行q（1～10000），接著q行指令 ADD x 或 POP，x為-10^9～10^9。ADD加入數值，POP輸出並移除最小值；空堆輸出 EMPTY。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+ADD 5
+ADD 2
+POP
+POP
+POP
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+5
+EMPTY
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+POP
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用import heapq；只在heap非空時heappop。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜每次合併最短兩段</h2><p>合併兩段的成本等於長度總和，新段還可能參與後續合併，因此早被合併的長度會重複付費。每次選最短兩段可讓較大的長度較晚加入；可以用交換理由把最短兩段安排為最深的兄弟葉。堆維持目前所有段，單一段不需任何合併成本。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+heap = [2, 3, 7]
+heapq.heapify(heap)
+merged = heapq.heappop(heap) + heapq.heappop(heap)
+heapq.heappush(heap, merged)
+print(merged)
+print(heapq.heappop(heap))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+5
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1～10000個正整數段長（1～10^6）。每次合併任兩段，成本為兩長度和，新長度再放回，直到剩一段。輸出最小總成本。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">17
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>heapify原列；while len(heap)&gt;1 取兩最小、累加成本、放回總和。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜只保留目前最大的k個</h2><p>維持大小最多為 k 的最小堆，每加入一值，若超過 k 就移除目前最小值，剩下的便是已讀資料中最大的 k 個。最後堆頂是這些值中最小的，也就是整體第 k 大。重複值仍占不同排名，不能先用集合去重，負數也遵守相同大小關係。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+heap = []
+for x in [4, 1, 8, 5]:
+    heapq.heappush(heap, x)
+    if len(heap) &gt; 2:
+        heapq.heappop(heap)
+print(heap[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n k（1≤k≤n≤100000），第二行n個整數（-10^9～10^9）。只保留至多k個值的堆，輸出第k大值，重複值各占排名，不使用全列排序。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+4 1 8 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 2
+-3 -3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每次push後若長度超k就pop；最後heap[0]。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜相同優先權依加入順序</h2><p>堆可以存元組，先比較第一欄，相同再比較第二欄。若任務按優先值由小到大處理，同值先來先服務，就存優先值與遞增序號，再存名稱。不能直接讓姓名當第二排序條件，否則同優先權會改成字母順序，與加入時間無關。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+heap = []
+heapq.heappush(heap, (2, 0, &#x27;Zoe&#x27;))
+heapq.heappush(heap, (2, 1, &#x27;Amy&#x27;))
+print(heapq.heappop(heap)[2])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>Zoe
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（1～10000），接著n行name priority（英文字母姓名，優先值0～1000）。全部加入後，依優先值小者先、相同按原輸入順序，逐行輸出姓名。使用heapq。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+Zoe 2
+Amy 2
+Bob 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">Bob
+Zoe
+Amy
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+A 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">A
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>存(priority,輸入索引,name)，取出時只輸出第三欄。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜最早空閒機器的排程</h2><p>任務按給定順序分配，每次挑最早空閒機器，不是重新排列任務求全域最優。堆保存各機器的空閒時間與編號，取出後加上新工作時間再放回。相同空閒時間選小編號，元組即可表示；最後完成時間是所有機器空閒時間的最大值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+heap = [(0, 1), (0, 2)]
+for duration in [3, 2, 4]:
+    free, machine = heapq.heappop(heap)
+    heapq.heappush(heap, (free + duration, machine))
+    print(machine, free + duration)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 3
+2 2
+2 6
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n k（1≤n,k≤10000），第二行n個工作時間（1～10^6）。k台編號1～k機器初始皆空閒，按輸入順序派給最早空閒者，同時選小編號。輸出所有工作完成的時間。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+3 2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 3
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>heap初始(0,id)，每次更新一台；最後掃堆取最大free。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-82.html">← 第82課</a><a href="courses.html">課程目錄</a><a href="lesson-84.html">第84課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第57課｜雜湊配對｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 57 / 120 · 教學</p><h1>雜湊配對</h1><p class="lead">能以集合或字典保存先前資料，查詢互補值且避免重用同一位置。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-14.html">第14課</a>、<a href="lesson-15.html">第15課</a>、<a href="lesson-41.html">第41課</a>、<a href="lesson-56.html">第56課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第14課字典、第15課集合與第41課雙層配對，本課用先前資料查表減少重複搜尋，並保留原輸入順序。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-57.ipynb" target="_blank" rel="noopener noreferrer">開啟第57課Colab作業本 ↗</a><a href="lesson-57.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜先查互補值，再存目前值</a><a href="#unit-B">B｜互補值出現幾次就新增幾組</a><a href="#unit-C">C｜保留最早索引找最早完成的配對</a><a href="#unit-D">D｜差距為零不能把同一條件加兩次</a><a href="#unit-E">E｜固定一個位置後轉為兩數和</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜先查互補值，再存目前值</h2><p>讀到x時，若之前已出現target-x，就存在兩個不同位置的配對。一定先查再加入x，否則target等於2*x時，第一筆資料就可能配到自己。集合只記出現與否，適合回答是否存在；若要算有幾組，就需要改用次數字典，不能把兩種任務混為一談。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>seen = set()
+for x in [3, 3]:
+    print(6-x in seen)
+    seen.add(x)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+True
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n t（1≤n≤100000，-2<em>10^9≤t≤2</em>10^9），第二行n個未排序整數（-10^9–10^9）。不用排序，若有兩個不同位置和為t輸出YES，否則NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 6
+3 1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 6
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>集合只含以前的值，先查target-value，再add(value)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜互補值出現幾次就新增幾組</h2><p>計算配對數時，先前若有三個互補值，現在這筆就新增三組不同位置配對。用count.get(need,0)取得次數，先加入答案，再增加目前值的次數。每組配對都在較晚位置讀到時被計入一次，因此不需要最後除以二，重複值也不會被集合合併而漏算。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>counts = {2: 3}
+value, target = 5, 7
+print(counts.get(target-value, 0))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n t（1≤n≤100000，-2<em>10^9≤t≤2</em>10^9），第二行n個整數（-10^9–10^9）。輸出i&lt;j且a[i]+a[j]=t的位置配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 4
+2 2 2 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 4
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>answer先加counts.get(t-value,0)，之後才更新counts[value]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜保留最早索引找最早完成的配對</h2><p>題目要求位置時，集合不足以保存答案，應把每個值對應到首次出現的索引。依序讀到第二個位置j，第一次成功就具有最小j；字典又保留最小i，便完成平手規則。後來相同值不能覆寫舊索引，否則雖然仍有合法配對，卻不是題目要求的最早版本。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>first = {}
+for i, value in [(0, 4), (1, 4)]:
+    if value not in first:
+        first[value] = i
+print(first[4])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n t（1≤n≤100000，-2<em>10^9≤t≤2</em>10^9），第二行n個整數（-10^9–10^9）。找和為t的i&lt;j，先讓j最小，再讓i最小。輸出0起算i j，無解輸出-1 -1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 6
+3 3 2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 6
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 -1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>字典只記首次索引，掃描時第一次查到互補值即可停止。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜差距為零不能把同一條件加兩次</h2><p>絕對差為k的互補值可能是x-k或x+k，當k&gt;0時兩者不同，可以把先前次數相加；當k=0時兩者相同，只能加一次。仍採先查再存，保證兩個位置不同。這個特例不是效能問題，而是同一合法集合被兩個相同條件描述造成的重複計數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>x, k = 4, 0
+print(x-k == x+k)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n k（1≤n≤100000，0≤k≤2*10^9），第二行n個整數（-10^9–10^9）。輸出i&lt;j且|a[i]-a[j]|=k的位置配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+1 3 1 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3 0
+7 7 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先加counts[x-k]；k不為0時才再加counts[x+k]。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜固定一個位置後轉為兩數和</h2><p>三數和計數可以固定最左位置i，剩下問題就是後方序列中找兩數和target-a[i]。每個i都建立新的次數字典，掃描k時字典只包含i與k之間的位置，因此每組自然滿足i&lt;j&lt;k。若沿用上一輪字典，就會混入不合法位置，產生重複或重用元素。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>target, fixed, current = 10, 2, 5
+print(target-fixed-current)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n t（1≤n≤2000，-3<em>10^9≤t≤3</em>10^9），第二行n個整數（-10^9–10^9）。用固定一位置加字典配對，輸出i&lt;j&lt;k且三數和為t的組合數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3
+1 1 1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每個i令counts={}；k從i+1開始，先查target-a[i]-a[k]再加入a[k]。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-56.html">← 第56課</a><a href="courses.html">課程目錄</a><a href="lesson-58.html">第58課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

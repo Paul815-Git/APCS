@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第42課｜三元組與合法剪枝｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 42 / 120 · 教學</p><h1>三元組與合法剪枝</h1><p class="lead">能完整枚舉三元組，並用已證明的限制減少不可能的候選。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-11.html">第11課</a>、<a href="lesson-27.html">第27課</a>、<a href="lesson-41.html">第41課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第11課巢狀迴圈與第41課配對，把選擇增加一層，再用等式決定最後一個變數，避免無理由刪去候選。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-42.ipynb" target="_blank" rel="noopener noreferrer">開啟第42課Colab作業本 ↗</a><a href="lesson-42.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜三個不同位置</a><a href="#unit-B">B｜排序後檢查三角形</a><a href="#unit-C">C｜由等式算出第三個值</a><a href="#unit-D">D｜部分和超標何時能停止</a><a href="#unit-E">E｜總件數與總價一起限制</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜三個不同位置</h2><p>三個不同位置且不分順序時，可以規定i&lt;j&lt;k。每一組位置只有一種遞增排列，因此不漏也不重複。三層迴圈的工作量大約隨資料量的三次方成長，所以這題限制n不大；先學會完整枚舉，再談如何縮減，才知道優化是否保留所有合法答案。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [1, 2, 3, 4]
+for i in range(len(a)):
+    for j in range(i+1, len(a)):
+        for k in range(j+1, len(a)):
+            if a[i] + a[j] + a[k] == 6:
+                print(i, j, k)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 1 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n t（1≤n≤60，-300≤t≤300），第二行n個整數（-100–100）。輸出i&lt;j&lt;k且三數和為t的位置組合數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 6
+1 2 3 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>三層起點分別為0、i+1、j+1，n不足3時自然沒有迴圈組合。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜排序後檢查三角形</h2><p>正邊長排序為a≤b≤c後，只要檢查a+b&gt;c就能判斷三角形，另外兩個不等式已由正數與順序保證。等於時只會攤成一直線，不能算三角形。排序會改變索引順序，但本題只計位置組合數，每一根仍保留一份，即使長度相同也沒有被合併。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>sides = sorted([4, 2, 3])
+print(sides[0] + sides[1] &gt; sides[2])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n（1–60），第二行n根木棒長度（1–1000）。每次選三根不同木棒，輸出能組成非退化三角形的組合數，相同長度的不同木棒分別計算。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+2 3 4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3
+1 2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>排序後枚舉i&lt;j&lt;k，只檢查a[i]+a[j]&gt;a[k]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜由等式算出第三個值</h2><p>若已知a+b+c等於固定目標，選定a和b後，c就只可能是目標減去前兩數，不必再走第三層迴圈。算出的c仍要檢查合法範圍，因為等式成立不代表符合題意。這是從限制推導出的縮減，與隨意跳過某些候選不同，能保證不漏答案。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>target, a, b = 8, 2, 3
+c = target - a - b
+print(c)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入m t（1≤m≤500，0≤t≤1500）。輸出0≤a,b,c≤m且a+b+c=t的有序三元組數；順序不同分別計算。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>枚舉a、b，令c=t-a-b，合法才計數。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜部分和超標何時能停止</h2><p>只有當後續值不會讓部分和變小時，超標才代表可以停止。本題a、b、c皆非負且b遞增，若a+b已超過目標，後面的b只會更大，因此break合法。若資料允許任意負數，這個理由就失效。先把單調性的依據說清楚，再使用提前結束。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>for b in range(5):
+    if 2 + b &gt; 3:
+        break
+    print(b)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0
+1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入m t（0≤m≤500，0≤t≤1500）。輸出0≤a≤b≤c≤m且a+b+c=t的數值三元組數。使用a、b兩層，部分和超標時可停止內層。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>b從a開始，c=t-a-b；最後檢查b≤c≤m。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜總件數與總價一起限制</h2><p>多條限制可以分工使用：先用總件數決定第三種商品的數量，再用總價檢查候選。三種數量都允許為零，所以迴圈必須包含零；同種商品的購買先後不影響組合。這樣只需要枚舉前兩種數量，而且第二種上限可縮到剩下的件數，避免出現負的第三種數量。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n, x, y = 4, 1, 2
+z = n - x - y
+print(z, 2*x + 3*y + 5*z)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 13
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入n B（0≤n≤500，0≤B≤2500）。三種商品單價固定2、3、5元，購買數量為x、y、z，皆非負整數。輸出總件數恰n且總價恰B的數量組合數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>x=0..n，y=0..n-x，z=n-x-y，再檢查價格。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-41.html">← 第41課</a><a href="courses.html">課程目錄</a><a href="lesson-43.html">第43課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

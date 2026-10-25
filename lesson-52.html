@@ -1,0 +1,122 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第52課｜二維前綴和｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 52 / 120 · 教學</p><h1>二維前綴和</h1><p class="lead">能以容斥建立矩形累積表，回答閉矩形的總和與計數。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-12.html">第12課</a>、<a href="lesson-17.html">第17課</a>、<a href="lesson-51.html">第51課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第12課矩陣與第17課前綴和，本課把一維端點相減擴展到二維四角，先畫矩形再套公式。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-52.ipynb" target="_blank" rel="noopener noreferrer">開啟第52課Colab作業本 ↗</a><a href="lesson-52.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜左上矩形的累積值</a><a href="#unit-B">B｜四角相減查詢矩形</a><a href="#unit-C">C｜障礙格數也是矩形和</a><a href="#unit-D">D｜全負數的最佳正方形</a><a href="#unit-E">E｜固定招牌能放在哪裡</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜左上矩形的累積值</h2><p>二維前綴p[i][j]表示前i列、前j欄的總和，多留第零列與第零欄為零。新格可由上方前綴加左方前綴，再減掉被重複加的左上矩形，最後加目前原值。先畫出重疊部分，就能理解減號的來源；每列都要新建串列，避免共用參照。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>top, left, overlap, cell = 3, 4, 1, 5
+print(top + left - overlap + cell)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>11
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行r c（1–200），接著r行各c個整數（-1000–1000）。輸出r行，每格(i,j)為原矩陣左上角到該格的矩形總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+1 2
+3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 3
+4 10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建(r+1)×(c+1)零表，p[i][j]=上+左-左上+原值。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜四角相減查詢矩形</h2><p>每次逐格加總一個矩形，可能重複讀取大量相同格子。用二維前綴先取到右下角的大矩形，再減掉上方和左方多出的區域；左上區域被減了兩次，要加回一次。因此查詢只需四次取值，預處理後每個問題不再隨矩形面積變大。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p = [[0,0,0],[0,1,3],[0,4,10]]
+x1, y1, x2, y2 = 1, 2, 2, 2
+print(p[x2][y2]-p[x1-1][y2]-p[x2][y1-1]+p[x1-1][y1-1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c q（1≤r,c≤200，1≤q≤100000），接著r行各c個整數（-1000–1000），再接q行x1 y1 x2 y2，皆為1起算合法矩形且左上不超過右下。逐行輸出含邊界的矩形總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 2
+1 2 3
+4 5 6
+1 2 2 3
+2 1 2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">16
+4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1
+-7
+1 1 1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>公式為p[x2][y2]-p[x1-1][y2]-p[x2][y1-1]+p[x1-1][y1-1]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜障礙格數也是矩形和</h2><p>前綴不必累加原本的字元。把障礙#轉成一、空地.轉成零，矩形總和就變成障礙數。查詢是否全空只要看總和是否為零，不必每次重掃區域。注意原輸入每列是連在一起的字串，直接讀input即可，不能套用空格分隔整數的讀法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>row = &quot;.##.&quot;
+flags = []
+for ch in row:
+    flag = 0
+    if ch == &quot;#&quot;:
+        flag = 1
+    flags.append(flag)
+print(*flags)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 1 1 0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c q（1≤r,c≤200，1≤q≤100000），接著r行長度c的.與#地圖，再接q行合法1起算閉矩形x1 y1 x2 y2。逐行輸出障礙#的數量。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 2
+.#.
+##.
+1 1 2 2
+1 3 2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1
+#
+1 1 1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>原字元為#時flag=1，否則0，將flag加進二維前綴。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜全負數的最佳正方形</h2><p>找最大矩形和時不能把最佳值設成零，因為合法區域可能全為負數。先用第一個k乘k區塊初始化，再枚舉所有右下角；每次以前綴公式求和。k等於整張方形邊長時只有一個候選，k等於一則每格都是候選，兩端都應使用同一套範圍。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>candidates = [-8, -3, -6]
+best = candidates[0]
+for value in candidates:
+    best = max(best, value)
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行r c k（1≤r,c≤200，1≤k≤min(r,c)），接著r行各c個整數（-1000–1000）。輸出所有連續k×k正方形區塊中的最大總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2 1
+-5 -2
+-3 -7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 2 2
+1 2
+3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>右下角i從k到r、j從k到c，左上前綴邊界是i-k、j-k。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜固定招牌能放在哪裡</h2><p>矩形候選有固定高與寬時，可以枚舉它的右下角，用障礙前綴表一次判斷整塊是否乾淨。每個左上位置算一種放法，區域互相重疊也分別計數，因為題目只問可選位置，不要求同時放置。高寬不相等時，不能擅自旋轉招牌或交換兩個尺寸。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>rows, cols, height, width = 3, 4, 2, 3
+print((rows-height+1) * (cols-width+1))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c h w（1≤r,c≤200，1≤h≤r，1≤w≤c），接著r行長度c的.與#地圖。招牌高h寬w不可旋轉，必須全覆蓋.。輸出合法放置位置數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 1 2
+...
+.#.
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1 1
+#
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立#的前綴計數，枚舉右下角，區塊和為0才計入。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-51.html">← 第51課</a><a href="courses.html">課程目錄</a><a href="lesson-53.html">第53課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

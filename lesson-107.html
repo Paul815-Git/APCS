@@ -1,0 +1,126 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第107課｜堆疊佇列重練：誰先被移除｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 107 / 120 · 教學</p><h1>堆疊佇列重練：誰先被移除</h1><p class="lead">能依取消、配對和先來先服務規則選擇容器。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-19.html">第19課</a>、<a href="lesson-39.html">第39課</a>、<a href="lesson-99.html">第99課</a>、<a href="lesson-106.html">第106課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第99課瀏覽紀錄；本課增加最大深度、配對位置及輪轉工作，但仍保持每步規則可手算。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-107.ipynb" target="_blank" rel="noopener noreferrer">開啟第107課Colab作業本 ↗</a><a href="lesson-107.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜合法括號的最深層</a><a href="#unit-B">B｜右括號找到左端位置</a><a href="#unit-C">C｜每人最多做兩單位</a><a href="#unit-D">D｜左右都能加入的候車列</a><a href="#unit-E">E｜撤回一次設定值</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜合法括號的最深層</h2><p>只計算最大深度之前，仍需先確認整個括號序列合法。左括號讓目前深度增加，右括號減少；任何時刻變負表示出現沒有配對的右括號，最後不為零表示仍有未關閉者。空字串合法且深度零，不能把沒有任何括號當作錯誤。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>depth = peak = 0
+for ch in &quot;(())&quot;:
+    depth += 1 if ch == &quot;(&quot; else -1
+    peak = max(peak, depth)
+print(peak)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入只含()的字串，長度0–10000。合法時輸出最大巢狀深度，不合法輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">(()())
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">)(
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>追蹤深度是否曾負數，最後也須為0。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜右括號找到左端位置</h2><p>堆疊不一定只存括號字元，也可以存對應位置。遇到右括號時，最近未配對的左位置就是它的夥伴，所以彈出索引即可。輸入已保證合法，本題重點是順序：按右括號出現順序輸出，不是按左端排序；內層配對會比外層更早完成。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>stack = []
+for i, ch in enumerate(&quot;(())&quot;, 1):
+    if ch == &quot;(&quot;:
+        stack.append(i)
+    else:
+        print(stack.pop(), i)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 3
+1 4
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入非空且合法的()字串，長度2–10000。按右括號由左到右的順序，每行輸出配對左、右括號的1起算位置。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">(()())
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 3
+4 5
+1 6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">()
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>enumerate(s,1)直接取得1起算位置。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜每人最多做兩單位</h2><p>輪轉佇列每回合處理固定上限的工作量，未完成者回到隊尾，完成者離開。工作編號要隨紀錄一起保存，不能用當下佇列位置代表身分。與一次做一單位相比，本題每次減二但可能只剩一；以剩餘量不大於零作完成條件，能正確處理最後一小段。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from collections import deque
+q = deque([(1, 3), (2, 1)])
+job, remaining = q.popleft()
+remaining -= 2
+q.append((job, remaining))
+print(q[0][0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行1–100個工作量（1–100），工作編號依序1起。每回合隊首做最多2單位，未完成回隊尾。依完成順序輸出編號，同一行空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 1 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>deque存(編號,剩餘量)，left&lt;=0即完成。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜左右都能加入的候車列</h2><p>deque 可以在左端或右端加入元素，移除方向仍由題目指定。這次一般乘客加到右端，優先乘客加到左端，服務一律取左端；連續優先加入會讓後來者更前面，這是本題明訂規則。空隊列服務必須輸出標記，不可直接移除而發生錯誤。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from collections import deque
+q = deque([&quot;a&quot;])
+q.appendleft(&quot;b&quot;)
+print(q.popleft())</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行q（1–1000），後q行RIGHT name、LEFT name或SERVE，名稱為無空白小寫字串。依指令加入指定端，SERVE取左端輸出，空列輸出EMPTY。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+RIGHT a
+LEFT b
+SERVE
+SERVE
+SERVE
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">b
+a
+EMPTY
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+SERVE
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>append、appendleft、popleft各對應一種操作。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜撤回一次設定值</h2><p>撤回設定與撤回加法不同，必須記住修改前的舊值，不能只存變動後的新值。每次設定先把目前值放進堆疊，再更新；撤回時取回最近保存的舊值。被忽略的空撤回不會新增歷史，因此下一次設定仍從目前狀態開始，這能用連續撤回檢查。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>value = 3
+history = []
+history.append(value)
+value = 8
+value = history.pop()
+print(value)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行初值v及q（-1000≤v≤1000，0≤q≤1000），後q行SET x或UNDO，x為-1000至1000。SET保存舊值後設定，UNDO撤回最近未撤回SET，無歷史則忽略。輸出最後值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+SET 8
+SET 2
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 1
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>SET先history.append(value)，UNDO再value=history.pop()。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-106.html">← 第106課</a><a href="courses.html">課程目錄</a><a href="lesson-108.html">第108課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

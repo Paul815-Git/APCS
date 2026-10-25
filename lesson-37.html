@@ -1,0 +1,120 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第37課｜鄰格與同步更新｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 37 / 120 · 教學</p><h1>鄰格與同步更新</h1><p class="lead">能用舊矩陣計算一整輪結果，避免更新順序影響答案。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-12.html">第12課</a>、<a href="lesson-25.html">第25課</a>、<a href="lesson-36.html">第36課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第12課合法鄰格與第25課獨立副本，本課加入同步更新：同一輪的所有判斷只讀取舊狀態。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-37.ipynb" target="_blank" rel="noopener noreferrer">開啟第37課Colab作業本 ↗</a><a href="lesson-37.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜統計四周亮燈數</a><a href="#unit-B">B｜一輪訊號擴散</a><a href="#unit-C">C｜依鄰居數重新開關</a><a href="#unit-D">D｜角落的平均只除實際格數</a><a href="#unit-E">E｜障礙格不傳遞訊號</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜統計四周亮燈數</h2><p>四鄰格只包含上、下、左、右，不含斜角也不含自己。對每個位置套用同一組位移，先檢查新座標是否合法，再讀取格子。輸出矩陣的每一格是獨立的統計結果，因此不應把已算出的數量寫回原矩陣，否則後面會把數量當成原來的零與一。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>grid = [[1, 0], [1, 1]]
+total = 0
+for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+    r, c = dr, dc
+    if 0 &lt;= r &lt; 2 and 0 &lt;= c &lt; 2:
+        total += grid[r][c]
+print(total)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行r c（1–30），接著r行各c個0或1。輸出r行，每格為原矩陣該格四鄰格中1的數量。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+1 0
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+2 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層遍歷位置，內層遍歷四方向；每個位置的count重新歸零。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜一輪訊號擴散</h2><p>同步擴散表示本輪新亮起的格子，要到下一輪才能影響別人。若邊掃描邊修改原矩陣，訊號會沿掃描方向在同一輪走很多格，違反規則。建立新列時只讀grid，保留原本的1，並檢查是否存在亮燈鄰格，全部完成後才得到下一輪的狀態。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>old = [1, 0, 0]
+new = old[:]
+for i in range(1, len(old)):
+    if old[i-1] == 1:
+        new[i] = 1
+print(*new)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 1 0
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c（1–30），接著r行各c個0或1。同步更新一輪：原為1保持1，原為0且至少一個四鄰格原為1則變1，否則仍0。輸出新矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3
+1 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每格先用原值初始化value，只從舊矩陣檢查鄰格。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜依鄰居數重新開關</h2><p>有些同步規則會關閉原本的燈，不能只把零改成一。先算原四鄰格中亮燈數，再單獨根據規則決定新值；原格是否亮不一定參與判斷。本題只在鄰居恰有兩盞燈時亮起，所以零、單一鄰居或三盞以上都要寫成零，不能沿用舊值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>for count in [1, 2, 3]:
+    value = 0
+    if count == 2:
+        value = 1
+    print(value)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0
+1
+0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c（1–30），接著r行各c個0或1。同步更新一輪：每格僅當原四鄰格中恰有兩個1時變1，其餘變0，不計自身。輸出新矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+1 0
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+1 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>統計鄰居後以count==2選擇新值，不能使用剛更新的鄰格。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜角落的平均只除實際格數</h2><p>平均濾波若包含自己與四鄰格，角落只會有三格，單格矩陣則只有自己，不能一律除以五。每加入一個合法鄰格，同時增加總和與格數，最後以整除取向下整數。本題數值非負，結果容易手算；原資料仍須保持不變，才能保證每格使用同一輪溫度。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>values = [6, 3, 0]
+print(sum(values) // len(values))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行r c（1–30），接著r行各c個溫度（0–1000）。每格同步改成「自己及存在的四鄰格」平均值向下取整。輸出更新後矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3
+0 9 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4 3 4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>total先設為自身，count先設為1，每遇合法鄰格再累加。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜障礙格不傳遞訊號</h2><p>把障礙值與訊號值分開定義，才能避免把所有非零格都當作訊號來源。此題只問本輪新增數量，可以直接統計符合條件的空地，不必保存新矩陣；原訊號與障礙都不算新增。continue會跳過目前這格的剩餘程式，進入最近一層迴圈的下一格，適合先略過非空地。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>neighbors = [-1, 0, 1]
+found = False
+for value in neighbors:
+    if value == 1:
+        found = True
+print(found)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c（1–30），接著r行各c個數值：-1是障礙、0是空地、1是訊號。同步一輪中，有原訊號四鄰格的空地變1。輸出本輪新增訊號格數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+1 0 0
+-1 0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 3
+1 -1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>只遍歷值為0的候選格，找到一個值為1的合法鄰格就break。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-36.html">← 第36課</a><a href="courses.html">課程目錄</a><a href="lesson-38.html">第38課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

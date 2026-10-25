@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第21課｜銜接第20課：把已學方法用在新規格｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 21 / 120 · 橋接診斷</p><h1>銜接第20課：把已學方法用在新規格</h1><p class="lead">能辨識五種已學工具，完成改變輸出要求的任務並記錄需要回補之處。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-14.html">第14課</a>、<a href="lesson-15.html">第15課</a>、<a href="lesson-17.html">第17課</a>、<a href="lesson-18.html">第18課</a>、<a href="lesson-20.html">第20課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>第20課已練集合、計數排序、區間和、鄰近搜尋與括號。本課不增加新演算法，改變查詢或輸出，檢查你能否理解並移用。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-21.ipynb" target="_blank" rel="noopener noreferrer">開啟第21課Colab作業本 ↗</a><a href="lesson-21.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜報名名單：聯集與重疊人數</a><a href="#unit-B">B｜先計次，再篩選排行榜</a><a href="#unit-C">C｜兩個期間的支出差</a><a href="#unit-D">D｜多個目標的鄰近搜尋</a><a href="#unit-E">E｜括號：指出第一個問題位置</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜報名名單：聯集與重疊人數</h2><p>第20課問只報一班的人；現在同時問總人數與兩班共同人數。先把每班變成集合，消除同班重複報名，再分別做聯集與交集。不要把兩行長度相加，因為同一人可能出現多次。請先手算每個集合有哪些元素，再算數量。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a={1,2,3}
+b={2,4}
+print(len(a|b),len(a&amp;b))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4 1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入兩行，每行0–1000個整數學生編號（1–10^6），空行表示該班沒人。輸出報名任一班的不同人數、兩班都報名的不同人數，以空白分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 2 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p>輸入共2行；第1、2行是空行，仍須按Enter送出，請勿省略。</p>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">5
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>各行使用 set(map(int,input().split()))；聯集用 |，交集用 &amp;。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜先計次，再篩選排行榜</h2><p>第14課先計次，第16課排序，第20課合併兩者。本題再增加最低出現次數，應在計數完成後篩選。某字在讀到一半時不達門檻，後面仍可能再出現，所以不能過早丟掉。排序依次數遞減，再依字母遞增。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>d={&quot;a&quot;:2,&quot;b&quot;:3,&quot;c&quot;:1}
+def rank(word):
+    return (-d[word],word)
+for word in sorted(d,key=rank):
+    if d[word]&gt;=2:
+        print(word,d[word])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b 3
+a 2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行1–1000個小寫英文單字，第二行門檻k（1–1000）。只輸出出現至少k次的單字及次數，次數多者先，同次數按字母順序；若沒有符合者，輸出NONE。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">b a b a c
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a 2
+b 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">x y
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NONE
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先建立字典；以具名key函式排序。用printed旗標判斷是否需印NONE。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜兩個期間的支出差</h2><p>第17課的前綴和可查一個期間；同一張表也能回答兩段期間，再比較其差。題目指定第一段減第二段，負數答案有意義。兩段可以重疊，分別查詢仍然正確，不需先拆掉共同部分。每筆查詢前先寫清四個端點。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p=[0,10,30,60]
+first=p[2]-p[0]
+second=p[3]-p[1]
+print(first-second)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-20
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n q（1≤n,q≤10000），第二行n個非負支出（≤10^6），接著q行l1 r1 l2 r2，兩個期間皆為合法1起算閉區間。逐行輸出第一段總支出減第二段總支出。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+10 20 30
+1 2 2 3
+1 3 1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-20
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+1 1 1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先建一次p；每段總和都是p[r]-p[l-1]，最後保留題目要求的減法順序。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜多個目標的鄰近搜尋</h2><p>第20課只找一個目標的最近數；現在資料固定、目標有很多個，排序應放在所有查詢之前。每個目標只看下界位置與前一個位置。下界可能是0或n，必須先判斷候選存在，才能取值；距離相同仍選小值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from bisect import bisect_left
+a=[2,6,10]
+pos=bisect_left(a,8)
+print(a[pos-1],a[pos])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6 10
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n q（1≤n,q≤10000），第二行n個整數（絕對值≤10^6），接著q行各一個目標t（絕對值≤10^6）。逐行輸出最接近t的資料值，同距離選小值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+10 2 6
+8
+-5
+20
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+2
+10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>對每次查詢建立合法候選；以(abs(v-t),v)作比較鍵。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜括號：指出第一個問題位置</h2><p>第20課只輸出合法與否；本題要留下第一個違規位置。遇到錯的右括號可立刻定位，若掃完仍有左括號，錯誤是在輸入結束才確定。本題用n+1表示這種缺少右括號的情況，並非要求找最早未關閉的左括號。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>s=&quot;([)]&quot;
+print(s[2])
+print(2+1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>)
+3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入一行只含()[]{}的字串，長度n為0–10000。若全部合法輸出0；遇到無法配對或種類不符的右括號，輸出第一個該位置（1起算）；若沒有此類錯誤但最後仍有左括號，輸出n+1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">([)]
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">((
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<p><strong>測試4輸入</strong></p>
+<pre><code class="language-text">[]
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用堆疊保存左括號，迴圈內記錄第一個失敗位置並break；最後只有error仍為0時才處理剩餘左括號。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-20.html">← 第20課</a><a href="courses.html">課程目錄</a><a href="lesson-22.html">第22課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

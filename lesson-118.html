@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第118課｜完整作答流程：讀題、實作、驗證、保存｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 118 / 120 · 教學</p><h1>完整作答流程：讀題、實作、驗證、保存</h1><p class="lead">每題都留下規格摘要、可跑程式與邊界測試證據。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-111.html">第111課</a>、<a href="lesson-116.html">第116課</a>、<a href="lesson-117.html">第117課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第117課策略；本課以五個新任務演練完整流程，要求每題各自從空白檔案開始，不增加新的高階演算法。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-118.ipynb" target="_blank" rel="noopener noreferrer">開啟第118課Colab作業本 ↗</a><a href="lesson-118.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜去掉一高一低的總分</a><a href="#unit-B">B｜每段警報只記一次</a><a href="#unit-C">C｜預約占用總時長</a><a href="#unit-D">D｜路線經過幾個不同格</a><a href="#unit-E">E｜預算能完成幾項任務</a><a href="#assignment">完成標準與保存</a></nav><section id="worksheet"><h2>本課操作與紀錄</h2><p>每題依序完成並留紀錄：①以自己的話寫輸入、輸出、端點與同分規則；②手算一組最小資料；③寫清楚狀態或資料結構；④完成可執行版本；⑤跑題附一般與邊界測資；⑥自加一個反例；⑦刪除除錯輸出並保存；⑧從新程序重新執行。若第⑤失敗，記錄實際輸出與預期差異再修改，不直接重寫整份程式。</p>
+</section><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜去掉一高一低的總分</h2><p>讀題先確認刪除的是各一個位置，而不是刪掉所有等於最高或最低的值。即使全部分數相同，也只去除兩筆，因此至少三筆資料的保證很重要。總和減最大值再減最小值就能表達這個規則；用多個相同最高分測試，確認重複值沒有被整批移除。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [5, 5, 2]
+print(sum(a) - max(a) - min(a))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行3–10000個0–100分數。移除一筆最高及一筆最低，若相同仍移除兩個位置，輸出剩餘總分。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 5 2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>sum(a)-max(a)-min(a)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜每段警報只記一次</h2><p>連續超標只觸發一個警報事件，回到安全範圍後再次超標才算下一個。用布林狀態記錄上一筆是否正在超標，新值超標且之前不是才增加事件數。這比把所有超標筆數相加更符合事件定義；第一筆就超標也應觸發一次，初始狀態需設為安全。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>active = False
+value, limit = 8, 5
+print(value &gt; limit and not active)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n limit（1≤n≤10000，0≤limit≤1000），第二行n個0–1000讀值。嚴格大於limit為超標，輸出最大連續超標段的段數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">6 5
+8 9 5 6 1 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 5
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先判斷新超標且前一筆不超標，再更新active。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜預約占用總時長</h2><p>占用總時長要計算區間聯集，重疊時間不能重複相加。先按起點排序，維持目前合併段的左右端；遇到接得上的區間就擴大右端，遇到分離段才結算前一段。時間區間長度是右端減左端，不是整數點數，因此不需要加一，空預約答案為零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>left, right = 2, 5
+right = max(right, 7)
+print(right - left)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（0–10000），後n行s e（0≤s&lt;e≤100000），占用[s,e)。輸出至少有一個預約占用的總時長。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 4
+3 6
+8 10
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>排序合併，最後別忘記結算保留的段。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜路線經過幾個不同格</h2><p>路線長度和經過不同格數不同，走回原地不會增加新格數。每次依方向更新座標後放入集合，並且先放入起點，才能讓空路線也有一個經過的格子。本題平面沒有邊界與障礙，不能擅自沿用先前地圖的限制；座標可以為負，tuple可作集合元素。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>visited = {(0, 0)}
+visited.add((0, 1))
+visited.add((0, 0))
+print(len(visited))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入長度0–10000的UDLR字串，從無限平面(0,0)出發，U使列減1、D加1、L欄減1、R加1。輸出包含起點的不同經過座標數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">RULD
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>visited存(x,y)，每步更新後add。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜預算能完成幾項任務</h2><p>每項成本非負，所以前綴成本非遞減，才能用二分查詢預算容許的最長前綴。成本為零時可能有多個相等前綴，應取最右邊仍不超預算的位置，才能包含免費任務。前綴含起始零，因此搜尋結果要減一；答案最多是任務數，不能把那個額外前綴算成任務。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from bisect import bisect_right
+p = [0, 0, 2, 2]
+print(bisect_right(p, 2) - 1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個0–1000任務成本，必須依序完成不可跳過。後q行預算b（0–10^7），輸出可完成的最長前綴任務數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3
+0 2 0 3
+0
+2
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+3
+4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>前綴建一次，bisect_right(prefix,b)-1。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-117.html">← 第117課</a><a href="courses.html">課程目錄</a><a href="lesson-119.html">第119課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

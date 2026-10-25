@@ -1,0 +1,136 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第27課｜輸入規模與工作量：先數步驟再選方法｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 27 / 120 · 教學</p><h1>輸入規模與工作量：先數步驟再選方法</h1><p class="lead">能區分正確答案與計算成本，使用明確的計數模型比較方法。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-11.html">第11課</a>、<a href="lesson-14.html">第14課</a>、<a href="lesson-17.html">第17課</a>、<a href="lesson-18.html">第18課</a>、<a href="lesson-21.html">第21課</a>、<a href="lesson-26.html">第26課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>第17、18課已接觸O(n)、O(log n)。本課不先背符號，直接計算搜尋與查詢做了幾次關鍵工作，再連到資料規模。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-27.ipynb" target="_blank" rel="noopener noreferrer">開啟第27課Colab作業本 ↗</a><a href="lesson-27.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜線性搜尋的比較次數</a><a href="#unit-B">B｜配對總數與符合數不同</a><a href="#unit-C">C｜二分搜尋真正縮小範圍</a><a href="#unit-D">D｜多次區間查詢的工作量</a><a href="#unit-E">E｜依明確模型判斷可行</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜線性搜尋的比較次數</h2><p>線性搜尋由第一個位置逐一比較，找到就停止。比較次數包含最後那次成功比較；查無資料則必須看完全部。計數器應在每次比較之前加一。這是指定操作的次數，不是電腦實際執行的全部指令或秒數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[4,7,9]
+checks=0
+for x in a:
+    checks+=1
+    if x==7:
+        break
+print(checks)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行1–1000個整數（|值|≤10^6），第二行目標t。用線性搜尋找第一個相等的0起算索引，不存在為-1。輸出索引及元素相等比較次數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 7 7
+7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 2
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">8
+8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每看一筆先checks+=1，找到後記位置並break。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜配對總數與符合數不同</h2><p>第11課用i&lt;j避免重複配對。符合目標的配對數可能是0，但檢查次數仍可能很多；不能用輸出答案大小推斷速度。分開保存檢查次數與符合次數，對照n(n-1)//2，就能驗證枚舉範圍是否正確。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n=4
+print(n*(n-1)//2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n t（1≤n≤300，|t|≤2000），第二行n個整數（-1000–1000）。枚舉i&lt;j，輸出檢查過的配對數及和等於t的配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 4
+2 2 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 4
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">3 100
+1 2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>兩個計數器在迴圈外初始化；每對都計入checks，只有符合才計入matches。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜二分搜尋真正縮小範圍</h2><p>本題沿用第18課左閉右開版本，回傳第一個至少目標的位置。每輪只計一次「a[mid]&lt;t」比較，不計while條件。若更新不能縮小區間，就可能無窮迴圈。請同時列lo、hi、mid，觀察右端不包含的規則如何維持。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[2,4,6,8]
+lo,hi=0,4
+mid=(lo+hi)//2
+print(mid,a[mid])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 6
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行1–1000個已非遞減排序整數，第二行t（數值與t絕對值≤10^6）。手寫第18課下界搜尋，輸出下界索引（不存在則n）及迴圈執行次數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 4 6 8
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2 2 2
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>a[mid]&lt;t時lo=mid+1，否則hi=mid；初始lo=0、hi=n。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜多次區間查詢的工作量</h2><p>重複查詢時，慢法每次讀取區間所有元素，讀取數為各區間長度相加。前綴法先讀n筆，再每次取兩個前綴。本題明確只比較這些讀取動作，沒有把加減、輸入和配置都當成零成本，因此模型結果不能直接換算成秒數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n=5
+queries=[(1,5),(2,3)]
+slow=0
+for l,r in queries:
+    slow+=r-l+1
+print(slow,n+2*len(queries))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>7 9
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n q（1≤n≤10^6，1≤q≤100000），接著q行合法1起算閉區間l r，不輸入陣列。輸出慢法總元素讀取數，以及前綴法模型讀取數n+2q。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 2
+1 5
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7 9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 3
+1 1
+1 1
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>慢法只累加r-l+1；不必真的建立陣列或走訪整段。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜依明確模型判斷可行</h2><p>漸近複雜度描述成長趨勢，但實際能否通過需要限制與實測。本題只是工作量模型練習，將線性n、平方n²兩種預估與預算比較，不宣稱真實評測每秒能做固定次數。等於預算仍算可行，並保留兩個方法各自的判斷。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n,budget=5,20
+print(n&lt;=budget,n*n&lt;=budget)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True False
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入n budget（0≤n≤10^9，0≤budget≤10^18）。模型L成本為n，模型Q成本為n*n。依序輸出L與Q是否不超過budget，使用YES或NO並以空白分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 20
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">5 25
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES YES
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">10 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO NO
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>兩個條件彼此獨立，不用elif。使用整數運算避免浮點誤差。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-26.html">← 第26課</a><a href="courses.html">課程目錄</a><a href="lesson-28.html">第28課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

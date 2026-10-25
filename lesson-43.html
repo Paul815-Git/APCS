@@ -1,0 +1,127 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第43課｜因數與質數判斷｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 43 / 120 · 教學</p><h1>因數與質數判斷</h1><p class="lead">能利用因數成對性縮減搜尋，正確處理1與完全平方數。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-27.html">第27課</a>、<a href="lesson-41.html">第41課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第3課整除餘數與第41課受限枚舉，本課將搜尋上限縮到平方根，並解釋縮減不會漏掉因數的原因。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-43.ipynb" target="_blank" rel="noopener noreferrer">開啟第43課Colab作業本 ↗</a><a href="lesson-43.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜完整列出因數</a><a href="#unit-B">B｜成對因數與平方數</a><a href="#unit-C">C｜找到一個因數就能否定質數</a><a href="#unit-D">D｜最小非平凡因數的特殊值</a><a href="#unit-E">E｜多筆數字的質數統計</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜完整列出因數</h2><p>正整數d若能讓n除以d的餘數為零，就是n的因數。先用從一到n的完整掃描建立正確基準，輸出自然已遞增。這個方法容易理解但工作量與n成正比，所以只適用小範圍；後續縮減搜尋前，可以用它檢查新方法的結果是否一致。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n = 6
+for d in range(1, n+1):
+    if n % d == 0:
+        print(d)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+2
+3
+6
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入n（1–10000）。輸出n的所有正因數，由小到大，以一行空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">12
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3 4 6 12
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立result串列，餘數為0時append(d)，最後print(*result)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜成對因數與平方數</h2><p>若d是因數，n//d也是因數；當兩者不同可一次計入兩個。每對因數至少有一個不大於平方根，所以只需測試d*d≤n。完全平方數在平方根處兩個因數相同，只能計一次。使用整數乘法判斷上限，可以避免浮點平方根的精度疑慮。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n, d = 9, 3
+print(d, n // d)
+print(d == n // d)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 3
+True
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入n（1–10^12）。使用成對因數的方法，輸出正因數個數；不得逐一掃描到n。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">36
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>d從1增加到d*d&gt;n，整除時加2，相同配對只加1。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜找到一個因數就能否定質數</h2><p>質數必須大於一，而且除了1與自己外沒有因數。若合數有一對非平凡因數，其中至少一個不超過平方根，因此試除到平方根就足夠。找到第一個可整除的d即可停止，因為後面是否還有因數都不會改變「不是質數」的答案，這與列出全部因數的任務不同。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n = 15
+prime = n &gt;= 2
+d = 2
+while d * d &lt;= n:
+    if n % d == 0:
+        prime = False
+        break
+    d += 1
+print(prime)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入n（0–10^12）。若為質數輸出YES，否則輸出NO。0與1都不是質數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">97
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">49
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>prime先設為n&gt;=2，再檢查2到平方根的因數。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜最小非平凡因數的特殊值</h2><p>最小因數題需要先定義1的輸出，因為1沒有大於一的因數。對n≥2，先假設答案為n；若從二開始找到更小因數，就立即回傳。試除結束仍沒找到時，n是質數，最小的大於一因數就是它自己。不同題目的「無解」定義不能混用。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n = 17
+answer = n
+d = 2
+while d*d &lt;= n:
+    if n % d == 0:
+        answer = d
+        break
+    d += 1
+print(answer)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>17
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入n（1–10^12）。輸出n最小的大於1的正因數；n=1時輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">91
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先獨立處理1，其他數以n初始化答案。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜多筆數字的質數統計</h2><p>把單筆質數判斷包成回傳布林值的函式，主程式就能專心統計多筆資料。函式遇到n&lt;2或找到因數即可return False，掃描完成才return True。重複數值仍代表不同輸入紀錄，必須分別計數；本題資料量不大，逐筆試除足夠，下一課程段再處理大量範圍查詢。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def at_least_two(n):
+    return n &gt;= 2
+count = 0
+for n in [0, 2, 2]:
+    if at_least_two(n):
+        count += 1
+print(count)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（1–1000），第二行n個整數（0–10^6）。輸出其中質數的筆數，重複出現分別計數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">6
+0 1 2 9 17 17
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>寫is_prime(value)，主迴圈每次True就加一。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-42.html">← 第42課</a><a href="courses.html">課程目錄</a><a href="lesson-44.html">第44課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,132 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第66課｜事件掃描｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 66 / 120 · 教學</p><h1>事件掃描</h1><p class="lead">能合併同時刻事件，分清事件點與相鄰時間段。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-53.html">第53課</a>、<a href="lesson-58.html">第58課</a>、<a href="lesson-62.html">第62課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第53課差分；把固定索引改成排序後的稀疏事件時間。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-66.ipynb" target="_blank" rel="noopener noreferrer">開啟第66課Colab作業本 ↗</a><a href="lesson-66.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜同時刻先合併增減</a><a href="#unit-B">B｜最大同時使用量</a><a href="#unit-C">C｜有使用的總時間</a><a href="#unit-D">D｜重量超過容量的時長</a><a href="#unit-E">E｜精確覆蓋層數的長度表</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜同時刻先合併增減</h2><p>每個半開區間在開始時加一、結束時減一，將同時刻的變化合併後再累加，就得到該時刻之後的使用量。合併可避免先加後減造成瞬間假高峰。本題只問每個事件時刻的狀態，沒有事件的中間時間不必逐秒模擬。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>change = {}
+for start, end in [(1, 3), (3, 5)]:
+    change[start] = change.get(start, 0) + 1
+    change[end] = change.get(end, 0) - 1
+active = 0
+for t in sorted(change):
+    active += change[t]
+    print(t, active)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 1
+3 1
+5 0
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行 n（1～10000），接著 n 行 s e（0≤s&lt;e≤10^9），每筆在 [s,e) 使用一個設備。按時間遞增，對每個不同起點或終點輸出「時間 當時使用量」，同時刻先合併全部變化。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+1 3
+3 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1
+3 1
+5 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>字典累加 +1 和 -1，保留合計為0的事件時刻。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜最大同時使用量</h2><p>掃描的累積值表示目前尚未結束的區間數，最大累積值就是同時需要的設備數。這不是最多能挑幾個活動，因此不能使用最早結束選取。事件只需按時間排序一次，同時出現多少開始與結束，都由同一個差分值一起處理。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>change = {0: 1, 2: 1, 4: -1, 6: -1}
+active, peak = 0, 0
+for t in sorted(change):
+    active += change[t]
+    peak = max(peak, active)
+print(peak)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n（0～10000），接著 n 行 s e（0≤s&lt;e≤10^9）。區間採 [s,e)，輸出最大同時進行數；沒有區間輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+0 4
+2 6
+4 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>更新 active 後更新 peak；同一時刻的開始與結束必須先抵消。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜有使用的總時間</h2><p>兩個相鄰事件之間沒有狀態變化，所以整段都使用相同數量的設備。先套用目前事件的變化，再用下一個時間減目前時間取得段長；若使用量大於零，整段都算入聯集長度。最後一個事件沒有後續段，不應憑空多算一秒。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>times = [1, 3, 6]
+changes = {1: 1, 3: 0, 6: -1}
+active, length = 0, 0
+for i in range(len(times) - 1):
+    active += changes[times[i]]
+    if active &gt; 0:
+        length += times[i + 1] - times[i]
+print(length)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行 n（0～10000），接著 n 行 s e（0≤s&lt;e≤10^12）。輸出至少有一個區間覆蓋的總時間長度，區間採 [s,e)，重疊部分只算一次。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 4
+3 6
+8 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>時間可能很大，只掃不同事件；空字典的迴圈自然不執行。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜重量超過容量的時長</h2><p>事件變化可以是重量，不必固定為一。每個使用區間開始加重量、結束減重量，累積後即是該段負載。判斷超載時要依題意使用嚴格大於，剛好達到容量不算。計算的是超載持續時間，不是超載事件數，也不是多出來的總重量。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>load, capacity = 7, 7
+print(load &gt; capacity)
+load += 2
+duration = 5 - 2
+if load &gt; capacity:
+    print(duration)
+else:
+    print(0)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行 n capacity（0≤n≤10000，0≤capacity≤10^9），接著 n 行 s e w（0≤s&lt;e≤10^12，1≤w≤10^6）。負載於 [s,e) 增加 w，輸出總負載嚴格超過 capacity 的總時長。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5
+0 4 3
+2 6 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 7
+1 9 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>把差分的1改成w，段長只在 active&gt;capacity 時加入。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜精確覆蓋層數的長度表</h2><p>把每個相鄰事件段依當時覆蓋層數分類，可以一次求出恰好一層、兩層直到所有層的總長度。段長屬於哪一類只由累積值決定，不必追蹤是哪幾個區間。零層是未覆蓋空白，本題不輸出；即使某層沒有出現，也要保留零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>lengths = [0, 0, 0]
+for count, width in [(1, 2), (2, 3), (1, 4)]:
+    lengths[count] += width
+print(*lengths[1:])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6 3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n（1～1000），接著 n 行 s e（0≤s&lt;e≤10^9）。輸出 n 個整數，第 k 個表示恰好被 k 個 [s,e) 區間覆蓋的總長度。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+0 4
+2 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立 n+1 格的長度表；每段把長度加入 lengths[active]。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-65.html">← 第65課</a><a href="courses.html">課程目錄</a><a href="lesson-67.html">第67課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

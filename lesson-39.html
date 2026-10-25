@@ -1,0 +1,137 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第39課｜復原操作｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 39 / 120 · 教學</p><h1>復原操作</h1><p class="lead">能保存操作前的狀態，使用堆疊完成復原與重做。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-19.html">第19課</a>、<a href="lesson-25.html">第25課</a>、<a href="lesson-29.html">第29課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第19課堆疊及第20課括號的後進先出，本課把堆疊內容改為歷史狀態，並注意副本與無效操作。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-39.ipynb" target="_blank" rel="noopener noreferrer">開啟第39課Colab作業本 ↗</a><a href="lesson-39.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜把最近一次加法撤回</a><a href="#unit-B">B｜文字編輯保存操作前版本</a><a href="#unit-C">C｜加入重做的第二個堆疊</a><a href="#unit-D">D｜失敗提款不占復原紀錄</a><a href="#unit-E">E｜串列快照必須建立副本</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜把最近一次加法撤回</h2><p>復原可以保存相反操作，也可以保存操作之前的狀態。先練後者：每次ADD前把目前數值放進堆疊，UNDO時取出最後保存的值。堆疊空時沒有可回復的狀態，應保持不變。UNDO本身不加入歷史，否則連續復原會在兩個狀態間來回跳動。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>value = 3
+history = []
+history.append(value)
+value += 5
+value = history.pop()
+print(value)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n（1–1000），接著n行ADD x（-1000≤x≤1000）或UNDO。初值0，UNDO撤回最近一個尚未撤回的ADD，沒有歷史就忽略。輸出最終值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+ADD 3
+ADD 5
+UNDO
+ADD 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>ADD先append(value)再加；UNDO在history非空時pop。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜文字編輯保存操作前版本</h2><p>字串不可變，保存舊字串後再建立新字串，不會連帶改掉歷史版本，因此很適合練習復原。新增文字與刪尾字都是編輯，成功前都要保存舊版本；空字串上的刪除沒有產生改變，本題定義為忽略，不應占用一次可復原操作的位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>text = &quot;ab&quot;
+history = [text]
+text = text[:-1]
+print(text)
+print(history.pop())</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>a
+ab
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n（1–1000），接著n行TYPE s、BACK或UNDO。s為1–20個小寫字母；初始文字空，TYPE接尾，BACK刪最後一字，空時忽略；UNDO撤回最近成功編輯。輸出最終文字。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+TYPE ab
+BACK
+TYPE c
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+BACK
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>TYPE必定保存舊字串；BACK僅在text非空時保存。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜加入重做的第二個堆疊</h2><p>復原時，把離開的目前狀態放到redo堆疊，之後就能重做。重做時則把目前狀態放回undo堆疊，兩邊互相搬移。若復原後出現新的編輯，原本的未來版本就不再是這條歷史的下一步，因此必須清空redo；單純查詢不需要清空任何歷史。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>undo, redo = [0], []
+value = 7
+redo.append(value)
+value = undo.pop()
+print(value, redo[-1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 7
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–1000），接著n行SET x（-1000–1000）、UNDO或REDO。初值0；SET一律保存舊值並清空重做，UNDO/REDO在對應歷史空時忽略。輸出最終值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+SET 5
+SET 8
+UNDO
+REDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">4
+SET 5
+UNDO
+SET 2
+REDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>UNDO把目前值放redo再pop undo；REDO做相反方向。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜失敗提款不占復原紀錄</h2><p>「收到指令」與「完成操作」不是同一件事。提款失敗時沒有改變餘額，所以不能新增歷史，下一次UNDO仍應撤回前一次成功提款。檢查合法條件必須早於保存狀態。這個邊界能分辨堆疊究竟保存所有輸入事件，還是真正需要復原的狀態變化。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>balance = 4
+history = []
+if 7 &lt;= balance:
+    history.append(balance)
+    balance -= 7
+print(balance, len(history))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4 0
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行初始餘額b與指令數n（0≤b≤10^6，1≤n≤1000），接著n行PAY x（1–10000）或UNDO。PAY餘額不足忽略，UNDO撤回最近成功付款，無歷史忽略。輸出最終餘額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">10 3
+PAY 4
+PAY 9
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 2
+PAY 1
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>金額不超過餘額時才append及扣款。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜串列快照必須建立副本</h2><p>若把可修改串列直接append進歷史，保存的是同一個物件，後續修改會連歷史一起改掉。對一維整數串列可用[:]建立獨立副本，再進行設定。復原時把最新快照取回作為目前串列；下一次編輯仍先複製，就能保持剩餘歷史不受影響。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [1, 2]
+history = [a[:]]
+a[0] = 9
+print(*history[-1])
+print(*a)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+9 2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行m n（1≤m≤100，1≤n≤1000），第二行m個整數（-1000–1000）。接著n行SET i x或UNDO，0≤i&lt;m、-1000≤x≤1000。每次SET保存整份舊串列，UNDO無歷史則忽略。輸出最後串列。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2
+SET 0 9
+SET 1 8
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+7
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>使用history.append(a[:])，不要append(a)。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-38.html">← 第38課</a><a href="courses.html">課程目錄</a><a href="lesson-40.html">第40課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

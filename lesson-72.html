@@ -1,0 +1,136 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第72課｜呼叫追蹤與回傳｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 72 / 120 · 教學</p><h1>呼叫追蹤與回傳</h1><p class="lead">能分辨進入、等待、回傳三個階段，理解每層自己的參數。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-24.html">第24課</a>、<a href="lesson-71.html">第71課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第71課基底；增加呼叫後的工作與回傳結果的組合。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-72.ipynb" target="_blank" rel="noopener noreferrer">開啟第72課Colab作業本 ↗</a><a href="lesson-72.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜呼叫前後的輸出順序</a><a href="#unit-B">B｜每層各自保存區域變數</a><a href="#unit-C">C｜兩個子呼叫都要完成</a><a href="#unit-D">D｜二分搜尋也有空區間基底</a><a href="#unit-E">E｜成對縮小的回文判斷</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜呼叫前後的輸出順序</h2><p>呼叫前的指令隨參數縮小依序執行，呼叫後的指令要等內層完成才執行，所以順序會反過來。可以把每層看成一張暫停的工作單，記住自己尚未完成的事。基底直接返回後，才會逐層恢復，不是把整個程式一次結束。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def trace(n):
+    if n == 0:
+        return
+    print(&#x27;IN&#x27;, n)
+    trace(n - 1)
+    print(&#x27;OUT&#x27;, n)
+trace(2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>IN 2
+IN 1
+OUT 1
+OUT 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入 n（0≤n≤50）。遞迴每進入一個正數層先輸出「IN n」，處理 n-1 返回後輸出「OUT n」；0層不輸出。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">IN 2
+IN 1
+OUT 1
+OUT 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>本例不輸出任何內容，也不需要換行。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>兩個 print 分別放在遞迴呼叫的前後，不能用兩個獨立倒數代替。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜每層各自保存區域變數</h2><p>不同呼叫雖使用同樣變數名稱，卻各自保有自己的值。先取得子問題答案，再算本層答案並輸出，可以看見回傳由小到大的累積過程。不要用一個全域變數取代所有層，否則無法看清函式契約，也容易讓重複呼叫互相影響。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def total(n):
+    if n == 0:
+        return 0
+    smaller = total(n - 1)
+    answer = smaller + n
+    print(n, answer)
+    return answer
+total(3)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 1
+2 3
+3 6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入 n（0≤n≤50）。用遞迴計算1到 n 的和，每個正數層在回傳前輸出「該層 n 該層總和」。0層不輸出，主程式也不額外印最終答案。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1
+2 3
+3 6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>本例不輸出任何內容，也不需要換行。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>smaller=total(n-1) 完成後，才計算並印本層 answer。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜兩個子呼叫都要完成</h2><p>一層可以呼叫兩個較小問題，但它們是依程式順序逐個執行，不是同時執行。計算呼叫總數時，本層算一次，再加上左右子問題的呼叫數。這種展開可能重複處理同樣參數，成長很快；本題刻意限制輸入，先學會追蹤，不把它當高效率方法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def calls(n):
+    if n &lt;= 1:
+        return 1
+    return 1 + calls(n - 1) + calls(n - 2)
+print(calls(3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>定義程序 F(n)：n≤1 時直接返回，否則依序呼叫 F(n-1)、F(n-2)。輸入 n（0≤n≤20），寫遞迴輸出執行 F(n) 的總呼叫次數，包含最外層與基底層。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>不是問 F 的數值；每層對呼叫次數貢獻1。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜二分搜尋也有空區間基底</h2><p>把二分搜尋寫成遞迴時，每層只負責一個半開區間。區間為空就回傳找不到；比較中點後，只呼叫仍可能包含目標的一半。子呼叫的答案要直接 return 回去，若只是呼叫卻沒有回傳，外層會得到 None，搜尋成功也無法交給主程式。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def find(a, x, lo, hi):
+    if lo == hi:
+        return -1
+    mid = (lo + hi) // 2
+    if a[mid] == x:
+        return mid
+    if a[mid] &lt; x:
+        return find(a, x, mid + 1, hi)
+    return find(a, x, lo, mid)
+print(find([2, 5, 9], 9, 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行0～10000個嚴格遞增整數（-100000～100000，可空），第二行目標 x（同範圍）。用遞迴二分搜尋輸出目標0起算索引，不存在輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5 9
+9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p>輸入共2行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>每個分支都回傳；左區間 [lo,mid)，右區間 [mid+1,hi)。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜成對縮小的回文判斷</h2><p>回文檢查可以先比較兩端字元，不同就立即回傳假，相同才檢查中間部分。左右索引相遇或交錯代表剩下零個或一個字元，必然是回文。這個基底同時處理奇數、偶數和空字串；用索引避免每層建立新切片，並讓縮小方向明確。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def palindrome(s, left, right):
+    if left &gt;= right:
+        return True
+    if s[left] != s[right]:
+        return False
+    return palindrome(s, left + 1, right - 1)
+print(palindrome(&#x27;abba&#x27;, 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入一行小寫英文字串（長度0～100，可空）。使用左右索引的遞迴判斷回文，是則輸出 YES，否則 NO；不得反轉整字串比較。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">abca
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">abba
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>基底 left&gt;=right 先於讀取 s[left]，所以空字串也安全。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-71.html">← 第71課</a><a href="courses.html">課程目錄</a><a href="lesson-73.html">第73課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

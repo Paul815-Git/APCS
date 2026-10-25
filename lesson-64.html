@@ -1,0 +1,136 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第64課｜最早結束貪心｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 64 / 120 · 教學</p><h1>最早結束貪心</h1><p class="lead">能以交換理由理解不重疊選取，並依端點規則調整相容判斷。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-26.html">第26課</a>、<a href="lesson-58.html">第58課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第58課區間表示；本課由合併所有區間改成選最多相容區間。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-64.ipynb" target="_blank" rel="noopener noreferrer">開啟第64課Colab作業本 ↗</a><a href="lesson-64.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜先留下最多後續空間</a><a href="#unit-B">B｜保留被選活動的身分</a><a href="#unit-C">C｜加入固定整備時間</a><a href="#unit-D">D｜可用時間窗先篩選</a><a href="#unit-E">E｜用最少點命中閉區間</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜先留下最多後續空間</h2><p>在所有尚可參加的活動中，先選結束最早者，不會比選其他活動更晚釋放時間。任何最優選法的第一個活動都能換成它，後面的活動仍然可行。這個交換理由依賴每個活動價值相同；若改問總獎金最大，僅看結束時間就沒有保證。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>events = [(4, 1), (3, 0), (6, 3)]
+events.sort()
+end, count = -1, 0
+for finish, start in events:
+    if start &gt;= end:
+        count += 1
+        end = finish
+print(count)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行 n（0～10000），接著 n 行 s e（0≤s&lt;e≤10^9），活動佔用 [s,e)，可在結束瞬間接下一個。輸出單人最多能參加的活動數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 4
+0 3
+3 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>存成 (結束,開始) 排序，只有選中才更新目前結束時間。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜保留被選活動的身分</h2><p>只輸出數量時，活動可以只存起訖；要輸出實際選擇，就必須保存原編號。排序會改變處理順序，卻不應改變身分。多個活動結束時間相同時，本題用較小編號作固定規則，讓輸出能核對；這只是決定平手順序，不是新的最佳化目標。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>events = [(5, 2, 1), (3, 1, 0)]
+events.sort()
+for finish, number, start in events:
+    print(number, finish)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 3
+2 5
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n（1～10000），接著 n 行 s e（0≤s&lt;e≤10^9），原編號從1開始。按結束時間遞增、同結束按編號遞增掃描，遇到與已選活動相容就選。輸出選中編號一行，以空格分隔；端點相接合法。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 4
+0 3
+3 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+0 2
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>記錄可存 (e,id,s)，讓預設 tuple 排序完成指定規則。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜加入固定整備時間</h2><p>若每場結束後都要花固定時間整理設備，下一場必須晚於結束加上整備時間。因為每場都加上相同常數，原本的結束早晚順序不變，交換理由仍適用。第一場之前沒有整備負擔，初始化要與題意一致，不能平白禁止一開始就舉辦的活動。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>finish, cleanup = 4, 2
+for start in [5, 6]:
+    print(start &gt;= finish + cleanup)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+True
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行 n g（0≤n≤10000，0≤g≤100000），接著 n 行 s e（0≤s&lt;e≤10^9）。每兩場選定活動之間須留至少 g 時間，第一場無限制。輸出最多可安排場數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+0 3
+4 5
+5 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 99
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>保存下一次可用時間 ready；第一次 ready=0。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜可用時間窗先篩選</h2><p>有些活動跨出場地開放時間，即使彼此不衝突，也不能入選。先將不完全落在時間窗內的活動排除，再對剩下的活動做最早結束選取，能把合法性與最佳化分開。兩個端點都剛好等於開放端點時仍合法，空的候選集合則自然選零場。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>opening, closing = 3, 8
+for start, finish in [(2, 5), (3, 8), (7, 9)]:
+    print(opening &lt;= start and finish &lt;= closing)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+True
+False
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行 n l r（0≤n≤10000，0≤l≤r≤10^9），接著 n 行 s e（0≤s&lt;e≤10^9）。只能選完全位於 [l,r] 的活動，活動佔 [s,e)。輸出可選最多場數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3 8
+2 4
+3 5
+5 8
+7 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 4 4
+3 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>讀取時只保留 l&lt;=s 且 e&lt;=r；掃描起始 end=l。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜用最少點命中閉區間</h2><p>這次不是挑不重疊活動，而是挑時間點，使每個閉區間至少含一個點。先處理右端最早的未命中區間，把點放在它的右端，能兼顧最多較晚區間。若下一區間左端等於已選點，因為兩端包含，它已被命中，不需要再加一點。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>intervals = [(3, 1), (5, 3), (8, 6)]
+intervals.sort()
+point = None
+chosen = []
+for right, left in intervals:
+    if point is None or left &gt; point:
+        point = right
+        chosen.append(point)
+print(*chosen)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 8
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n（0～10000），接著 n 行 l r（0≤l≤r≤10^9）。選最少整數點，讓每個閉區間 [l,r] 至少包含一個選定點。只輸出最少點數，允許長度0區間。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 3
+3 5
+6 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+4 4
+4 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>按右端排序；只有 left&gt;目前點 才新增點，None 表示尚未選點。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-63.html">← 第63課</a><a href="courses.html">課程目錄</a><a href="lesson-65.html">第65課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

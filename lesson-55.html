@@ -1,0 +1,115 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第55課｜非負可變視窗｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 55 / 120 · 教學</p><h1>非負可變視窗</h1><p class="lead">能利用非負數的單調性移動左右端點，求最長、最短與區間數量。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-27.html">第27課</a>、<a href="lesson-54.html">第54課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第17課固定長度區間與第54課視窗更新，本課讓左端依條件移動。所有和的視窗題明定非負數；若有負數，縮窗判斷不再成立。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-55.ipynb" target="_blank" rel="noopener noreferrer">開啟第55課Colab作業本 ↗</a><a href="lesson-55.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜不超支的最長連續片段</a><a href="#unit-B">B｜達到需求的最短片段</a><a href="#unit-C">C｜一次數出所有合法左端</a><a href="#unit-D">D｜零會讓相同總和有多種起點</a><a href="#unit-E">E｜同時限制金額與特殊項目數</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜不超支的最長連續片段</h2><p>非負數讓視窗向右擴張時總和不會下降，移除左端時總和不會上升。加入右端後若超支，就反覆移除左端直到合法，再更新長度。左右指標各最多前進n次，雖然有巢狀while，總工作量仍為線性。含負數時這個理由失效，不能只套程式外形。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a, budget = [2, 3, 1], 4
+left, total = 0, sum(a)
+while total &gt; budget:
+    total -= a[left]
+    left += 1
+print(left, len(a)-left)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n B（1≤n≤100000，0≤B≤10^12），第二行n個非負整數（0–10^6）。輸出總和≤B的最長非空連續片段長度；不存在輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 4
+2 3 1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 0
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">3 0
+0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>加入a[right]後while total&gt;B縮左端，合法長度為right-left+1。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜達到需求的最短片段</h2><p>最短和至少S的視窗，縮窗時機與最長不超支題相反：只要目前總和已達標，先記錄長度，再移除左端試著變更短。S設為正數，可確保空視窗不會被視為合法。若全程沒達標，以n+1作為尚未找到的記號，最後轉成零輸出。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a, target = [2, 3, 1], 4
+left, total, best = 0, sum(a), 4
+while total &gt;= target:
+    best = min(best, len(a)-left)
+    total -= a[left]
+    left += 1
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n S（1≤n≤100000，1≤S≤10^12），第二行n個非負整數（0–10^6）。輸出總和至少S的最短連續片段長度；無解輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 7
+2 3 1 2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 1
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>while total&gt;=S時先更新best，再移除左端。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜一次數出所有合法左端</h2><p>當右端固定，縮到總和不超過B的最左合法位置left後，所有更右的起點也合法，因為移除的是非負數。因此以right結尾的合法非空片段共有right-left+1個，可一次加入答案，不必逐一列出。每個片段只會在自己的右端被計入，便不會重複。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>left, right = 2, 5
+print(right-left+1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n B（1≤n≤100000，0≤B≤10^12），第二行n個非負整數（0–10^6）。輸出總和不超過B的非空連續片段總數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+1 2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3 0
+0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>與最長視窗相同地縮窗，改成answer+=right-left+1。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜零會讓相同總和有多種起點</h2><p>求總和恰好S時，若資料有零，一個右端可能對應多個相同總和起點，不能找到一次就只加一。對整數總和，可用「不超過S的片段數」減「不超過S-1的片段數」。S為零時第二個門檻是負一，而非負序列不可能達成，所以函式直接回傳零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>at_most_s, at_most_before = 6, 0
+print(at_most_s - at_most_before)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n S（1≤n≤100000，0≤S≤10^12），第二行n個非負整數（0–10^6）。輸出總和恰為S的非空連續片段數，正確處理零。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 0
+0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3 1
+0 1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>寫count_at_most(limit)，limit&lt;0先return 0，再做兩次呼叫相減。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜同時限制金額與特殊項目數</h2><p>一個視窗可以維護兩個指標，只要兩者在加入元素時都不會下降。金額與特殊標記皆非負，因此只要任一限制超標，就把同一個左端元素從兩個總量一起扣除。縮到兩條件都合法後再更新答案，不能各用一個左端，否則兩種統計會對應不同區間。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>cost, marked, budget, limit = 5, 2, 6, 1
+print(cost &gt; budget or marked &gt; limit)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n B K（1≤n≤100000，0≤B≤10^12，0≤K≤n），第二行n個非負價格（0–10^6），第三行n個0/1特殊標記。輸出同時滿足總價≤B、特殊數≤K的最長連續片段長度，無解為0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 5 1
+2 1 2 1
+0 1 1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 0 0
+0 0
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>維護total與marked；while total&gt;B or marked&gt;K時同步移除左端。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-54.html">← 第54課</a><a href="courses.html">課程目錄</a><a href="lesson-56.html">第56課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

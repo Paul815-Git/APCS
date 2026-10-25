@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第67課｜值域計數排序｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 67 / 120 · 教學</p><h1>值域計數排序</h1><p class="lead">能在小值域用次數取代比較，並保留需要的紀錄順序。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-14.html">第14課</a>、<a href="lesson-62.html">第62課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第62課壓縮；本課辨識值域本來就小時可以直接使用桶。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-67.ipynb" target="_blank" rel="noopener noreferrer">開啟第67課Colab作業本 ↗</a><a href="lesson-67.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜用出現次數重建順序</a><a href="#unit-B">B｜負數要平移索引</a><a href="#unit-C">C｜不重建全部排序結果找排名</a><a href="#unit-D">D｜眾數的平手規則</a><a href="#unit-E">E｜桶內保存同分輸入順序</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜用出現次數重建順序</h2><p>數值只在小範圍內時，可為每種值配置一格次數。先掃輸入計數，再按值由小到大輸出對應次數，便完成排序。工作量約為資料筆數加值域大小；若最大值非常大，直接配置巨大串列就不適合，應改用一般排序或座標壓縮。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>count = [0] * 4
+for x in [3, 1, 3]:
+    count[x] += 1
+answer = []
+for x in range(4):
+    for _ in range(count[x]):
+        answer.append(x)
+print(*answer)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 3 3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行 1～100000 個整數（0～100）。不得使用 sorted 或 sort，輸出由小到大排序結果，以空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 0 3 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1 3 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">100
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">100
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立101格次數表，每一格的索引就是原值。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜負數要平移索引</h2><p>串列索引不能直接拿負數作一般桶號，因為負索引會從尾端回數。若值域下界是負五十，可將每個值加五十映射到非負索引；輸出時再減五十還原。平移保持大小順序，而且桶數應等於上界減下界再加一，包含兩端。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>offset = 2
+count = [0] * 5
+for x in [-2, 0, -2]:
+    count[x + offset] += 1
+for i in range(5):
+    if count[i]:
+        print(i - offset, count[i])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-2 2
+0 1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行 1～10000 個整數（-50～50）。不使用比較排序，按原值遞增逐行輸出有出現的「數值 次數」。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-2 0 -2 50
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2 2
+0 1
+50 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">-50
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-50 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>索引=x+50，原值=索引-50，表長101。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜不重建全部排序結果找排名</h2><p>要求第幾小的值，不一定需要展開整份排序串列。按桶從小到大累加次數，第一次累積數量達到排名的位置，就是答案。排名從一開始，而桶索引從零開始，兩者不可混淆；重複值佔多個排名，不能先去重再計算。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>count = [0, 2, 0, 1]
+k, total = 2, 0
+for x in range(len(count)):
+    total += count[x]
+    if total &gt;= k:
+        print(x)
+        break</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行 n k（1≤k≤n≤100000），第二行 n 個整數（0～1000）。使用次數表輸出第 k 小的值，重複元素各占一個排名。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3
+9 2 2 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>累積 count[x]，第一次 total&gt;=k 就停止。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜眾數的平手規則</h2><p>眾數依據次數比較，並不是排序後最大的數。本題同次數選較小值，因此從小到大掃桶且只在嚴格更高次數時更新，便可自然保留較小者。若寫成大於或等於，後來的較大值會覆蓋答案，這正是需要特別測試的平手邊界。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>count = [0, 2, 2]
+best = 0
+for x in range(len(count)):
+    if count[x] &gt; count[best]:
+        best = x
+print(best, count[best])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入一行 1～100000 個整數（0～1000）。輸出出現最多的值及次數，空格分隔；多值同次數時選最小值。須用次數串列實作。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2 4 2 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1000
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1000 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>best=0，依序掃過且只在次數嚴格增加時換答案。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜桶內保存同分輸入順序</h2><p>如果每筆資料還有姓名，單純次數不足以還原紀錄，可以把每個分數的桶改成姓名串列。依輸入順序加入同一桶，再按分數順序輸出，便保有同分原順序。建立多個桶時每次要建新串列，避免使用重複參照讓所有桶一起變動。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>buckets = []
+for _ in range(3):
+    buckets.append([])
+buckets[2].append(&#x27;Amy&#x27;)
+buckets[2].append(&#x27;Bob&#x27;)
+print(*buckets[2])
+print(len(buckets[0]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>Amy Bob
+0
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n（1～10000），接著 n 行 name score（name 為1～20個英文字母，score 為0～100）。不用 sort/sorted，按分數遞減輸出「姓名 分數」，同分保留原輸入順序。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+Amy 80
+Bob 90
+Cat 80
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">Bob 90
+Amy 80
+Cat 80
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+Z 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">Z 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>101個獨立串列；分數從100倒數到0，每桶依 append 順序輸出。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-66.html">← 第66課</a><a href="courses.html">課程目錄</a><a href="lesson-68.html">第68課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

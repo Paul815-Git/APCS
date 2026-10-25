@@ -1,0 +1,122 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第32課｜解碼與長度限制｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 32 / 120 · 教學</p><h1>解碼與長度限制</h1><p class="lead">能讀取壓縮片段，先估長度，再決定是否實際展開。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-13.html">第13課</a>、<a href="lesson-31.html">第31課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第13課split與字串組合、第31課片段壓縮，增加反向展開及輸出長度上限，避免不必要的大字串。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-32.ipynb" target="_blank" rel="noopener noreferrer">開啟第32課Colab作業本 ↗</a><a href="lesson-32.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜展開一個片段</a><a href="#unit-B">B｜依序接回多個片段</a><a href="#unit-C">C｜只問長度就不展開</a><a href="#unit-D">D｜先檢查容量再建立結果</a><a href="#unit-E">E｜不用展開也能找第幾個字</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜展開一個片段</h2><p>字串乘上非負整數會重複該字串，例如&quot;ab&quot;乘三會得到三份ab。壓縮片段的字元和次數屬於不同型別，split後的次數仍是文字，必須先轉成int。這題只展開一段，先把解析與重複的規則確認清楚，再處理多段資料。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>ch, count = &quot;x 4&quot;.split()
+print(ch * int(count))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>xxxx
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行字元c與整數k，以空格分隔。c為一個小寫字母，0≤k≤1000。輸出c重複k次的字串，k為0時輸出空行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">b 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">bbb
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">a 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先拆成兩欄，將k轉成整數後使用字串乘法。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜依序接回多個片段</h2><p>解碼不能按照字母排序，因為片段出現順序就是原資料順序。逐段展開後存入串列，最後用空分隔符join接回，可以清楚區分「讀一段」與「組合整份結果」。相鄰片段就算字元相同也可以直接接上，解碼不要求先重新壓縮。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>parts = [&quot;a&quot; * 2, &quot;b&quot; * 1, &quot;a&quot; * 2]
+print(&quot;&quot;.join(parts))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>aabaa
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n（1–100），接著n行各為小寫字母c與次數k（0–100）。依序展開全部片段，輸出一行解碼文字。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+a 2
+b 1
+a 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">aabaa
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+x 0
+y 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>每行append(c*k)，最後只print一次join結果。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜只問長度就不展開</h2><p>當題目只問解碼長度，每段的字元內容不影響答案，長度就是所有次數的總和。即使次數非常大，整數加法仍不需要建立對應字串。這與前綴和先累積數值的想法相同：只保存輸出真正需要的資訊，會讓程式更快也更省空間。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>total = 0
+for count in [1000000, 0, 8]:
+    total += count
+print(total)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1000008
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–10000），接著n行各為小寫字母c與次數k（0–10^9）。只輸出完整解碼字串的長度，不輸出文字。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+a 1000000000
+b 0
+c 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1000000007
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+z 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>讀取每一段的次數，累加即可，不要使用c*k。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜先檢查容量再建立結果</h2><p>輸出長度有上限時，應先讀完片段並加總次數，再決定要不要展開，不能先做出巨大字串才檢查。長度恰好等於上限仍合法；超過才拒絕。把片段保存成字元與次數兩欄，通過檢查後再走一次迴圈，時間仍與輸入及合法輸出長度成正比。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>length, limit = 6, 6
+if length &lt;= limit:
+    print(&quot;OK&quot;)
+else:
+    print(&quot;TOO LONG&quot;)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>OK
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n L（1≤n≤1000，0≤L≤10000），接著n行c k，c為小寫字母，0≤k≤10^9。若解碼長度超過L輸出TOO LONG，否則輸出解碼文字。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+a 2
+b 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">aab
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+z 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">TOO LONG
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1 0
+z 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先存片段並算total；total≤L才進行字串乘法。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜不用展開也能找第幾個字</h2><p>想找解碼後的第p個字，可以把p視為尚未跨過的距離。若p大於本段長度，就減去整段長度；否則答案位於這一段。這裡位置從一開始，故p等於段長時仍屬於本段。零長度片段自然被略過，也不會改變剩餘距離。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p = 5
+for ch, count in [[&quot;a&quot;, 3], [&quot;b&quot;, 4]]:
+    if p &lt;= count:
+        print(ch)
+        break
+    p -= count</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n p（1≤n≤10000，1≤p≤10^12），接著n行小寫字母c及次數k（0–10^9）。輸出解碼後第p個字；若總長不足p則輸出NONE。不得實際展開。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 4
+a 0
+b 3
+c 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">c
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 3
+x 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NONE
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先讀完片段；找不到時保留答案NONE。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-31.html">← 第31課</a><a href="courses.html">課程目錄</a><a href="lesson-33.html">第33課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

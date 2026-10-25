@@ -1,0 +1,120 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第84課｜拓樸與依賴｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 84 / 120 · 延伸選修</p><h1>拓樸與依賴</h1><p class="lead">能以入度追蹤先修依賴，輸出合法順序或判斷循環。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-79.html">第79課</a>、<a href="lesson-83.html">第83課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>選修入口：第79課有向圖、第83課堆。新增只在所有先修完成後處理節點；首考可暫回第91課。</p>
+</aside><p class="small">選修延伸：第一次應考若基礎仍需提示，可先完成第91–120課核心複習，再回來加深。是否學到這些方法不直接對應官方級分。</p><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-84.ipynb" target="_blank" rel="noopener noreferrer">開啟第84課Colab作業本 ↗</a><a href="lesson-84.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜入度是尚有多少直接前置</a><a href="#unit-B">B｜移除完成節點的影響</a><a href="#unit-C">C｜佇列空不代表全部完成</a><a href="#unit-D">D｜可開始者中選最小編號</a><a href="#unit-E">E｜同一輪可並行完成</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜入度是尚有多少直接前置</h2><p>有向邊 u 到 v 在本課代表 u 必須先於 v。v 的入度就是直接指向它的邊數，表示尚未處理時有多少直接先修；不是所有祖先數，也不是最短距離。初始入度零的節點可以立即開始，沒有任何邊的節點同樣符合條件，必須列入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>indegree = [0] * 4
+for u, v in [(1, 3), (2, 3)]:
+    indegree[v] += 1
+print(*indegree[1:])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 0 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n m（1≤n≤10000，0≤m≤20000），接著m行u v表示u須先於v，無重邊自環。按編號遞增輸出初始沒有先修的節點；若沒有則輸出 NONE。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+1 3
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 2
+1 2
+2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NONE
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>只對v加一，最後掃入度為0的節點。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜移除完成節點的影響</h2><p>取出可開始的節點後，它的每個後繼就少了一個未完成先修，因此入度各減一。只有降到零時才放入佇列，不能只要某一個前置完成就加入。本題指定初始按編號、後繼按輸入順序入隊，讓多種合法拓樸順序中有固定可核對的輸出。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>indegree = [0, 0, 0, 2]
+indegree[3] -= 1
+print(indegree[3] == 0)
+indegree[3] -= 1
+print(indegree[3] == 0)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+True
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n m（1≤n≤10000，0≤m≤20000），後面m行先修邊u v，保證無循環。用Kahn佇列法：初始0入度節點依編號入隊，後繼依邊輸入順序處理。輸出處理順序一行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3
+1 3
+2 3
+3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3 4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>完成u時遍歷adj[u]並減入度，變0才append。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜佇列空不代表全部完成</h2><p>如果剩下的節點互相等待，便再也沒有零入度節點，佇列會提早變空。比較已處理數與總節點數，就能判斷是否存在循環。不能只檢查初始有沒有可開始節點，因為圖的一部分可能可完成，另一部分仍有環，最後才看得出處理不完整。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n = 5
+processed = [1, 2]
+print(&#x27;YES&#x27; if len(processed) == n else &#x27;NO&#x27;)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>NO
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n m（1≤n≤10000，0≤m≤20000），接著m行u v表示先修依賴，允許循環、無重邊自環。能完成所有節點輸出 YES，否則 NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+1 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3 2
+2 3
+3 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>執行Kahn直到佇列空，計數等於n才成功。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜可開始者中選最小編號</h2><p>若要求字典順序最小的拓樸排列，每一步都要從目前所有可開始節點選最小編號。一般佇列只能保證先加入先處理，不符合這個新條件；把可開始集合改成最小堆即可。新的可開始節點可能比已等待者更小，因此不能只將初始候選排一次序。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>import heapq
+ready = [2, 5]
+heapq.heapify(ready)
+heapq.heappush(ready, 1)
+print(heapq.heappop(ready))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n m（1≤n≤10000，0≤m≤20000），接著m行先修邊u v。輸出字典順序最小的合法拓樸排列；若有循環輸出 IMPOSSIBLE。無重邊自環。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 2
+1 2
+2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">IMPOSSIBLE
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>入度0者放heap，反覆heappop最小；最後仍檢查數量。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜同一輪可並行完成</h2><p>每項任務都花一輪且資源無限制時，本輪開始時已無先修的任務可以同時完成。先固定本輪佇列長度，只處理這些節點；本輪新解鎖的任務留到下一輪。若一邊加入一邊全部處理，就會把有先後依賴的任務誤算在同一輪內。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from collections import deque
+queue = deque([1, 2])
+this_round = len(queue)
+for _ in range(this_round):
+    u = queue.popleft()
+    if u == 1:
+        queue.append(3)
+print(list(queue))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>[3]
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n m（1≤n≤10000，0≤m≤20000），接著m行先修邊。每項任務耗1輪，同輪可做任意多項，但須前一輪末前完成全部先修。輸出最少輪數；循環無法完成輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 3
+1 3
+2 3
+3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每輪先存len(queue)，處理固定數量後rounds加1。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-83.html">← 第83課</a><a href="courses.html">課程目錄</a><a href="lesson-85.html">第85課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

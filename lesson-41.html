@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第41課｜受限配對枚舉｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 41 / 120 · 教學</p><h1>受限配對枚舉</h1><p class="lead">能定義配對是否有序、是否可重用，並完整枚舉合法組合。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-11.html">第11課</a>、<a href="lesson-27.html">第27課</a>、<a href="lesson-28.html">第28課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第11課雙層迴圈與第20課選擇解法，本課先限制小資料規模，增加配對條件及平手規則。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-41.ipynb" target="_blank" rel="noopener noreferrer">開啟第41課Colab作業本 ↗</a><a href="lesson-41.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜相近數值的位置配對</a><a href="#unit-B">B｜矩形邊長不重複枚舉</a><a href="#unit-C">C｜兩場活動能否相接</a><a href="#unit-D">D｜沒有合法配對時怎麼表示</a><a href="#unit-E">E｜最接近的兩個讀值與平手</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜相近數值的位置配對</h2><p>選兩個不同位置時令i小於j，就能保證不選自己，也不把顛倒順序算第二次。條件只看數值差，但答案計算的是位置配對；兩個相同數值在不同位置仍可配對。先列出全部位置，再用abs判斷差距，對小資料是最容易檢查是否漏算的方法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [2, 2, 5]
+for i in range(len(a)):
+    for j in range(i+1, len(a)):
+        if abs(a[i] - a[j]) &lt;= 1:
+            print(i, j)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n d（1≤n≤200，0≤d≤1000），第二行n個整數（-1000–1000）。輸出數值差絕對值不超過d的不同位置無序配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1
+2 2 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>j從i+1開始，符合abs(a[i]-a[j])≤d才加一。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜矩形邊長不重複枚舉</h2><p>若長寬交換視為同一矩形，就約定短邊a不超過長邊b，讓b從a開始。這裡a等於b的正方形合法，與選兩個不同位置時使用i小於j不同。先確定題意允不允許兩個值相等，再選迴圈起點，不能把所有無序問題都寫成嚴格小於。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>for a in range(1, 4):
+    for b in range(a, 4):
+        if a * b == 6:
+            print(a, b)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 3
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入m A（1≤m≤100，1≤A≤10000）。整數邊長a、b都在1到m，且a≤b。輸出面積不超過A的矩形種類數，交換長寬不另計。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層a=1..m，內層b=a..m，再檢查a*b。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜兩場活動能否相接</h2><p>活動使用開始包含、結束不包含的區間，因此一場剛結束、另一場立刻開始仍不衝突。兩場不重疊有兩種順序：第一場先結束，或第二場先結束，條件要用or連接。輸入不保證排序，不能只檢查一個時間方向，否則會漏掉較晚讀入但較早開始的活動。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>s1, e1 = 5, 8
+s2, e2 = 1, 5
+print(e1 &lt;= s2 or e2 &lt;= s1)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–200），接著n行s e（0≤s&lt;e≤10000），表示活動區間[s,e)。輸出可共同參加的兩場活動位置配對數，不分順序。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+5 8
+1 5
+4 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+0 2
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>對i&lt;j判斷ei≤sj或ej≤si。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜沒有合法配對時怎麼表示</h2><p>尋找最佳配對時，答案初值不能假裝某一組一定合法。本題用best=-1表示尚未找到，因為合法價格總和皆非負，負一不會與真正答案混淆。每次只更新不超過預算的總和；只有一件商品或所有組合超支時，保留負一正好符合無解輸出。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>best = -1
+for total in [9, 12]:
+    if total &lt;= 10:
+        best = max(best, total)
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>9
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n B（1≤n≤200，0≤B≤20000），第二行n個商品價格（0–10000）。恰選兩個不同位置，輸出不超過B的最大總價；無法選擇輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 10
+6 4 3 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 10
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2 0
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>best初值-1，總價≤B才max更新。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜最接近的兩個讀值與平手</h2><p>完整最佳化規格除了目標值，也要處理平手。本題按照i再j的順序枚舉，若差距相同就不更新，最先找到的配對自然是索引字典序最小。這個技巧依賴枚舉順序已符合平手優先順序；若換了迴圈順序，就需要明確比較索引，不能盲目保留第一組。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>best = 3
+new_gap = 3
+if new_gap &lt; best:
+    best = new_gap
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（2–200），第二行n個整數（-10000–10000）。選i&lt;j使|a[i]-a[j]|最小；同差距先取較小i，再取較小j。索引從0開始，輸出i j 差距。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+8 3 6 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 2 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3
+5 5 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先用(0,1)初始化，只有嚴格更小的差距才更新。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-40.html">← 第40課</a><a href="courses.html">課程目錄</a><a href="lesson-42.html">第42課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

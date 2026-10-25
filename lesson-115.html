@@ -1,0 +1,251 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第115課｜自編識讀卷二：換結構再次追蹤｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 115 / 120 · 自編識讀測驗</p><h1>自編識讀卷二：換結構再次追蹤</h1><p class="lead">以另一份三十題輸出題檢查是否真的修正推理。</p><p class="meta">建議：識讀建議自訂45–60分鐘；A–E考後選做另計<br>先備：<a href="lesson-109.html">第109課</a>、<a href="lesson-110.html">第110課</a>、<a href="lesson-114.html">第114課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第109卷一與第110訂正；卷二加入重新綁定、雙端操作、分支遞迴等變化，A–E仍是考後選做，不混入測驗計時。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-115.ipynb" target="_blank" rel="noopener noreferrer">開啟第115課Colab作業本 ↗</a><a href="lesson-115.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜考後選做：回傳與原值</a><a href="#unit-B">B｜考後選做：雙端取值</a><a href="#unit-C">C｜考後選做：內外索引分工</a><a href="#unit-D">D｜考後選做：回程累計奇數</a><a href="#unit-E">E｜考後選做：保留相等的邊界</a><a href="#reading-exam">自編識讀卷30題</a><a href="#assignment">完成標準與保存</a></nav><section id="reading-exam"><p class="eyebrow">ORIGINAL READING PRACTICE</p><h2>30題自編識讀練習卷</h2><p>先完成整份題目並記錄時間，再展開解析。每題四選一；請另外記錄猜測題，不把看過解析的結果當作獨立表現。這是課程練習卷，題型、配分與時長不宣稱等同當次官方題本。</p><article class="quiz-question" id="reading-1"><h3>第1題</h3><pre><code>a = 7
+print(a // 2 + a % 2, a ** 0)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>3 0</pre></li><li><pre>4 0</pre></li><li><pre>4 1</pre></li><li><pre>3 1</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。7//2為3、餘數1；任何非零數的零次方為1。</p>
+</details></article><article class="quiz-question" id="reading-2"><h3>第2題</h3><pre><code>x = 4
+print(1 &lt; x &lt;= 4, x != 4)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>True True</pre></li><li><pre>True False</pre></li><li><pre>False False</pre></li><li><pre>False True</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。鏈式比較兩側都成立，而4不等於4是假。</p>
+</details></article><article class="quiz-question" id="reading-3"><h3>第3題</h3><pre><code>a = []
+print(bool(a), bool([0]))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>False False</pre></li><li><pre>True False</pre></li><li><pre>True True</pre></li><li><pre>False True</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。空串列為假，包含一個0的串列仍非空，為真。</p>
+</details></article><article class="quiz-question" id="reading-4"><h3>第4題</h3><pre><code>a = [4, 8]
+i = len(a)
+print(i == len(a) or a[i] == 8)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>True</pre></li><li><pre>False</pre></li><li><pre>8</pre></li><li><pre>2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。or左側已是真，右側索引不會被求值。</p>
+</details></article><article class="quiz-question" id="reading-5"><h3>第5題</h3><pre><code>x, y = 5, 2
+x = x + y
+y = x - y
+print(x, y)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>7 3</pre></li><li><pre>5 7</pre></li><li><pre>7 5</pre></li><li><pre>2 5</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。這是兩次順序賦值，第二行使用已更新為7的x。</p>
+</details></article><article class="quiz-question" id="reading-6"><h3>第6題</h3><pre><code>s = 0
+for i in range(5, 0, -2):
+    s += i
+print(s)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>6</pre></li><li><pre>9</pre></li><li><pre>8</pre></li><li><pre>10</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。反向range依序產生5、3、1，終點0不含。</p>
+</details></article><article class="quiz-question" id="reading-7"><h3>第7題</h3><pre><code>value = 1
+for i in range(3):
+    value = value * 2 + i
+print(value)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>8</pre></li><li><pre>10</pre></li><li><pre>14</pre></li><li><pre>12</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。各輪value為2、5、12，i取0、1、2。</p>
+</details></article><article class="quiz-question" id="reading-8"><h3>第8題</h3><pre><code>x = 1
+count = 0
+while x &lt; 10:
+    x *= 3
+    count += 1
+print(x, count)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>27 3</pre></li><li><pre>9 2</pre></li><li><pre>27 2</pre></li><li><pre>10 3</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。條件在更新前判斷，x由1到3到9到27後停止。</p>
+</details></article><article class="quiz-question" id="reading-9"><h3>第9題</h3><pre><code>total = 0
+for i in range(1, 4):
+    for j in range(i, 4):
+        total += j
+print(total)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>10</pre></li><li><pre>12</pre></li><li><pre>14</pre></li><li><pre>18</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。三輪內層分別加1+2+3、2+3、3，共14。</p>
+</details></article><article class="quiz-question" id="reading-10"><h3>第10題</h3><pre><code>answer = []
+for i in range(3):
+    for j in range(3):
+        if i == j:
+            continue
+        answer.append(i + j)
+print(sum(answer))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>6</pre></li><li><pre>12</pre></li><li><pre>18</pre></li><li><pre>9</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。排除三個對角位置，其他和為1、2、1、3、2、3。</p>
+</details></article><article class="quiz-question" id="reading-11"><h3>第11題</h3><pre><code>a = [1, 2]
+b = a
+a = a + [3]
+print(len(a), len(b))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>3 3</pre></li><li><pre>2 3</pre></li><li><pre>2 2</pre></li><li><pre>3 2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。加法建立新串列並讓a改指向它，b仍指原本兩項串列。</p>
+</details></article><article class="quiz-question" id="reading-12"><h3>第12題</h3><pre><code>a = [1, 2]
+b = a
+a += [3]
+print(len(a), len(b))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>3 3</pre></li><li><pre>3 2</pre></li><li><pre>2 3</pre></li><li><pre>2 2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。串列的+=在原串列擴充，兩個別名都看到新增。</p>
+</details></article><article class="quiz-question" id="reading-13"><h3>第13題</h3><pre><code>g = []
+for i in range(2):
+    g.append([0, 0])
+g[0][0] = 6
+print(g[1][0], g[0][0])</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>6 6</pre></li><li><pre>0 0</pre></li><li><pre>0 6</pre></li><li><pre>6 0</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。每輪新建一列，改第一列不會影響第二列。</p>
+</details></article><article class="quiz-question" id="reading-14"><h3>第14題</h3><pre><code>a = [[1], [2]]
+b = []
+for row in a:
+    b.append(row[:])
+b[1][0] = 9
+print(a[1][0], b[1][0])</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>9 9</pre></li><li><pre>2 9</pre></li><li><pre>2 2</pre></li><li><pre>9 2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。逐列切片讓內層也獨立，a第二列保留2。</p>
+</details></article><article class="quiz-question" id="reading-15"><h3>第15題</h3><pre><code>d = {&quot;a&quot;: 2}
+x = d.get(&quot;b&quot;, 5)
+print(x, len(d))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>5 2</pre></li><li><pre>0 1</pre></li><li><pre>2 1</pre></li><li><pre>5 1</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。get回傳預設值，不會把不存在的鍵加入字典。</p>
+</details></article><article class="quiz-question" id="reading-16"><h3>第16題</h3><pre><code>s = &quot;abcde&quot;
+print(s[-2:], s[:0])</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>de </pre></li><li><pre>de a</pre></li><li><pre>ed </pre></li><li><pre>cde </pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。最後兩字是de，s[:0]為空字串；print的兩參數間仍有一個空格。</p>
+</details></article><article class="quiz-question" id="reading-17"><h3>第17題</h3><pre><code>words = &quot; a  b a &quot;.split()
+print(len(words), len(set(words)))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>5 3</pre></li><li><pre>3 3</pre></li><li><pre>3 2</pre></li><li><pre>4 2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。無參數split合併空白，三個單字中有a、b兩種類。</p>
+</details></article><article class="quiz-question" id="reading-18"><h3>第18題</h3><pre><code>def f(x):
+    return x * 2
+def g(x):
+    return f(x + 1) - 1
+print(g(3))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>8</pre></li><li><pre>7</pre></li><li><pre>6</pre></li><li><pre>5</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。g先把3加一，f(4)=8，最後減一。</p>
+</details></article><article class="quiz-question" id="reading-19"><h3>第19題</h3><pre><code>def change(a):
+    a = [9]
+    return a[0]
+x = [2]
+y = change(x)
+print(x[0], y)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>9 9</pre></li><li><pre>2 2</pre></li><li><pre>9 2</pre></li><li><pre>2 9</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。函式把區域參數改指新串列，沒有修改呼叫端x的內容。</p>
+</details></article><article class="quiz-question" id="reading-20"><h3>第20題</h3><pre><code>def f(n):
+    if n &lt;= 1:
+        return 1
+    return n + f(n - 2)
+print(f(6))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>13</pre></li><li><pre>12</pre></li><li><pre>10</pre></li><li><pre>21</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。f(6)=6+4+2+f(0)，基底回傳1，所以總共13。</p>
+</details></article><article class="quiz-question" id="reading-21"><h3>第21題</h3><pre><code>def f(n):
+    if n &lt; 10:
+        return n
+    return n % 10 + f(n // 10)
+print(f(507))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>507</pre></li><li><pre>7</pre></li><li><pre>12</pre></li><li><pre>5</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。各層取末位7、0，再以單位數5為基底。</p>
+</details></article><article class="quiz-question" id="reading-22"><h3>第22題</h3><pre><code>def f(a, b):
+    if b == 0:
+        return a
+    return f(b, a % b)
+print(f(20, 12))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>8</pre></li><li><pre>4</pre></li><li><pre>2</pre></li><li><pre>12</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。呼叫依序為(20,12)、(12,8)、(8,4)、(4,0)。</p>
+</details></article><article class="quiz-question" id="reading-23"><h3>第23題</h3><pre><code>def f(n):
+    if n == 0:
+        return 1
+    return f(n - 1) + f(n - 1) + 1
+print(f(2))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>4</pre></li><li><pre>5</pre></li><li><pre>6</pre></li><li><pre>7</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。f(0)=1，f(1)=3，f(2)=3+3+1。</p>
+</details></article><article class="quiz-question" id="reading-24"><h3>第24題</h3><pre><code>def show(n):
+    if n == 0:
+        return
+    print(n)
+    show(n - 1)
+    print(n)
+show(2)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>2
+1
+1
+2</pre></li><li><pre>2
+1
+2
+1</pre></li><li><pre>1
+2
+2
+1</pre></li><li><pre>2
+1</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。每層進入印一次、回程印一次，最內層兩個1相鄰。</p>
+</details></article><article class="quiz-question" id="reading-25"><h3>第25題</h3><pre><code>from bisect import bisect_left, bisect_right
+a = [2, 2, 5, 7]
+print(bisect_right(a, 5) - bisect_left(a, 2))</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>2</pre></li><li><pre>4</pre></li><li><pre>3</pre></li><li><pre>1</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。右界5是索引3，左界2是0，閉數值區間共三筆。</p>
+</details></article><article class="quiz-question" id="reading-26"><h3>第26題</h3><pre><code>a = [1, 3, 5]
+lo, hi = 0, len(a)
+while lo &lt; hi:
+    mid = (lo + hi) // 2
+    if a[mid] &lt;= 3:
+        lo = mid + 1
+    else:
+        hi = mid
+print(lo)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>1</pre></li><li><pre>2</pre></li><li><pre>3</pre></li><li><pre>0</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。條件使用&lt;=，找的是第一個嚴格大於3的位置。</p>
+</details></article><article class="quiz-question" id="reading-27"><h3>第27題</h3><pre><code>a = [4, 1, 7, 2]
+total = sum(a[:2])
+total += a[2] - a[0]
+print(total)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>12</pre></li><li><pre>5</pre></li><li><pre>9</pre></li><li><pre>8</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>D</strong>。第一窗4+1，移出4加入7，留下1+7。</p>
+</details></article><article class="quiz-question" id="reading-28"><h3>第28題</h3><pre><code>stack = [3, 5]
+x = stack.pop()
+stack.append(x - 1)
+print(*stack)</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>3 4</pre></li><li><pre>3 5 4</pre></li><li><pre>4 3</pre></li><li><pre>3</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>A</strong>。pop移除5並回傳，接著加入4。</p>
+</details></article><article class="quiz-question" id="reading-29"><h3>第29題</h3><pre><code>from collections import deque
+q = deque([&quot;a&quot;, &quot;b&quot;])
+q.appendleft(&quot;c&quot;)
+x = q.pop()
+print(x, q.popleft())</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>a c</pre></li><li><pre>c b</pre></li><li><pre>b c</pre></li><li><pre>b a</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>C</strong>。右端pop先取b，左端popleft再取c。</p>
+</details></article><article class="quiz-question" id="reading-30"><h3>第30題</h3><pre><code>records = [(2, &quot;b&quot;), (1, &quot;z&quot;), (2, &quot;a&quot;)]
+records.sort()
+print(records[1][1])</code></pre><p>完整輸出為何？</p><ol type="A"><li><pre>b</pre></li><li><pre>a</pre></li><li><pre>z</pre></li><li><pre>2</pre></li></ol><details class="feedback"><summary>作答後核對答案與解析</summary><p>答案：<strong>B</strong>。tuple先比數字，同數字再比文字，排序後第二筆為(2,a)。</p>
+</details></article></section><p class="bridge">以下A–E五道程式題是識讀卷作答後的訂正加練，另安排學習時間，不計入前面識讀卷的作答時間。</p><section id="worksheet"><h2>本課操作與紀錄</h2><p>本卷為另一份30題原創單選程式輸出題，不是官方題本。建議沿用卷一自行設定的時間，方便比較自己的讀題速度；不據此推估級分。先獨立選答並記信心，測驗後才看解析及執行程式。第16題輸出末尾含空格，選項保留完整print結果；追蹤時也要區分空字串與不存在的輸出。A–E是考後選做訂正，不計入30題作答時間。逐題紀錄錯在運算、控制流、容器、呼叫或邊界，再以不同輸入驗證修正。</p>
+</section><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜考後選做：回傳與原值</h2><p>若卷二把函式回傳值誤認成會自動改寫外部變數，可用三個輸出值重新驗證資料流。原值保留，第一次函式結果傳給第二次函式，最後依序列出。每次呼叫的參數要清楚標出來源，這能避免把第二次仍傳原值，或把尚未接住的結果當作已儲存。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def twice(x):
+    return 2*x
+a = 3
+b = twice(a)
+print(a, b, twice(b))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 6 12
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入x（-1000至1000）。定義f(x)=2*x+1，輸出原x、f(x)、f(f(x))，同一行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 5 11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1 -1 -1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先b=f(x)，再c=f(b)，原x不重新賦值。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜考後選做：雙端取值</h2><p>deque的兩端都可移除，指令與方法要一一對應。左端使用popleft，右端使用pop，每次取出都會改變下一次能看到的值。空容器仍要輸出EMPTY並繼續下一條指令，不能整段停止；用交替左右與比元素數更多的指令，檢查方向和空狀態。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from collections import deque
+q = deque([2, 5, 8])
+print(q.popleft(), q.pop())</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 8
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行0–1000個整數（-1000至1000，可空），第二行長度1–1000的LR字串。每個L取左端、R取右端，逐行輸出取出值；空時輸出EMPTY。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5 8
+LRRL
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+8
+5
+EMPTY
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+L
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<p>輸入共2行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先if q，再依字元選popleft或pop。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜考後選做：內外索引分工</h2><p>巢狀迴圈的輸出有時不是資料內容，而是座標規則產生的數值。這題每一列的起點不同，每一欄再加固定差，先用兩列三欄手算，再把公式放進內層。把一整列組好才輸出，能避免多印中途結果，也讓列欄數量容易直接核對。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>for r in range(2):
+    row = []
+    for c in range(3):
+        row.append(10*r + c)
+    print(*row)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 1 2
+10 11 12
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入r c（1–20），輸出r列c欄表格，第i列第j欄為(i+1)*(j+1)，i、j從0起算。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 3
+2 4 6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層列、內層欄，每列建立新串列。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜考後選做：回程累計奇數</h2><p>遞迴基底決定空前綴的答案，每次回程再加入目前項的貢獻。這題只累計一到n之間的奇數，偶數層仍須呼叫下一層，不能直接返回零而忽略前面的奇數。先把每層的局部貢獻寫為目前值或零，再加上下層結果，能看清楚哪些資料被保留。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def odd_sum(n):
+    if n == 0:
+        return 0
+    return odd_sum(n-1) + (n if n % 2 else 0)
+print(odd_sum(4))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入n（0–100）。以遞迴輸出1至n所有奇數總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先取得odd_sum(n-1)，再視n奇偶加值。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜考後選做：保留相等的邊界</h2><p>下界和上界相減能得到相等元素數，但若直接把資料轉集合，這個資訊就無法恢復。本題要求同時輸出小於、等於與大於目標的筆數，三個答案總和應等於原資料長度。這項總和檢查可以抓出漏掉相等者，或把端點在兩類同時計入的錯誤。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from bisect import bisect_left, bisect_right
+a = [1, 3, 3, 5]
+l, r = bisect_left(a, 3), bisect_right(a, 3)
+print(l, r-l, len(a)-r)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2 1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行1–10000個-10000至10000整數，第二行同範圍目標t。輸出小於t、等於t、大於t的筆數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3 3 5
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>排序後left、right兩界可得到三段長度。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-114.html">← 第114課</a><a href="courses.html">課程目錄</a><a href="lesson-116.html">第116課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

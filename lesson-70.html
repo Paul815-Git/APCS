@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第70課｜搜尋排序綜合｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 70 / 120 · 教學</p><h1>搜尋排序綜合</h1><p class="lead">能先指出資料前提，再組合排序、查詢、貪心或掃描。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-61.html">第61課</a>、<a href="lesson-63.html">第63課</a>、<a href="lesson-64.html">第64課</a>、<a href="lesson-65.html">第65課</a>、<a href="lesson-66.html">第66課</a>、<a href="lesson-69.html">第69課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第61–69課；每題先寫方法與反例，再開提示，不加入新的演算法。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-70.ipynb" target="_blank" rel="noopener noreferrer">開啟第70課Colab作業本 ↗</a><a href="lesson-70.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜值域中的數值總和</a><a href="#unit-B">B｜可拆工作的最低速度</a><a href="#unit-C">C｜兩來源最近的數值</a><a href="#unit-D">D｜第一個超載時刻</a><a href="#unit-E">E｜先滿足門檻再安排活動</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜值域中的數值總和</h2><p>查詢數值範圍時，先排序才能讓合法元素聚成連續片段，再用二分找到兩個位置，最後用前綴和取總和。三份資訊必須對齊同一份排序結果。重複數值應逐筆加入前綴和，負數也可加總，因為本題沒有用總和的單調性進行搜尋。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from bisect import bisect_left, bisect_right
+a = [-2, 3, 3, 8]
+p = [0]
+for x in a:
+    p.append(p[-1] + x)
+print(p[bisect_right(a, 3)] - p[bisect_left(a, -2)])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行 n q（1～10000），第二行 n 個整數（-100000～100000），後面 q 行 l r（-100000≤l≤r≤100000）。逐行輸出所有值位於 [l,r] 的元素總和，重複值照算。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+8 3 -2 3
+-2 3
+4 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-5
+-5 -5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-5
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>left(l) 與 right(r) 取得半開索引，再用 p[right]-p[left]。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜可拆工作的最低速度</h2><p>給定速度後，每項工作所需時間要向上取整，因為不足一單位時間也占一單位。速度提高只會讓總時間減少或持平，所以可以二分最小可行速度。每項至少一單位時間，因此題目保證時間上限不小於項目數，才能確保解存在。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>work = [4, 7]
+speed = 3
+hours = 0
+for x in work:
+    hours += (x + speed - 1) // speed
+print(hours)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n h（1≤n≤10000，n≤h≤10^9），第二行 n 個工作量（1～10^9）。同一時間單位只處理一項，每項所需時間為工作量除速度向上取整。輸出總時間≤h 的最小正整數速度。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5
+4 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>ceil(x/s)=(x+s-1)//s；搜尋1到最大工作量。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜兩來源最近的數值</h2><p>若要從兩個來源各選一筆，不能將全部混在一起後只看相鄰，因為最接近兩筆可能來自同一來源。將兩列各自排序並比較目前兩值，更新差距後移動較小值一側；較小值留著只會遇到更大的對方值，無法改善距離。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a, b = [1, 8], [5, 10]
+i, j, best = 0, 0, 100
+while i &lt; len(a) and j &lt; len(b):
+    best = min(best, abs(a[i] - b[j]))
+    if a[i] &lt; b[j]:
+        i += 1
+    else:
+        j += 1
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入兩行，每行1～10000個整數（-10^9～10^9，未排序）。從每行各選一個數，輸出最小絕對差。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">8 1
+10 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">7
+7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>best 可先設 abs(a[0]-b[0])；相等時答案已是0。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜第一個超載時刻</h2><p>超載是否發生可以在事件掃描後立刻判斷，但必須先合併同時刻的增減，才不會把瞬間交接誤報成超載。由於時間已排序，第一次符合條件就是最早時刻，找到後可停止。沒有任何超載時刻要輸出指定文字，不能沿用初始時間當答案。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>changes = {1: 2, 3: 0, 5: -2}
+active = 0
+for t in sorted(changes):
+    active += changes[t]
+    print(t, active &gt; 2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 False
+3 False
+5 False
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行 n cap（0≤n≤10000，0≤cap≤10000），接著 n 行 s e（0≤s&lt;e≤10^9）。每筆在 [s,e) 占一單位。輸出使用量第一次嚴格大於 cap 的時刻；從未超過則輸出 OK。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1
+1 4
+3 5
+6 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 1
+0 2
+2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">OK
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>合併事件，按時間累加；找到第一個 active&gt;cap 時 break。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜先滿足門檻再安排活動</h2><p>同一題可能需要先做條件篩選，再進行排序貪心。資格分數只決定能否參加，通過後每場活動都同樣計一場，因此仍可依最早結束安排。若把分數當獎金加總，目標就改變了。先將題目的門檻與最佳化目標分開，才能選對方法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>threshold = 60
+events = []
+for start, end, score in [(0, 2, 59), (1, 3, 60)]:
+    if score &gt;= threshold:
+        events.append((end, start))
+print(events)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>[(3, 1)]
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n threshold（0≤n≤10000，0≤threshold≤100），接著 n 行 s e score（0≤s&lt;e≤10^9，0≤score≤100）。只可參加 score≥threshold 的活動，活動佔 [s,e)。輸出單人最多可參加場數；分數不加總。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 60
+0 2 59
+1 3 60
+3 5 90
+2 6 100
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 100
+0 1 99
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先篩選合格活動，再存 (e,s) 排序；只有選中才改 end。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-69.html">← 第69課</a><a href="courses.html">課程目錄</a><a href="lesson-71.html">第71課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

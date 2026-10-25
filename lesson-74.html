@@ -1,0 +1,125 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第74課｜選或不選回溯｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 74 / 120 · 教學</p><h1>選或不選回溯</h1><p class="lead">能把選擇樹寫成遞迴，分清共享路徑與每層參數。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-49.html">第49課</a>、<a href="lesson-71.html">第71課</a>、<a href="lesson-72.html">第72課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第49課小型子集合枚舉；本課逐位置決定，並學習加入後必須復原。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-74.ipynb" target="_blank" rel="noopener noreferrer">開啟第74課Colab作業本 ↗</a><a href="lesson-74.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜每個位置的二選一</a><a href="#unit-B">B｜用回傳值計數葉節點</a><a href="#unit-C">C｜共用串列要成對加入與撤回</a><a href="#unit-D">D｜禁止相鄰選擇的狀態</a><a href="#unit-E">E｜正重量才能安全剪枝</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜每個位置的二選一</h2><p>對每個位置先決定不選，再決定選，就形成二分選擇樹。當位置等於長度，代表一整組決定已完成，才輸出結果。本題用不可變字串把路徑傳給下一層，每個分支得到自己的新字串；分支順序決定輸出順序，不能把基底提早到最後一個位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def choices(i, n, path):
+    if i == n:
+        print(path)
+        return
+    choices(i + 1, n, path + &#x27;0&#x27;)
+    choices(i + 1, n, path + &#x27;1&#x27;)
+choices(0, 2, &#x27;&#x27;)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>00
+01
+10
+11
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入 n（0≤n≤10）。用選或不選遞迴，按字典順序逐行輸出所有長度 n 的01字串；n=0 有一個空字串，因此輸出一個空行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">00
+01
+10
+11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>每層先加0再加1，i==n 才 print(path)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜用回傳值計數葉節點</h2><p>若只要符合條件的子集合數，不需保存所有選擇字串。把目前總和當參數，走到葉節點時符合目標回傳一，否則回傳零，再把兩個分支數量相加。相同數值的不同位置仍是不同選擇；目標為零時，空集合也應由正常分支計入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def count(a, i, total, target):
+    if i == len(a):
+        return 1 if total == target else 0
+    return count(a, i + 1, total, target) + count(a, i + 1, total + a[i], target)
+print(count([1, 1, 2], 0, 0, 2))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n target（0≤n≤18，-100≤target≤100），第二行 n 個整數（-10～10，可空）。用選或不選遞迴，輸出總和恰為 target 的位置子集合數一行，包含空集合。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+1 1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>可以含負數，因此不能以 total&gt;target 直接剪枝。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜共用串列要成對加入與撤回</h2><p>路徑若使用同一個可變串列，選某位置時 append，處理完該分支後必須 pop，恢復成進入分支前的樣子，這就是回溯。否則後面的兄弟分支會看到不屬於自己的選擇。本題輸出索引，讓相同數值也能區分不同位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>path = [1]
+path.append(3)
+print(*path)
+path.pop()
+print(*path)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 3
+1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入 n（0≤n≤8）。用共享路徑串列，依每個編號先不選後選的順序，逐行輸出1～n的所有子集合，編號空格分隔；空集合輸出 EMPTY。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+2
+1
+1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>不選分支直接遞迴；選分支 append(i)、遞迴、pop()。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜禁止相鄰選擇的狀態</h2><p>如果是否能選目前位置取決於前一格，只傳位置還不夠，必須再記錄前一格有沒有選。跳過目前格後，下一層的前一格狀態就是未選；選取後則是已選。這項限制只排除不合法分支，不會漏掉合法選法，因為每格仍只做一次決定。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def ways(left, previous):
+    if left == 0:
+        return 1
+    total = ways(left - 1, False)
+    if not previous:
+        total += ways(left - 1, True)
+    return total
+print(ways(3, False))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入 n（0≤n≤20）。使用選或不選遞迴，輸出長度 n 的01字串中沒有相鄰兩個1的數量一行；空字串算1種。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每層永遠可放0，只有 previous=False 才能放1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜正重量才能安全剪枝</h2><p>總重量已超過容量時，若剩下所有重量皆為正，再選任何物品都不可能回到合法範圍，因此可以停止整個分支。這個剪枝依賴正重量前提，若存在負數就不成立。仍然先定義完整選或不選搜尋，再加上能證明安全的提前返回。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def best(a, i, total, cap):
+    if total &gt; cap:
+        return -1
+    if i == len(a):
+        return total
+    return max(best(a, i + 1, total, cap), best(a, i + 1, total + a[i], cap))
+print(best([3, 5, 6], 0, 0, 8))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>8
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n cap（0≤n≤20，0≤cap≤1000），第二行 n 個正重量（1～100，可空）。每件最多選一次，用遞迴求不超過 cap 的最大總重量並輸出一行，允許空集合。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 8
+3 5 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 0
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>超重回傳-1表示不合法；沒有剩餘物品才回傳 total。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-73.html">← 第73課</a><a href="courses.html">課程目錄</a><a href="lesson-75.html">第75課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,114 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第31課｜連續片段壓縮｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 31 / 120 · 教學</p><h1>連續片段壓縮</h1><p class="lead">能分辨字元次數與連續片段，正確結算最後一段。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-13.html">第13課</a>、<a href="lesson-23.html">第23課</a>、<a href="lesson-29.html">第29課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第13課逐字掃描與第20課字典計數：字典忽略位置，本課保留相鄰順序，增加目前片段的狀態。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-31.ipynb" target="_blank" rel="noopener noreferrer">開啟第31課Colab作業本 ↗</a><a href="lesson-31.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜數一數換了幾段</a><a href="#unit-B">B｜寫出每段的字元與長度</a><a href="#unit-C">C｜最長成功片段的最早起點</a><a href="#unit-D">D｜空字串也能去除相鄰重複</a><a href="#unit-E">E｜符合長度的感測片段</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜數一數換了幾段</h2><p>相同字元只要被別的字元隔開，就屬於不同片段，不能用集合大小代替。非空字串先有第一段，從第二個字元開始，只在它與前一字元不同時加一。這個判斷把每個段首恰好計入一次，也避免把同一段的每個字元都當成新段。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>s = &quot;aabbaa&quot;
+runs = 1
+for i in range(1, len(s)):
+    if s[i] != s[i-1]:
+        runs += 1
+print(runs)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行非空小寫英文字串，長度1–10000。輸出連續相同字元的片段數；例如aabbaa有三段。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">aabbaa
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">z
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>令段數為1，從索引1開始比較相鄰字元。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜寫出每段的字元與長度</h2><p>壓縮時需要同時記住目前字元與目前長度。遇到不同字元，先輸出已完成的片段，再把新字元設為長度一。迴圈結束不會再遇到「不同字元」，因此最後一段必須另外輸出。輸出格式中的冒號只是分隔符，不參與長度計算。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>ch = &quot;b&quot;
+length = 3
+print(ch + &quot;:&quot; + str(length))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b:3
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行非空小寫字串，長度1–10000。依原順序逐行輸出每個連續片段，格式為字元:長度。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">aaabbc
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a:3
+b:2
+c:1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">aaaa
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a:4
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先用第一字元初始化，掃描s[1:]，迴圈後再結算一次。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜最長成功片段的最早起點</h2><p>除了最長連續成功的長度，也要記住這一段從哪裡開始。讀到1且目前長度為零時，位置就是新段首；只有長度嚴格超過最佳值才更新答案，平手就保留較早的一段。遇到0只清除目前長度，不清除最佳紀錄；完全沒有成功時，起點與長度都用零表示。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>best_length, best_start = 2, 1
+current_length, current_start = 2, 4
+if current_length &gt; best_length:
+    best_length, best_start = current_length, current_start
+print(best_start, best_length)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行長度1–10000、只含0和1的記錄。輸出最長連續1片段的1起算起點與長度；同長取最早一段。完全沒有1時輸出0 0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">11011101
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">11011
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0000
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>目前長度為0時記錄新起點i+1；只在current&gt;best時替換最佳起點。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜空字串也能去除相鄰重複</h2><p>直接讀s[0]的寫法要求資料非空；允許空字串時可以改用結果串列保存段首。讀入字元後，若結果為空或字元與最後保存的字元不同，就加入結果。or會在左邊已成立時停止判斷，因此空串列不會被讀取[-1]，這也是邊界處理的一部分。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>out = []
+for ch in &quot;xxxyyx&quot;:
+    if not out or out[-1] != ch:
+        out.append(ch)
+print(&quot;&quot;.join(out))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>xyx
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入一行小寫字串，長度0–10000。把每個連續相同片段縮成一個字元，輸出結果；空輸入須輸出一個空行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">abbbcca
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">abca
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>輸入共1行；第1行是空行，仍須按Enter送出，請勿省略。
+預期輸出是一個空行（換行），不是完全不輸出。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>結果串列只保存段首，先判斷是否為空。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜符合長度的感測片段</h2><p>片段概念也適用於整數序列。這次要計算達到指定長度的片段數，必須在片段完成時才判斷，而不是長度每增加一次就加答案。先把相鄰相同值歸成一段，再用門檻篩選；同一數值在不同位置形成的片段仍分開計算。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>lengths = [2, 1, 3]
+answer = 0
+for length in lengths:
+    if length &gt;= 2:
+        answer += 1
+print(answer)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n k（1≤k≤n≤10000），第二行n個整數（-1000–1000）。輸出長度至少k的連續相同數值片段數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">7 2
+4 4 1 2 2 2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>數值改變時檢查length，結束後也要檢查最後一段。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-30.html">← 第30課</a><a href="courses.html">課程目錄</a><a href="lesson-32.html">第32課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

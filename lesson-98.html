@@ -1,0 +1,135 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第98課｜格子與搜尋整合：座標先於模板｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 98 / 120 · 教學</p><h1>格子與搜尋整合：座標先於模板</h1><p class="lead">能以合法座標、同步狀態及可走條件完成小型格子問題。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-37.html">第37課</a>、<a href="lesson-38.html">第38課</a>、<a href="lesson-78.html">第78課</a>、<a href="lesson-97.html">第97課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第37課鄰格、第78課BFS；前四題只需核心模擬，最後一題才整合最短路徑。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-98.ipynb" target="_blank" rel="noopener noreferrer">開啟第98課Colab作業本 ↗</a><a href="lesson-98.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜指定格的可走出口</a><a href="#unit-B">B｜碰壁原地停留</a><a href="#unit-C">C｜只擴散一輪</a><a href="#unit-D">D｜格子周長看四邊</a><a href="#unit-E">E｜最短步數含零步</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜指定格的可走出口</h2><p>鄰格檢查分成座標存在與內容可走兩個條件，順序不可交換。Python 的負索引可能讀到另一邊，因此看起來沒有報錯不代表座標正確。這裡只統計一步可以走到的方向，不計目前格，也不計對角；一格地圖是檢查四個邊界最直接的資料。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [&quot;..&quot;, &quot;.#&quot;]
+count = 0
+for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+    r, c = dr, dc
+    if 0 &lt;= r &lt; 2 and 0 &lt;= c &lt; 2 and g[r][c] == &quot;.&quot;:
+        count += 1
+print(count)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行長c的地圖，只含.與#；最後一行x y為合法0起算座標且該格為.。輸出上下左右為.的鄰格數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+..
+.#
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+.
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先範圍檢查，再讀g[nr][nc]。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜碰壁原地停留</h2><p>移動指令先產生候選座標，再檢查候選是否在地圖內且不是障礙，最後才更新目前座標。把檢查和賦值分開，就不必在失敗時倒退回去。多個連續撞牆指令不會改變位置；測試中要保留這種重複失敗，確認狀態沒有逐步漂移。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>x, y = 0, 0
+nx, ny = x - 1, y
+if 0 &lt;= nx &lt; 2 and 0 &lt;= ny &lt; 2:
+    x, y = nx, ny
+print(x, y)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 0
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行.或#地圖，下一行合法可走起點x y，最後一行長度0–1000的UDLR指令。撞牆或出界忽略。輸出終點座標。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+.#.
+...
+0 0
+RDRRU
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+.
+0 0
+ULDR
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用字典把方向對應位移，再判斷候選位置。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜只擴散一輪</h2><p>同步更新的所有新狀態都只能讀取舊地圖。若在原地逐格修改，剛變成感染的格子可能同輪繼續傳播，造成方向相關的結果。先複製每一列，再由舊的一標記新鄰格；本題只做一輪，所以相隔兩格的位置不應因中間格剛被改變而連帶更新。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>old = [[1, 0, 0]]
+new = []
+for row in old:
+    new.append(row[:])
+new[0][1] = 1
+print(*old[0])
+print(*new[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 0 0
+1 1 0
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行各c個0或1。同步一輪：每個原本為1的格子使上下左右合法格變1，原本的1保留。輸出更新後矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3
+1 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>掃old，只寫new，不讓new參與判斷。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜格子周長看四邊</h2><p>每個填色格先考慮四條邊，某邊外側出界或是空格，這條邊就屬於外露周長。內部共享邊不應算入，但不需要另外找整個形狀的輪廓。此方法也適用多個分離區塊與洞，因為題目計算所有外露邊，包括洞邊；全空地圖則自然得到零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [[1, 1]]
+print(4 * 2 - 2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行各c個0或1。輸出所有1格與外界或0格相接的單位邊總數，包含洞的邊。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+1 1
+1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>對每個1格，四個方向各檢查一次外露條件。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜最短步數含零步</h2><p>每一步成本相同時，佇列搜尋會先處理較近的格子，所以第一次記錄距離就是最少步數。距離初始化為負一表示尚未到達，起點則是零；加入佇列時立即設定距離，能避免同一格被多個鄰格重複加入。起終點相同應得到零，不必真的移動。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from collections import deque
+q = deque([(0, 0)])
+distance = [[0, -1]]
+distance[0][1] = distance[0][0] + 1
+q.append((0, 1))
+print(distance[0][1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行.或#地圖，最後一行sx sy tx ty，皆合法0起算且為.。上下左右每步一格，輸出最少步數，走不到輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+.#.
+...
+0 0 0 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+.
+0 0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1 3
+.#.
+0 0 0 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用deque及獨立各列的dist矩陣。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-97.html">← 第97課</a><a href="courses.html">課程目錄</a><a href="lesson-99.html">第99課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

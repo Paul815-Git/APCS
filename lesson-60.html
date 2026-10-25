@@ -1,0 +1,136 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第60課｜效率綜合｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 60 / 120 · 教學</p><h1>效率綜合</h1><p class="lead">能判斷更新與查詢順序、資料單調性及所需狀態，整合適當的效率技巧。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-51.html">第51課</a>、<a href="lesson-52.html">第52課</a>、<a href="lesson-53.html">第53課</a>、<a href="lesson-55.html">第55課</a>、<a href="lesson-57.html">第57課</a>、<a href="lesson-59.html">第59課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>回接第20課依需求選方法的整合練習。本課組合第51–59課，先保留可手算的小例，再讓資料規模要求有效率的解法。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-60.ipynb" target="_blank" rel="noopener noreferrer">開啟第60課Colab作業本 ↗</a><a href="lesson-60.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜區間內上升了幾次</a><a href="#unit-B">B｜批次補貨後再查詢總庫存</a><a href="#unit-C">C｜每個值都不同的最長視窗</a><a href="#unit-D">D｜同值但不同組別才配對</a><a href="#unit-E">E｜預算內的最佳矩形展區</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜區間內上升了幾次</h2><p>上升事件發生在相鄰兩個位置之間，而不是單一位置。把第i筆大於第i-1筆記在位置i，區間[l,r]內只應計入l+1到r的事件，不能包含從l-1進入l的那次。因此查詢是p[r]-p[l]；單點區間沒有相鄰比較，答案自然為零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [5, 7, 6, 9]
+p = [0, 0]
+for i in range(1, len(a)):
+    flag = 0
+    if a[i] &gt; a[i-1]:
+        flag = 1
+    p.append(p[-1]+flag)
+print(p[4]-p[2])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n q（1–100000），第二行n個整數（-10^9–10^9），接著q行合法1起算l r。逐行輸出該片段內a[i]&gt;a[i-1]的相鄰上升次數，不計片段外的連接。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+5 7 6 9
+2 4
+1 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+8
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>p[1]=0，i從第二筆開始標記；查詢減p[l]而非p[l-1]。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜批次補貨後再查詢總庫存</h2><p>資料先接受所有區間加值，之後才查詢，正好可以串接差分與前綴和。第一階段記更新端點，第二階段累積還原每個位置的最終值，同時建立總和前綴，第三階段才回答查詢。若更新與查詢交錯，這套一次預處理就不成立，所以讀題時先確認事件順序。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>difference = [0, 2, 0, -2]
+current, prefix = 0, [0]
+for i in range(1, 4):
+    current += difference[i]
+    prefix.append(prefix[-1]+current)
+print(prefix[3]-prefix[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n u q（1≤n,q≤100000，0≤u≤100000），n個初始庫存皆0。接著u行補貨l r v（合法1起算閉區間，0≤v≤1000），全部補貨後接q行查詢l r。逐行輸出最終區間總庫存。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2 2
+1 3 2
+2 4 1
+1 4
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0 1
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>差分還原時直接p.append(p[-1]+current)，避免每次查詢重做更新。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜每個值都不同的最長視窗</h2><p>視窗不一定維護數值和，也可以維護每個值的次數。加入右端的新值後，只有這個值可能從一次變成重複，因此只要縮左端到它的次數回到一，整個視窗就恢復互不重複。移除左端時也要更新字典，不能只移動指標，否則次數會描述已離開的資料。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>counts = {2: 2, 3: 1}
+counts[2] -= 1
+print(counts[2])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–100000），第二行n個整數（-10^9–10^9）。輸出所有元素數值都互不相同的最長連續片段長度。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">6
+1 2 1 3 4 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3
+7 7 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>增加counts[a[right]]後，while該次數&gt;1，扣掉a[left]並移動left。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜同值但不同組別才配對</h2><p>一筆資料帶有數值與組別，合法配對要求同值又不同組。讀到新資料時，先前同值的總數減去同值同組的數量，就是可配對筆數。用tuple作字典鍵可同時辨識兩個欄位；先計算再增加兩張次數表，仍維持只與前面位置配對的規則，避免重用自己。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>by_value = {5: 4}
+by_group = {(5, &quot;A&quot;): 1}
+print(by_value.get(5, 0)-by_group.get((5, &quot;A&quot;), 0))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（1–100000），接著n行value group，value為-10^9–10^9整數，group為1–20個小寫英文字母。輸出不同位置、value相同但group不同的無序配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+5 a
+5 b
+5 a
+7 b
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+1 a
+1 a
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>total[value]記同值數，same[(value,group)]記同值同組數，差值加入答案。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜預算內的最佳矩形展區</h2><p>每個格子同時有成本與收益，先為兩張矩陣分別建立二維前綴。枚舉固定高寬區域時，用成本表檢查預算，再用收益表更新最佳值，不能把兩種資料加在一起。以負一表示尚無合法展區，因為收益皆非負；合法區域收益為零時仍應輸出零，不能誤判成無解。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>cost, value, budget = 7, 20, 6
+best = -1
+if cost &lt;= budget:
+    best = max(best, value)
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c h w B（1≤r,c≤150，1≤h≤r，1≤w≤c，0≤B≤10^9）。接著r行每行c個成本，再r行每行c個收益，皆0–1000。選高h寬w不可旋轉的連續矩形且成本≤B，輸出最大收益；無合法位置輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2 1 2 5
+2 2
+3 4
+5 6
+8 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1 1 0
+1
+9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1 1 1 1 0
+0
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>寫讀取前綴表的函式，成本和收益各呼叫一次，再枚舉同一組右下角。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-59.html">← 第59課</a><a href="courses.html">課程目錄</a><a href="lesson-61.html">第61課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

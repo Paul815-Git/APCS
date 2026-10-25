@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第113課｜卷一講評：用新題證明已理解｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 113 / 120 · 教學</p><h1>卷一講評：用新題證明已理解</h1><p class="lead">以新的變化題重建連續狀態、頻率合併與區間端點。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-100.html">第100課</a>、<a href="lesson-112.html">第112課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第112課三題與失敗測資；本課A–B修狀態、C修累計同分、D–E修區間定義，不能只重貼前題程式。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-113.ipynb" target="_blank" rel="noopener noreferrer">開啟第113課Colab作業本 ↗</a><a href="lesson-113.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜最長不合格片段起點</a><a href="#unit-B">B｜合格段至少有兩筆</a><a href="#unit-C">C｜累計後選最低站</a><a href="#unit-D">D｜區間以外的總量</a><a href="#unit-E">E｜區間平均的精確比較</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜最長不合格片段起點</h2><p>把合格改成不合格後，更新條件也要跟著改，而不是只換題目名稱。這次除了長度還要輸出最早起點，遇到更長片段時才更新，平手保留先前結果。沒有不合格批次時輸出零零；這個不存在狀態必須和合法的一開始起點分開。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>right, run = 5, 3
+print(right - run + 2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n t（1≤n≤10000，0≤t≤100），第二行n個0–100分數。分數&lt;t為不合格。輸出最長連續不合格長度與最早1起算起點；沒有則0 0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">6 60
+20 30 80 10 40 90
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>索引i從0開始，片段起點為i-run+2。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜合格段至少有兩筆</h2><p>連續段統計不能只在遇到不合格時結算，否則最後一段若一直延伸到輸入結尾就會漏算。這題要計算長度至少二的合格段數，當段落結束時檢查一次，迴圈後再結算尾段。每段只算一次，不可對段內每一對相鄰合格都重複增加答案。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>run, count = 3, 0
+if run &gt;= 2:
+    count += 1
+print(count)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n t（1≤n≤10000，0≤t≤100），第二行n個0–100分數。合格為≥t，輸出長度至少2的最大連續合格段數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">7 60
+60 70 0 80 90 100 10
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 60
+60
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2 60
+60 60
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>遇失敗結算run，結尾再結算一次。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜累計後選最低站</h2><p>累計任務換成找最小值時，不能沿用零作最佳值，因為所有實際總量可能都大於零。先從已存在的站名取得候選，或使用尚無答案的標記，再依規則比較。這題以名稱逆序處理同量，迫使你重新閱讀同分規則，而不是照搬先前選最前名稱。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>totals = {&quot;a&quot;: 2, &quot;b&quot;: 2}
+print(sorted(totals, reverse=True)[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行站名與量1–1000。輸出累計量最少的站名與量，同量選字母順序最後者。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+a 2
+b 2
+c 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">b 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+x 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">x 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>名稱逆序掃描，只在嚴格較小時更新。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜區間以外的總量</h2><p>前綴差算出區間內的量，但這次題目要的是其餘位置，還要從全體總和扣除。先明確區分全體、選取區間與補集，再套公式，能避免看到l、r就直接輸出同一種答案。若區間包含全體，外部是空集合，答案為零，不能多算任一端點。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p = [0, 2, 5, 9]
+inside = p[2] - p[0]
+print(p[-1] - inside)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個-1000至1000整數，後q行合法1起算閉區間l r。逐行輸出區間以外元素總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+2 3 4
+1 2
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-2
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>p[n]-(p[r]-p[l-1])。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜區間平均的精確比較</h2><p>比較區間平均與整數門檻，可以改成區間總和與門檻乘元素個數比較。區間含兩端，所以個數是右端減左端再加一；少加一會讓單格區間失去正確意義。使用整數乘法也能避免浮點誤差，且允許負數門檻，因為乘上的長度始終為正。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>total, length, target = 7, 2, 3
+print(total &gt;= length * target)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個-1000至1000整數，後q行l r t（合法1起算閉區間，t為-1000至1000）。平均至少t輸出YES，否則NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+2 5 1
+1 2 3
+2 3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-2
+1 1 -2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>比較p[r]-p[l-1] &gt;= (r-l+1)*t。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-112.html">← 第112課</a><a href="courses.html">課程目錄</a><a href="lesson-114.html">第114課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

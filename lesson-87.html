@@ -1,0 +1,125 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第87課｜0/1背包｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 87 / 120 · 延伸選修</p><h1>0/1背包</h1><p class="lead">能區分每件一次與可重複，理解倒序容量保護上一層。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-74.html">第74課</a>、<a href="lesson-85.html">第85課</a>、<a href="lesson-86.html">第86課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>選修入口：第74課選或不選與第85課DP。將指數搜尋改為物品×容量表；可暫回第91課。</p>
+</aside><p class="small">選修延伸：第一次應考若基礎仍需提示，可先完成第91–120課核心複習，再回來加深。是否學到這些方法不直接對應官方級分。</p><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-87.ipynb" target="_blank" rel="noopener noreferrer">開啟第87課Colab作業本 ↗</a><a href="lesson-87.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜每件只有拿或不拿</a><a href="#unit-B">B｜二維表看清選與不選</a><a href="#unit-C">C｜倒序容量避免同件重拿</a><a href="#unit-D">D｜恰好裝滿需要不可達狀態</a><a href="#unit-E">E｜用重量表改善分組搜尋</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜每件只有拿或不拿</h2><p>每個物品最多一次時，處理新物品的可達重量應只依賴加入它之前的狀態。先複製舊表，代表全不拿這件，再由舊表產生拿它的重量，就不會在同一輪反覆使用。重量相同的兩件仍是不同物品，但本題只問是否可達，不計有多少選法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>reachable = [True, False, False, False, False]
+weight = 2
+next_row = reachable.copy()
+for used in range(5 - weight):
+    if reachable[used]:
+        next_row[used + weight] = True
+print(*next_row)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True False True False False
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n cap（0≤n≤100，0≤cap≤1000），第二行n個正重量（1～1000，可空）。每件最多一次，輸出0～cap內可達的不同總重量數，包含0。使用舊表/新表分層。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>每物品 new=reachable.copy()，只從舊reachable讀取。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜二維表看清選與不選</h2><p>令dp[i][c]表示只看前i件、容量不超過c時的最大價值。第i件不選就取上一列同容量；選它就取上一列扣掉重量的容量，再加價值。兩個來源都來自上一列，直接表達每件只能一次。容量是上限，不要求裝滿，所以所有初始容量可用空集合取得零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>previous = [0, 0, 0, 0, 0]
+weight, value = 2, 5
+current = previous.copy()
+for cap in range(weight, 5):
+    current[cap] = max(previous[cap], previous[cap - weight] + value)
+print(*current)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 0 5 5 5
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n cap（0≤n≤100，0≤cap≤1000），接著n行w v（1≤w≤1000，0≤v≤10000）。每件最多一次，重量總和≤cap，輸出最大價值。使用完整二維DP表。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 5
+2 4
+3 5
+4 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每一列代表增加一件；選的來源是dp[i-1][c-w]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜倒序容量避免同件重拿</h2><p>將二維表壓成一維後，更新dp[c]時必須確保dp[c-w]仍屬於上一件處理完的狀態。容量由大到小走，較小位置尚未更新，因此滿足這個要求。若由小到大，同一物品剛產生的結果可能立刻再被使用，便把每件一次誤寫成可重複拿。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>dp = [0] * 5
+for c in range(4, 1, -1):
+    dp[c] = max(dp[c], dp[c - 2] + 5)
+print(*dp)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 0 5 5 5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n cap（0≤n≤200，0≤cap≤3000），接著n行w v（1≤w≤3000，0≤v≤10000）。每件最多一次，輸出容量不超過cap的最大價值。只用一維DP表。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 6
+2 5
+3 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 4
+2 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>對每件物品，for c in range(cap,w-1,-1)。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜恰好裝滿需要不可達狀態</h2><p>容量恰好用完與不超過容量不同。只有重量零的初始價值是零，其餘重量尚不可達；若全設零，就等於允許憑空補重量。用None表示不可達，轉移前先檢查來源。價值可為負時也不能用零當最佳下界，因為恰好裝滿可能只能得到負總價值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>dp = [0, None, None, None]
+weight, value = 3, -5
+if dp[3 - weight] is not None:
+    dp[3] = dp[3 - weight] + value
+print(dp[3])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-5
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n target（0≤n≤100，0≤target≤1000），接著n行w v（1≤w≤1000，-1000≤v≤1000）。每件最多一次，重量須恰好target，輸出最大價值；無解輸出 IMPOSSIBLE。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3
+3 -5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 3
+2 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">IMPOSSIBLE
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>dp[0]=0，其他None；倒序，來源存在才計算候選。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜用重量表改善分組搜尋</h2><p>分成兩組的最小差曾用完整子集合搜尋，現在可先求哪些重量能由部分物品組成，再在所有可達重量中比較兩組差。每件仍只用一次，所以重量表倒序更新。工作量依總重量而非子集合數成長，適合物品多但總重量受限的題目。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>total = 10
+reachable = [0, 3, 7, 10]
+best = total
+for used in reachable:
+    best = min(best, abs(total - 2 * used))
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（0≤n≤200），第二行n個正重量（1～100，可空），保證總重量≤10000。全部物品分成兩組，可空組，輸出兩組總重量最小差。用0/1可達重量表。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+3 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先sum取得總重量，倒序求可達，掃描abs(total-2*used)。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-86.html">← 第86課</a><a href="courses.html">課程目錄</a><a href="lesson-88.html">第88課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

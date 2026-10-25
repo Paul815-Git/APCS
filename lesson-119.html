@@ -1,0 +1,108 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第119課｜精簡錯誤檢核：五種常見失誤逐一實測｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 119 / 120 · 教學</p><h1>精簡錯誤檢核：五種常見失誤逐一實測</h1><p class="lead">以短而完整的題目檢查初始化、重複消耗、同步、整數與事件輸入。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-102.html">第102課</a>、<a href="lesson-110.html">第110課</a>、<a href="lesson-118.html">第118課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第118課完整流程；本課縮短題目但保留完整實作與測資，把檢核清單變成可執行證據。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-119.ipynb" target="_blank" rel="noopener noreferrer">開啟第119課Colab作業本 ↗</a><a href="lesson-119.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜奇數位置不是奇數數值</a><a href="#unit-B">B｜庫存每件只能使用一次</a><a href="#unit-C">C｜環狀鄰居同步相加</a><a href="#unit-D">D｜約分保留分母正號</a><a href="#unit-E">E｜查詢指令沒有第二欄</a><a href="#assignment">完成標準與保存</a></nav><section id="worksheet"><h2>本課操作與紀錄</h2><p>提交前只問六件事：輸入是否讀完？索引與端點是否依本題？初值是否來自合法狀態？重複值與等號是否正確？空結果或找不到是否有輸出？保存後是否重新從頭執行？每次只勾已用測資確認的項目，不以「看起來沒問題」代替實測。</p>
+</section><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜奇數位置不是奇數數值</h2><p>題目若依位置篩選，就不能拿元素本身的奇偶判斷。本題使用一開始的位置，第一筆屬奇數位置，對應Python索引零。先把位置與值各寫一列，再標出應加入的元素；用偶數值放在奇數位置的資料，最容易看出把兩種奇偶混用的錯誤。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [8, 1, 6]
+print(a[0] + a[2])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>14
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行1–10000個-1000至1000整數。輸出1起算奇數位置元素的總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">8 1 6 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">14
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>Python索引0、2、4…，使用range(0,len(a),2)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜庫存每件只能使用一次</h2><p>查詢是否存在和實際領取一件不同，成功領取後必須扣除次數，後面才能看見新的庫存。集合無法表達多件同款商品，所以使用頻率字典。庫存降到零仍可留在字典，但判斷應是次數大於零，而不是鍵還在不在，否則會讓已用完的品項繼續成功。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>stock = {&quot;a&quot;: 1}
+stock[&quot;a&quot;] -= 1
+print(stock.get(&quot;a&quot;, 0) &gt; 0)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行0–1000個小寫品名，可空；第二行q（1–1000），後q行各一個欲領取品名。每次有庫存就扣1並輸出YES，否則輸出NO；每個查詢輸出一行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">a a b
+3
+a
+a
+a
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+YES
+NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+1
+a
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<p>輸入共3行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>get(name,0)&gt;0才成功，成功後扣一。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜環狀鄰居同步相加</h2><p>同步更新必須讀取舊陣列，若直接覆蓋左邊元素，後面就會用到已更新的新值。這題每格的新值是原左右鄰居的和，環狀索引用取模處理；當長度只有一時，左右鄰居都指向自己，依規則要加兩次，不能自行把重複座標去重。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [2, 5, 7]
+print(a[-1] + a[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>12
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行1–1000個-1000至1000整數，視為環。同步令新第i格等於原第(i-1)%n格加原第(i+1)%n格，輸出新陣列。n=1時原值加兩次。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">12 9 7
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立answer，全部計算完才輸出，不修改a。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜約分保留分母正號</h2><p>分數約分要用分子絕對值與正分母的最大公因數，之後分子、分母都以整數除法除去。負號只保留在分子，零分子約分後應得到零比一。這題避免浮點除法，因為題目要求整數形式，且數字很大時浮點數無法精確保存每一個整數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from math import gcd
+a, b = -6, 8
+g = gcd(abs(a), b)
+print(a // g, b // g)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-3 4
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入分子a與分母b（-10^9≤a≤10^9，1≤b≤10^9）。輸出最簡分數的整數分子與正分母，以空格隔開。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-6 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-3 4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>gcd(abs(a),b)，再用//。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜查詢指令沒有第二欄</h2><p>不同指令的欄位數不同，讀入後不能無條件存取第二欄。先判斷指令種類，再讀它需要的欄位；ASK只要求輸出目前狀態，RESET則清空，ADD才帶數值。把沒有參數的指令放在第一行測試，可以立即發現解析器是否錯誤假設每行都有兩欄。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>parts = &quot;ASK&quot;.split()
+print(parts[0], len(parts))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>ASK 1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行q（1–1000），後q行ADD x、RESET或ASK，x為-1000至1000。初始總量0；ADD加x，RESET設0，ASK輸出目前量。至少一條ASK。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+ASK
+ADD 3
+ASK
+RESET
+ASK
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+3
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+ASK
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先看parts[0]，只有ADD分支才讀parts[1]。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-118.html">← 第118課</a><a href="courses.html">課程目錄</a><a href="lesson-120.html">第120課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

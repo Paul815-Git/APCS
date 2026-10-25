@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第76課｜排列｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 76 / 120 · 教學</p><h1>排列</h1><p class="lead">能區分排列與組合，使用已用標記及正確復原。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-74.html">第74課</a>、<a href="lesson-75.html">第75課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第75課組合；排列允許不同選取順序，但同一位置仍不能重用。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-76.ipynb" target="_blank" rel="noopener noreferrer">開啟第76課Colab作業本 ↗</a><a href="lesson-76.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜每層重新看所有未用元素</a><a href="#unit-B">B｜位置權重使順序重要</a><a href="#unit-C">C｜重複值只走一個同層分支</a><a href="#unit-D">D｜禁止回到原位置</a><a href="#unit-E">E｜相鄰差距限制的排列</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜每層重新看所有未用元素</h2><p>排列與組合不同，下一個值不必更大，所以每層都從所有候選重新嘗試。為避免同一數字用兩次，加入 used 標記，選前設真、回來後設假；路徑也要同時加入與彈出。兩種狀態都恢復，下一個分支才從乾淨的狀態開始。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>used = [False, False, False]
+used[1] = True
+for x in range(1, 3):
+    if not used[x]:
+        print(x)
+used[1] = False
+print(used[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+False
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入 n（0≤n≤7）。按字典順序逐行輸出1～n的所有排列，每行空格分隔；n=0 輸出 EMPTY。使用回溯與 used 串列。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+2 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每層 for x in range(1,n+1)，只跳過已用值，不設遞增起點。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜位置權重使順序重要</h2><p>如果第幾個位置會改變貢獻，選同一批數的不同排列便可能得到不同分數。遞迴參數保存目前分數，選值後加上位置乘該值，再交給下一層。分數用整數參數傳遞不需額外撤回，但 used 是共享串列，仍必須在分支結束後復原。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [2, 5]
+print(1 * a[0] + 2 * a[1])
+print(1 * a[1] + 2 * a[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>12
+9
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n target（1≤n≤8，0≤target≤10000），第二行 n 個互異正整數（1～100）。排列後的分數為各位置1起算編號乘該值的總和。輸出分數恰為 target 的排列數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 12
+2 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>pos 從0開始，新增貢獻 (pos+1)*a[i]；到 pos==n 才判斷。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜重複值只走一個同層分支</h2><p>輸入可能有重複字元時，依位置枚舉會重複產生相同字串。先排序字元，若目前字元等於前一個而前一個尚未使用，就跳過目前位置，讓同一層只選最左可用副本。前一副本已在路徑中時則可再選，才能保留需要多個相同字元的排列。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>chars = sorted(&#x27;aba&#x27;)
+used = [False] * 3
+for i in range(3):
+    if i &gt; 0 and chars[i] == chars[i - 1] and not used[i - 1]:
+        continue
+    print(chars[i])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>a
+b
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一個長度1～8的小寫英文字串。用回溯按字典順序輸出所有不同排列，每行一個，不可先產生全部重複結果再用集合去重。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">aba
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">aab
+aba
+baa
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">aa
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">aa
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>跳過條件有兩部分：同字且前一副本未用；用過的索引也先跳過。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜禁止回到原位置</h2><p>錯排要求每個編號都不能放在同編號位置。這是選候選時就能判斷的局部限制，遇到相同編號直接略過，不需要等整個排列完成才檢查。仍須使用 used 防止同一編號放在多個位置；位置限制與元素使用限制是兩件不同的事。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>position = 2
+for number in range(1, 4):
+    if number != position:
+        print(number)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入 n（0≤n≤9）。將1～n排列到1～n位置，每個值不可等於所在位置編號。使用回溯輸出合法排列數；n=0 的空排列算1種。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>遞迴位置從1開始，到 pos&gt;n 完成；候選要未用且 x!=pos。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜相鄰差距限制的排列</h2><p>限制只涉及新值與前一個值時，加入新值前即可檢查，不合法的分支不必往下走。第一個位置沒有前一個值，要另外允許，不能任意設一個假的前值參與比較。合法性檢查只減少分支，完整路徑仍由排列的 used 狀態保證不重複使用元素。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>path = [1]
+for x in [2, 3, 4]:
+    if abs(path[-1] - x) &gt;= 2:
+        print(x)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+4
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入 n d（1≤n≤8，1≤d≤8）。將1～n排列，要求每對相鄰值的絕對差至少 d。使用回溯輸出合法排列數；單一元素沒有相鄰限制。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">3 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>path 為空可選任意未用值，否則檢查 abs(path[-1]-x)。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-75.html">← 第75課</a><a href="courses.html">課程目錄</a><a href="lesson-77.html">第77課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

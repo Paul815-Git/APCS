@@ -1,0 +1,133 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第58課｜區間合併｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 58 / 120 · 教學</p><h1>區間合併</h1><p class="lead">能排序後合併區間，分清相接、重疊、長度與空白區域。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-16.html">第16課</a>、<a href="lesson-41.html">第41課</a>、<a href="lesson-53.html">第53課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第16課記錄排序與第53課區間端點，本課不依賴小值域陣列，直接處理座標很大的連續區間。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-58.ipynb" target="_blank" rel="noopener noreferrer">開啟第58課Colab作業本 ↗</a><a href="lesson-58.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜排序後只比較最後一段</a><a href="#unit-B">B｜總覆蓋長度不能直接加原長度</a><a href="#unit-C">C｜合併後才能找真正空檔</a><a href="#unit-D">D｜沒有長度的區間不算一段</a><a href="#unit-E">E｜找最早能預約的空檔</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜排序後只比較最後一段</h2><p>先依起點排序，新的區間若起點不超過目前段的終點，就與目前段重疊或相接，可以延伸終點。延伸要取max，因為新區間可能完全被包住。若起點更大，就開始新段；已完成的更早區間不可能再被後面的區間碰到，所以只需查看最後一段。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>current = [1, 8]
+new = [3, 5]
+current[1] = max(current[1], new[1])
+print(*current)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 8
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n（1–100000），接著n行s e（0≤s&lt;e≤10^9），表示半開區間[s,e)。將重疊或相接區間合併，按起點遞增逐行輸出每個合併區間的s e。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+5 7
+1 3
+3 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 7
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+1 8
+3 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 8
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先sorted(intervals)，與merged[-1]比較，否則append新串列。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜總覆蓋長度不能直接加原長度</h2><p>重疊區間的長度若直接相加，交集會算很多次。先合併成互不重疊的段，再累加每段end-start即可。這裡是連續時間的半開區間，不是整數格點個數，所以長度不加一。即使座標上億，也只處理輸入區間，不需要建立每個時間點的陣列。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>merged = [[1, 5], [8, 10]]
+total = 0
+for start, end in merged:
+    total += end-start
+print(total)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n（1–100000），接著n行半開區間s e（0≤s&lt;e≤10^9）。輸出至少被一個區間覆蓋的總長度，重疊部分只算一次。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 4
+3 6
+8 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+0 1
+1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>合併後累加end-start，注意不是end-start+1。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜合併後才能找真正空檔</h2><p>尋找空檔時，原區間相鄰兩筆的端點不一定代表空白，因為較早的長區間可能仍覆蓋那裡。先合併，再用上一段終點到下一段起點作為空檔。還要納入觀察範圍開頭到第一段、最後一段到結尾的兩個空白區，不能只看中間。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>merged = [[2, 5], [8, 9]]
+previous, best = 0, 0
+for start, end in merged:
+    best = max(best, start-previous)
+    previous = end
+best = max(best, 12-previous)
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n L（1≤n≤100000，1≤L≤10^9），接著n行忙碌區間s e（0≤s&lt;e≤L）。輸出[0,L)內最長連續空閒時間的長度。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 12
+2 5
+8 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 7
+0 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>合併後previous初值0，每段檢查start-previous，最後檢查L-previous。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜沒有長度的區間不算一段</h2><p>允許s=e時，半開區間[s,s)是空集合，不占時間也不能把兩個區間連接起來。因此讀入時先忽略空區間，再套合併規則。所有輸入都空或n為零時，合併結果就是空串列，段數為零；不要直接用第一段初始化，否則會遇到不存在的元素。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>intervals = [[2, 2], [3, 5]]
+kept = []
+for start, end in intervals:
+    if start &lt; end:
+        kept.append([start, end])
+print(len(kept))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（0–100000），接著n行s e（0≤s≤e≤10^9）。忽略零長度區間，將重疊或相接的非空半開區間合併。輸出最後非空連通段數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 1
+2 4
+4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1
+7 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>讀入時只保留start&lt;end，merged可從空串列開始。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜找最早能預約的空檔</h2><p>要放入長度D的新預約，不必枚舉每個時間點。合併忙碌區間後，最早可能開始的位置是零或某個忙碌段的終點；若到下一段開始前至少有D長，就立即找到最早答案。整個日程最後還有一個到L的空檔，也必須檢查，恰好放滿是合法情況。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>candidate, next_busy, duration = 4, 7, 3
+print(candidate + duration &lt;= next_busy)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n L D（0≤n≤100000，1≤D≤L≤10^9），接著n行忙碌區間s e（0≤s&lt;e≤L）。在[0,L)中找長度D、不碰忙碌區間的最早開始時間；端點相接可，無解輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 10 3
+0 2
+5 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 5 2
+1 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0 5 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>合併後candidate從0開始，若candidate+D≤start就成功，否則移到該段end。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-57.html">← 第57課</a><a href="courses.html">課程目錄</a><a href="lesson-59.html">第59課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

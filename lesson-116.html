@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第116課｜自編實作卷二：轉換規則後獨立完成｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 116 / 120 · 自編實作測驗</p><h1>自編實作卷二：轉換規則後獨立完成</h1><p class="lead">完成三個新的核心問題，驗證修正能否遷移。</p><p class="meta">建議：A–C自訂60–90分鐘；D–E測驗結束後另做<br>先備：<a href="lesson-104.html">第104課</a>、<a href="lesson-106.html">第106課</a>、<a href="lesson-112.html">第112課</a>、<a href="lesson-115.html">第115課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第112卷一流程及第115識讀；A–C獨立計時，D–E考後訂正。題目不同於卷一，不宣稱等同官方考試。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-116.ipynb" target="_blank" rel="noopener noreferrer">開啟第116課Colab作業本 ↗</a><a href="lesson-116.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜獨立題一：首次庫存告警</a><a href="#unit-B">B｜獨立題二：座位列交換</a><a href="#unit-C">C｜獨立題三：趕上最早班次</a><a href="#unit-D">D｜考後訂正：列身分追蹤</a><a href="#unit-E">E｜考後加練：要保留登車緩衝</a><a href="#assignment">完成標準與保存</a></nav><section id="worksheet"><h2>本課操作與紀錄</h2><p>卷二A–C是三題原創獨立實作，建議使用與卷一相同的自訂時間以觀察個人進步；不是官方模擬題本，也不保證同等難度。各題以獨立.py從頭執行，先不看提示。記錄首次可跑版本、測資結果及卡關原因。計時結束先封存當時版本，再做D–E兩題訂正與延伸；它們不計入前三題的獨立作答時間。</p>
+</section><p class="bridge">本課A–C為三題獨立自編實作練習，先關閉提示計時完成；D–E為考後訂正與變化練習，另安排時間。題目不冒充官方原題或分級題本；計時以你核對後的當次規定為準。</p><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜獨立題一：首次庫存告警</h2><p>本題的判斷對象是每步完成後的累積狀態，不是單筆變化量，也不是最後庫存。先處理初始庫存是否已低於門檻，再依序更新；第一次告警後仍要讀完資料，但不能覆蓋第一次時間。起始時刻以零表示，完全未告警用負一，兩者意義不同。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>stock, limit = 5, 3
+stock += -3
+print(stock &lt; limit)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行b limit（0–10000），第二行n（0–10000），第三行n個-1000至1000變化量，n=0為空行。輸出庫存首次嚴格低於limit的步數；起始就低為0，從未低為-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 3
+3
+-2 -1 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 1
+0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共3行；第3行是空行，仍須按Enter送出，請勿省略。</p>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">3 3
+0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p>輸入共3行；第3行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>answer先檢查初始值，之後僅在answer==-1時記錄。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜獨立題二：座位列交換</h2><p>每條交換指令都作用在當前座位表，因此後面的列號指目前位置，不是最初的列身分。若矩陣每列已獨立讀入，交換外層兩列參照就能完成整列交換，無須逐格移動。作答後用連續交換同一列與自己交換測試，確認流程沒有把指令誤當成一次性的排列。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [[1, 2], [3, 4]]
+g[0], g[1] = g[1], g[0]
+print(*g[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 4
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c q（1≤r,c≤30，0≤q≤1000），後r行各c個-1000至1000座位資料，再q行a b（合法0起算列，可相同）。依序交換兩列，輸出最終矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2 2
+1 2
+3 4
+5 6
+0 2
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 4
+5 6
+1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1
+9
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>外層g[a],g[b]同時交換。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜獨立題三：趕上最早班次</h2><p>乘客可以搭上與到達時間相同的班次，因此要找第一個不小於到達時間的發車。資料先排序，再對每位乘客獨立查詢；某位乘客搭車不會消耗班次。答案是等待時間，還要用發車時間減到達時間，不能把搜尋到的索引直接當作輸出。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>departures = [3, 8]
+arrival = 5
+print(departures[1] - arrival)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個0–100000發車時間，後q行到達時間t（同範圍）。可搭時間≥t的最早班次，輸出等待時間；沒有班次輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+8 3 8
+3
+5
+9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+3
+-1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>排序後bisect_left；pos==n時沒有班次。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜考後訂正：列身分追蹤</h2><p>前題輸出座位內容，這次只問每個位置最後放著哪個原始列號。把每列身分當成一個整數，依相同交換指令更新即可，不需要建立實際矩陣。這種縮小表示能幫助除錯：先確認交換順序正確，再回到包含更多欄位的資料，不讓無關數值掩蓋索引問題。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>ids = [0, 1, 2]
+ids[0], ids[2] = ids[2], ids[0]
+print(*ids)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 1 0
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行r q（1≤r≤10000，0≤q≤10000），初始位置i放原始列號i，0起算。後q行合法a b交換。輸出最後各位置的原始列號。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+0 2
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>ids=list(range(r))，依序交換。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜考後加練：要保留登車緩衝</h2><p>規則改成必須在發車前至少指定分鐘到達，等價於尋找不小於到達時間加緩衝的班次。把題意先轉成新的搜尋門檻，再沿用下界方法，才能避免只改輸出等待時間卻沒改可搭條件。緩衝可以為零，此時應退回原本規則，適合用來核對兩題關係。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>arrival, buffer = 5, 2
+print(arrival + buffer)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>7
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個0–100000發車時間，後q行t b（0≤t≤100000，0≤b≤1000）。須發車時間≥t+b，輸出最早可搭的發車時間，沒有則-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+5 8
+5 1
+8 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">8
+-1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>bisect_left(departures,t+b)，輸出實際時間而非索引。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-115.html">← 第115課</a><a href="courses.html">課程目錄</a><a href="lesson-117.html">第117課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第101課｜診斷回補：把錯誤變成下一個可完成步驟｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 101 / 120 · 教學</p><h1>診斷回補：把錯誤變成下一個可完成步驟</h1><p class="lead">以新資料重建運算、計數、狀態、區間與順序處理。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-100.html">第100課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第100課診斷紀錄；先做A、B取得可核對結果，再做C–E，不以回去重讀代替實作。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-101.ipynb" target="_blank" rel="noopener noreferrer">開啟第101課Colab作業本 ↗</a><a href="lesson-101.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜收支最低點</a><a href="#unit-B">B｜第一次重複的位置</a><a href="#unit-C">C｜每日增加是否連續</a><a href="#unit-D">D｜第一段達標</a><a href="#unit-E">E｜服務完成時間</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜收支最低點</h2><p>最後餘額無法指出途中是否曾經不足，必須每筆更新後保留到目前為止的最低餘額。最低點包含開始前的狀態，因此初始化為起始餘額。用先支出後收入的資料測試，能抓出只看總和的錯誤；順序不同時，即使最後總額相同，最低點仍可能不同。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>balance = 5
+lowest = balance
+for delta in [-8, 9]:
+    balance += delta
+    lowest = min(lowest, balance)
+print(balance, lowest)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6 -3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行起始餘額b（0–10000），第二行0–1000個收支整數（-1000至1000，可空）。輸出最終餘額及包含初始時刻的最低餘額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+-8 9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6 -3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>每次加收支後更新lowest。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜第一次重複的位置</h2><p>偵測重複時，答案是第二次出現的位置，並非那個值第一次出現的位置。集合記住已看過的值，讀到新值時先查再加入；第一次碰到已存在者就固定答案。題目使用一開始的位置編號，因此輸出時要把串列索引加一，不能和內部索引混用。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>seen = {7, 2}
+print(7 in seen)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1–10000個整數（-100000至100000）。輸出最早發生重複的1起算位置；都不同輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">7 2 7 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用range索引掃描，遇到seen內值輸出i+1。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜每日增加是否連續</h2><p>連續上升的天數由相鄰比較決定，不能直接計算所有大於首日的資料。每個值本身都能形成長度一的片段，上升時接到前一段，否則重新開始。相等不算嚴格上升，所以全相等資料只能得到一；先確認這個定義，再決定使用大於或大於等於。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [2, 3, 3, 5]
+run = 1
+for i in range(1, len(a)):
+    run = run + 1 if a[i] &gt; a[i-1] else 1
+print(run)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行1–10000個-10000至10000整數。輸出最長嚴格遞增連續片段的元素個數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3 2 4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">6 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>run及best初始化1；比較目前值和前一值。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜第一段達標</h2><p>固定長度片段的起點有明確先後，本題只找第一個達到門檻的片段，不需要最大值。用前綴差或滑動總和都能取得每一段的總和，再由左往右停止。沒有答案時使用零作輸出標記，與一開始的合法位置編號分開，避免最後一段剛好達標卻漏掉。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p = [0, 2, 5, 9]
+print(p[3] - p[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>7
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n k t（1≤k≤n≤10000，-10^7≤t≤10^7），第二行n個-1000至1000整數。輸出最早總和至少t的長度k片段之1起算起點，沒有則0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2 7
+1 2 3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>右端從k到n含n；答案起點是right-k+1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜服務完成時間</h2><p>單一櫃台一次只能服務一人，開始時間是抵達時間與前一人完成時間兩者較大值。輸入已按抵達先後排列，所以不需要再排序，也不會允許後來的人插隊。空閒時間不能累加成工作時間；用中間有空檔的資料檢查，能分辨連續忙碌與重新開始。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>finish = 3
+arrival, duration = 8, 2
+finish = max(finish, arrival) + duration
+print(finish)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>10
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行到達時間a及服務時間d（0≤a≤100000，1≤d≤1000），a非遞減，同時依輸入先後。逐行輸出每人的完成時間。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+0 3
+1 2
+8 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+5
+9
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>finish=max(finish,a)+d。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-100.html">← 第100課</a><a href="courses.html">課程目錄</a><a href="lesson-102.html">第102課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

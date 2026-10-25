@@ -1,0 +1,126 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第80課｜搜尋綜合｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 80 / 120 · 教學</p><h1>搜尋綜合</h1><p class="lead">能依是否需要最短路、是否區分順序，選擇合適的搜尋。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-73.html">第73課</a>、<a href="lesson-74.html">第74課</a>、<a href="lesson-75.html">第75課</a>、<a href="lesson-76.html">第76課</a>、<a href="lesson-77.html">第77課</a>、<a href="lesson-78.html">第78課</a>、<a href="lesson-79.html">第79課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第71–79課；題目不提示方法名稱，先判斷狀態、合法分支與結束條件。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-80.ipynb" target="_blank" rel="noopener noreferrer">開啟第80課Colab作業本 ↗</a><a href="lesson-80.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜括號序列的合法前綴</a><a href="#unit-B">B｜小資料的分組最接近</a><a href="#unit-C">C｜只能順指定方向移動</a><a href="#unit-D">D｜禁用節點先排除</a><a href="#unit-E">E｜由外側找可到達空地</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜括號序列的合法前綴</h2><p>合法括號序列任一前綴的右括號數都不能超過左括號數，最後兩種數量相等。搜尋時只加入不會破壞這兩條限制的字元，可以避免產生大量必定不合法的完整字串。每次增加一個字元，長度有明確上限；這是把既有括號規則用來限制回溯分支。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def count(opened, closed, n):
+    if closed == n:
+        return 1
+    total = 0
+    if opened &lt; n:
+        total += count(opened + 1, closed, n)
+    if closed &lt; opened:
+        total += count(opened, closed + 1, n)
+    return total
+print(count(0, 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入 n（0≤n≤9）。用回溯計算恰有 n 對圓括號的合法序列數，輸出一個整數；空序列算1種。不得先列出全部2^(2n)字串再判斷。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>左括號未達n可加左；右括號少於已放左括號才可加右。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜小資料的分組最接近</h2><p>把每個物品分到甲組或乙組，可以只記甲組總和，乙組就是全部總和減甲組。兩組差距是總和減兩倍甲組和的絕對值。每物品做選或不選即可完整搜尋；本題只求最小差，不需把交換組名視為不同答案，也不需要儲存所有分法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>values = [3, 5, 7]
+total = sum(values)
+chosen = 8
+print(abs(total - 2 * chosen))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行 n（0≤n≤20），第二行 n 個非負整數（0～100，可空）。把全部物品分成兩組，允許空組，輸出兩組總和的最小絕對差。用小資料完整搜尋。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+3 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>到葉節點回傳 abs(total-2*chosen)，中間取兩分支最小值。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜只能順指定方向移動</h2><p>搜尋方法與移動規則可以分開：BFS的距離層次不變，但鄰格集合改成題目允許的方向。只能向右或向下時，不可偷偷加入向左或向上繞路。先寫合法移動清單，再用相同的邊界與牆檢查；一格地圖起終點重合仍需要零步。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>moves = [(0, 1), (1, 0)]
+x, y = 1, 2
+for dx, dy in moves:
+    print(x + dx, y + dy)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 3
+2 2
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行 r c（1～100），接著 r 行 .與#，保證左上角與右下角為.。只能向右或向下移動，輸出左上到右下最少步數；無法到達輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+..#
+...
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+.
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用BFS但只列 (0,1)、(1,0)，不能套用四方向清單。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜禁用節點先排除</h2><p>圖上有暫停使用的節點時，不能只在輸出時略過，搜尋也不得穿越它們。加入鄰居前檢查是否禁用，便能保證所有路徑都合法。起終點本身若禁用，沒有合法路徑；這個邊界需要在初始化時處理，否則被禁用起點仍可能向外擴張。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>blocked = {2}
+for neighbor in [1, 2, 3]:
+    if neighbor not in blocked:
+        print(neighbor)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+3
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行 n m k（1≤n≤10000，0≤m≤20000，0≤k≤n），第二行k個禁用節點（k=0為空行），接著m行無向簡單邊，最後s t（1～n）。輸出不經禁用節點的最少邊數，不可達或端點禁用輸出-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2 1
+2
+1 2
+2 3
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0 0
+
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共3行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>起點未禁用才入佇列；鄰居先檢查不在 blocked。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜由外側找可到達空地</h2><p>地圖邊界的每個可走格都可以視為外界入口，一起放入搜尋後，標記的就是能通向外面的空地。最後計算未被標記的可走格，即得到封閉空地數。這把多源初始化與一般走訪結合；不需要從每個空格重跑搜尋，也不要求最短步數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>grid = [&#x27;###&#x27;, &#x27;#.#&#x27;, &#x27;###&#x27;]
+seen = set()
+inside = 0
+for x in range(3):
+    for y in range(3):
+        if grid[x][y] == &#x27;.&#x27; and (x, y) not in seen:
+            inside += 1
+print(inside)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 r c（1～100），接著 r 行 .與#。能透過上下左右的.路徑連到任一邊界.的格子視為外通，輸出其餘封閉的.格子數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+###
+#.#
+###
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2
+..
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先把所有邊界.去重加入堆疊並標記，搜尋完再數未標記的.。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-79.html">← 第79課</a><a href="courses.html">課程目錄</a><a href="lesson-81.html">第81課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

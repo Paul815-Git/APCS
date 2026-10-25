@@ -1,0 +1,114 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第71課｜遞迴基底｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 71 / 120 · 教學</p><h1>遞迴基底</h1><p class="lead">能指出停止條件與縮小量，寫出有界的簡單遞迴。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-24.html">第24課</a>、<a href="lesson-47.html">第47課</a>、<a href="lesson-69.html">第69課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第24課函式與第69課迴圈排序；本課首次讓函式呼叫自己，先限制深度。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-71.ipynb" target="_blank" rel="noopener noreferrer">開啟第71課Colab作業本 ↗</a><a href="lesson-71.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜先停止，再縮小</a><a href="#unit-B">B｜回傳值等待小問題</a><a href="#unit-C">C｜每層移除一個位數</a><a href="#unit-D">D｜乘法的空次數</a><a href="#unit-E">E｜索引描述剩餘片段</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜先停止，再縮小</h2><p>遞迴是函式在執行中呼叫自己，但每次參數要更接近停止條件，稱為基底。倒數到零時直接 return，讓這次呼叫結束，不再呼叫下一層。少了基底或參數沒有變小就會持續呼叫。本課輸入很小，先理解流程，不用調整系統的遞迴深度限制。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def countdown(n):
+    if n == 0:
+        return
+    print(n)
+    countdown(n - 1)
+countdown(3)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+2
+1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入 n（0≤n≤100）。使用遞迴逐行輸出 n 到1，n=0 時不輸出任何內容。函式必須在 n=0 停止，不使用迴圈完成倒數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+2
+1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>本例不輸出任何內容，也不需要換行。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>先判斷 n==0，再 print(n)，最後呼叫 n-1。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜回傳值等待小問題</h2><p>呼叫下一層後，外層會等待它回傳，再完成自己的運算。計算一到 n 的和，可以把答案寫成 n 加上一到 n-1 的和，零的答案是零。print 只把內容顯示出來，不能代替 return；要讓上一層取得數值，每個有結果的分支都必須回傳。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def total(n):
+    if n == 0:
+        return 0
+    return n + total(n - 1)
+print(total(4))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>10
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入 n（0≤n≤100）。定義遞迴函式回傳1到 n 的整數和，主程式只輸出答案一行；n=0 答案為0。不要使用 sum 或迴圈。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>基底回傳0，其他情形回傳 n+total(n-1)。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜每層移除一個位數</h2><p>縮小問題不一定是減一。非負整數除以十取商會移除最後一位，餘數則是最後一位的值。因此位數和可拆成最後一位加上其餘位數的和，遞迴深度只與位數有關。零的基底直接回傳零，避免以字串長度或特殊迴圈補救。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def digit_sum(n):
+    if n == 0:
+        return 0
+    return n % 10 + digit_sum(n // 10)
+print(digit_sum(407))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>11
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入 n（0≤n≤10^100），使用整數除法與遞迴計算十進位各位數之和，輸出一個整數。不將 n 轉成字串逐字相加。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">407
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>n//10 嚴格減少正數的位數，n%10 是本層貢獻。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜乘法的空次數</h2><p>乘方可以定義成重複相乘，但零次方的基底應回傳一，因為一是乘法的起始單位。若誤寫成零，後面所有乘積都會變零。每層將指數減一，底數保持不變；本題也明確約定零的零次方為一，讓邊界符合相同程式定義。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def power(a, k):
+    if k == 0:
+        return 1
+    return a * power(a, k - 1)
+print(power(3, 3))
+print(power(0, 0))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>27
+1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入 a k（-10≤a≤10，0≤k≤100）。用每層指數減一的遞迴回傳 a 的 k 次方，輸出整數。本題約定0的0次方為1，不用 ** 或 pow。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-8
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>零次是乘法的空累積，所以回傳1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜索引描述剩餘片段</h2><p>處理串列時，可讓參數 i 表示還沒處理部分的起點。基底是 i 等於長度，表示已沒有元素；其他情況處理 a[i] 再交給 i+1。這樣不用每層複製切片，也不修改原串列。範例的 X if 條件 else Y 是條件運算式，成立取X，否則取Y。先寫清楚函式回傳的是從目前位置到尾端的結果。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def count_positive(a, i):
+    if i == len(a):
+        return 0
+    flag = 1 if a[i] &gt; 0 else 0
+    return flag + count_positive(a, i + 1)
+print(count_positive([-1, 0, 4, 2], 0))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行 n（0≤n≤100），第二行 n 個整數（-1000～1000，n=0 時空行）。用索引遞迴計算嚴格正數的個數，輸出一行，不使用迴圈計數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4
+-1 0 4 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>函式 count_positive(a,i) 只負責 i 起的尾段；空尾段回傳0。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-70.html">← 第70課</a><a href="courses.html">課程目錄</a><a href="lesson-72.html">第72課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

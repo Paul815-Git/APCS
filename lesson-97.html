@@ -1,0 +1,134 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第97課｜資料與事件整合：先確定時間和身分｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 97 / 120 · 教學</p><h1>資料與事件整合：先確定時間和身分</h1><p class="lead">能整理事件、依規則更新狀態並處理同時事件。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-26.html">第26課</a>、<a href="lesson-33.html">第33課</a>、<a href="lesson-66.html">第66課</a>、<a href="lesson-96.html">第96課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第66課事件掃描與第96課小資料核對；本課以帳目、在線狀態與預約資料整合字典、排序及區間。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-97.ipynb" target="_blank" rel="noopener noreferrer">開啟第97課Colab作業本 ↗</a><a href="lesson-97.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜帳目依名稱累積</a><a href="#unit-B">B｜重複登入不能多算</a><a href="#unit-C">C｜同時抵達依原順序</a><a href="#unit-D">D｜離開與到達同時</a><a href="#unit-E">E｜庫存不足就整筆拒絕</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜帳目依名稱累積</h2><p>多筆帳目可以指向同一個人，字典用身分作鍵，累加正負金額就能得到淨額。輸出排序只決定呈現順序，不應改變加總結果。即使某人的淨額最後為零，也仍是出現過的身分；是否保留這種項目必須依題意，而不能因數值為零就刪除。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>balance = {}
+for name, delta in [(&quot;amy&quot;, 5), (&quot;amy&quot;, -5)]:
+    balance[name] = balance.get(name, 0) + delta
+print(balance[&quot;amy&quot;])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行小寫名稱及金額（-10000至10000）。按名稱字母順序輸出每位出現者的名稱及淨額，包含零。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+bob 5
+amy 2
+bob -5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">amy 2
+bob 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+x -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">x -1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先累加，最後for name in sorted(balance)。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜重複登入不能多算</h2><p>在線狀態只關心每個名稱目前是否存在，適合使用集合。重複登入與重複登出在本題都忽略，不應把登入次數直接當成人數。事件依輸入順序發生，每次處理完就更新最高同時在線數；最高值記錄的是狀態大小，不是某一事件的金額或次數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>online = set()
+online.add(&quot;a&quot;)
+online.add(&quot;a&quot;)
+print(len(online))
+online.discard(&quot;b&quot;)
+print(len(online))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行q（0–1000），後q行IN name或OUT name，name為無空白小寫字串。重複IN及不存在者OUT忽略。輸出最後在線人數與最高在線人數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5
+IN a
+IN a
+IN b
+OUT a
+OUT c
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>OUT可用discard，不存在也不會出錯。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜同時抵達依原順序</h2><p>事件時間可能沒有排序，處理前先把時間和原輸入序號一起保存。時間相同時依輸入先後處理，是明確的同分規則；序號也能讓排序後的事件仍可識別原身分。本題只重建事件順序，不混入額外模擬，讓排序鍵與輸出內容分開檢查。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>events = [(3, 0, &quot;a&quot;), (1, 1, &quot;b&quot;), (3, 2, &quot;c&quot;)]
+for time, index, name in sorted(events):
+    print(name)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>b
+a
+c
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行time name（0≤time≤100000，name小寫無空格，可重複）。依時間遞增輸出name，每行一個；同時間維持輸入順序。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+3 z
+1 a
+3 b
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a
+z
+b
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+0 x
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">x
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>儲存(time,index,name)，用tuple排序。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜離開與到達同時</h2><p>預約以半開區間表示，結束時刻已不占用，因此同時間離開要先於到達處理。用事件的增減值作第二排序欄，負一就會排在正一之前。這項規則直接影響最高占用；用一段恰好接另一段的例子，能辨認程式是否把不重疊誤算成重疊。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>events = [(2, 1), (4, -1), (4, 1), (6, -1)]
+active = peak = 0
+for time, delta in sorted(events):
+    active += delta
+    peak = max(peak, active)
+print(peak)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（0–1000），後n行s e（0≤s&lt;e≤100000），占用時間為[s,e)。輸出最高同時占用數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 3
+2 4
+4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2
+1 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>起點事件+1，終點事件-1，直接排序(time,delta)。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜庫存不足就整筆拒絕</h2><p>更新規則必須先決定交易是否允許，再一次修改狀態。若先扣庫存再檢查不足，拒絕時忘記回復就會污染後續交易。這裡補貨一定接受，領取只有足夠時接受；紀錄拒絕次數和最終庫存，可同時檢查判斷分支以及被拒絕事件沒有副作用。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>stock, demand = 3, 4
+if demand &lt;= stock:
+    stock -= demand
+print(stock)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行stock q（0≤stock≤1000，0≤q≤1000），後q行ADD x或TAKE x（1≤x≤1000）。TAKE不足則整筆拒絕。輸出最終庫存與拒絕次數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 4
+TAKE 4
+ADD 2
+TAKE 5
+TAKE 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>TAKE分支先比較x&lt;=stock，再扣除。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-96.html">← 第96課</a><a href="courses.html">課程目錄</a><a href="lesson-98.html">第98課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

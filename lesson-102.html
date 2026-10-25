@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第102課｜邊界條件重練：零、一、最後一個｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 102 / 120 · 教學</p><h1>邊界條件重練：零、一、最後一個</h1><p class="lead">能把索引、空結果與等號邊界變成實際測資。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-23.html">第23課</a>、<a href="lesson-28.html">第28課</a>、<a href="lesson-101.html">第101課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第101課的錯誤紀錄；本課每題刻意改變一項端點規則，練習先寫規格再選迴圈範圍。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-102.ipynb" target="_blank" rel="noopener noreferrer">開啟第102課Colab作業本 ↗</a><a href="lesson-102.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜不含終點的區間</a><a href="#unit-B">B｜尾端連續零</a><a href="#unit-C">C｜相鄰而非所有配對</a><a href="#unit-D">D｜整批分裝的最後一盒</a><a href="#unit-E">E｜環狀位移允許負數</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜不含終點的區間</h2><p>同樣寫兩個位置，本題使用左閉右開區間，與先前一開始且含兩端的規格不同。先把索引定義抄在紙上，再決定 range 的兩個參數。左右相等代表空區間，總和應為零；右端等於長度則合法，因為程式不會真的讀取該索引。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [4, 5, 6]
+print(sum(a[1:3]))
+print(sum(a[2:2]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>11
+0
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行1–1000個整數（-1000至1000），第二行l r（0≤l≤r≤長度）。輸出索引[l,r)的總和，空區間為0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 5 6
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">8
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>range(l,r)，不必減一也不必加一。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜尾端連續零</h2><p>由後往前找連續零時，遇到第一個非零就停止；不能把整個串列所有零都算進去。索引遞減的 range 終點不包含，因此要走到第零格時終點寫負一。全零與最後一格非零是兩個相反邊界，可以檢查停止條件及是否漏掉第一格。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [0, 3, 0, 0]
+count = 0
+for i in range(len(a)-1, -1, -1):
+    if a[i] != 0:
+        break
+    count += 1
+print(count)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1–1000個-100至100整數。輸出尾端連續為0的元素個數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">0 3 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>從len(a)-1走到0，遇非零break。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜相鄰而非所有配對</h2><p>只有相鄰位置形成題目的比較對，因此有一個元素時根本沒有配對。迴圈從第二個元素開始，每次與前一個比較；初始化次數為零便能自然處理單元素，不必額外補一筆。相等不算變號，且零不是正數或負數，需把這些定義寫進條件。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a, b = -2, 3
+print(a * b &lt; 0)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入一行1–1000個-1000至1000整數。輸出相鄰兩值一正一負的對數，任何一個為0不計。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">-2 3 0 -1 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>乘積&lt;0恰表示一正一負。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜整批分裝的最後一盒</h2><p>整數除法給出完整盒數，但只要仍有餘數就需要多一盒。空物品不需要盒子，而恰好整除不應額外增加；這兩種情況最容易被無條件加一的寫法弄錯。以商與餘數分開思考，再用小例子核對，比直接背取整公式更能看清楚用途。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n, capacity = 6, 3
+boxes = n // capacity
+if n % capacity != 0:
+    boxes += 1
+print(boxes)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入n k（0≤n≤10^9，1≤k≤10^6），每盒最多放k件。輸出裝完n件所需最少盒數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">7 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">6 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先n//k，餘數非零才加一。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜環狀位移允許負數</h2><p>環狀位置移動後，取模可以把結果放回合法索引範圍。Python 對正的模數會得到非負餘數，所以向左移動也能使用同一公式，不需要反覆加減長度。先保留原位置再算新位置；長度一與位移整圈時，結果都應回到唯一或原本的位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n, position, shift = 5, 0, -1
+print((position + shift) % n)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入n p d（1≤n≤10000，0≤p&lt;n，-10^9≤d≤10^9）。位置0至n-1環狀排列，正d向右，負d向左。輸出移動後位置。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 0 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0 -999
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>直接(p+d)%n，不要建立長度為位移的迴圈。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-101.html">← 第101課</a><a href="courses.html">課程目錄</a><a href="lesson-103.html">第103課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

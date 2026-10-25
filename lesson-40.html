@@ -1,0 +1,127 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第40課｜模擬綜合｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 40 / 120 · 教學</p><h1>模擬綜合</h1><p class="lead">能從完整規格挑出狀態，整合解析、移動、更新與復原。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-31.html">第31課</a>、<a href="lesson-34.html">第34課</a>、<a href="lesson-36.html">第36課</a>、<a href="lesson-38.html">第38課</a>、<a href="lesson-39.html">第39課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>回接第20課的獨立實作方式，整合第31–39課。每題先寫出狀態與更新順序，再用邊界資料驗證，未加入新語法。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-40.ipynb" target="_blank" rel="noopener noreferrer">開啟第40課Colab作業本 ↗</a><a href="lesson-40.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜壓縮路線的終點</a><a href="#unit-B">B｜調整時鐘與讀取紀錄</a><a href="#unit-C">C｜旋轉後的座位查詢</a><a href="#unit-D">D｜可撤回的有限步行</a><a href="#unit-E">E｜帶障礙的多輪訊號報告</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜壓縮路線的終點</h2><p>路線以方向和次數表示時，若平面沒有邊界、牆壁或途中事件，就能一次把位移乘上次數，不必真的走每一步。這個簡化依賴每一步的效果可以相加；若題目需要領取沿路金幣，就不能只看終點。本題先把解碼規則轉成數學位移再更新位置。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>dx, dy, count = 1, 0, 100
+x, y = 2, 3
+x += dx * count
+y += dy * count
+print(x, y)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>102 3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n（1–10000），接著n行方向N/E/S/W與次數k（0–10^9）。從(0,0)在無限平面移動，東x正、北y正。輸出終點x y，不得逐步展開。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+N 3
+E 5
+S 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+W 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每段加dx<em>k及dy</em>k，工作量取決於片段數。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜調整時鐘與讀取紀錄</h2><p>時鐘指令把文字解析與循環狀態結合。內部只存一天中的總分鐘，SHIFT在加上偏移後立刻取餘數，READ再拆成時分輸出。每次更新後都保持0到1439的範圍，能讓後續指令不必擔心累積很多天，也不必另寫跨日、借位的分支。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>minute = 5
+minute = (minute - 10) % 1440
+print(minute // 60, minute % 60)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>23 55
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行h m n（時0–23、分0–59，1≤n≤1000），接著n行SHIFT d（-10^9≤d≤10^9）或READ。SHIFT調整分鐘，每遇READ輸出當時的小時與分鐘，不補零。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">23 50 3
+SHIFT 20
+READ
+SHIFT -15
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 10
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 0 2
+SHIFT -1
+READ
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">23 59
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>讀取指令的第一欄後再決定是否需要第二欄。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜旋轉後的座位查詢</h2><p>旋轉矩陣後再查詢，座標必須依旋轉後的尺寸解讀。先完成所有旋轉，之後查詢只讀最終矩陣，就不必對每個查詢重做轉換。以函式集中旋轉規則能避免重複程式，也讓「建構資料」和「回答問題」兩階段的責任分得清楚。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>grid = [[3, 1], [4, 2]]
+row, col = 1, 0
+print(grid[row][col])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c k q（1≤r,c≤20，0≤k≤10^9，1≤q≤1000），接著r行各c個整數座號（0–10000）。順時針旋轉90度k次；再讀q行旋轉後的合法座標x y（0起算），逐行輸出座號。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 1 2
+1 2 3
+4 5 6
+0 0
+2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 0 1
+7
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先旋轉k%4次；查詢直接grid[x][y]，無須再次換座標。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜可撤回的有限步行</h2><p>移動被拒絕時不算成功操作，因此不應新增復原紀錄。成功前保存原座標tuple，UNDO就能一次恢復兩個維度，避免只還原其中一個。單格場地是很好的邊界測試：所有移動都失敗，無論執行多少次UNDO，歷史都應保持空且位置不變。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>position = (1, 2)
+history = [position]
+position = (1, 3)
+position = history.pop()
+print(*position)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行w h n（1≤w,h≤100，1≤n≤1000），接著n行N/E/S/W或UNDO。從(0,0)出發，東x正、北y正，越界忽略；UNDO撤回最近成功移動，無歷史忽略。輸出最終x y。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2 4
+N
+N
+E
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 2
+N
+UNDO
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>判斷候選位置合法後才保存(x,y)。UNDO分支不新增歷史。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜帶障礙的多輪訊號報告</h2><p>完整模擬先釐清每輪哪些格會改變：障礙永遠固定，訊號保持亮起，只有空地可能變成訊號。同步輪次使用新矩陣，計數則只增加本輪由零變一的格。每輪輸出新增數量，比只看最後圖形更容易檢查是否偷用了同輪新訊號，以及是否重複計入舊訊號。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>old = [1, 0, 0]
+new = [1, 1, 0]
+added = 0
+for i in range(len(old)):
+    if old[i] == 0 and new[i] == 1:
+        added += 1
+print(added)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c t（1≤r,c≤20，1≤t≤20），接著r行各c個-1/0/1，依序代表障礙、空地、訊號。每輪空地若有原訊號四鄰格就變1，其餘保持，全部同步。逐行輸出每輪新增訊號數，共t行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 4 3
+1 0 0 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+1
+0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 2
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每輪added歸零，只在原格為0且找到訊號鄰格時加一並break。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-39.html">← 第39課</a><a href="courses.html">課程目錄</a><a href="lesson-41.html">第41課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

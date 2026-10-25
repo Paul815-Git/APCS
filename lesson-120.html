@@ -1,0 +1,141 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第120課｜最終檢核與考後銜接：用五份程式留下能力證據｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 120 / 120 · 最終檢核</p><h1>最終檢核與考後銜接：用五份程式留下能力證據</h1><p class="lead">能完成核心問題並說明測試依據，依實際表現安排後續學習。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-100.html">第100課</a>、<a href="lesson-109.html">第109課</a>、<a href="lesson-112.html">第112課</a>、<a href="lesson-115.html">第115課</a>、<a href="lesson-116.html">第116課</a>、<a href="lesson-118.html">第118課</a>、<a href="lesson-119.html">第119課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第119課短檢核；本課再整合掃描、頻率、矩陣、配對與前綴查詢，完成後以紀錄決定下一步，不保證任何級分。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-120.ipynb" target="_blank" rel="noopener noreferrer">開啟第120課Colab作業本 ↗</a><a href="lesson-120.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜相鄰日最大改善</a><a href="#unit-B">B｜兩份材料能配成幾組</a><a href="#unit-C">C｜同時是列小值與欄大值</a><a href="#unit-D">D｜預算內有幾對商品</a><a href="#unit-E">E｜完成任務後剩餘多少時間</a><a href="#assignment">完成標準與保存</a></nav><section id="worksheet"><h2>本課操作與紀錄</h2><h3>最終實作紀錄</h3>
+<p>五題各保留一份獨立程式、題附測資結果與至少一組自選反例。記錄是否獨立完成、使用提示位置、首次通過時間及仍無法說明的步驟。先核對答案，再說明為什麼不會漏算或重算；第D題可用小資料兩層枚舉核對雙指標。</p>
+<h3>考前檢核</h3>
+<ul>
+<li>以官方當次公告核對日期、地點、環境、語言、時間與提交規則；本教材的兩份自編卷不代表官方規格。</li>
+<li>能從空白檔案開始，保存後從頭執行，不依賴先前儲存的變數。</li>
+<li>能說清楚位置起算、端點、重複值、同分規則、空結果與找不到時的輸出。</li>
+<li>每題先完成可驗證版本，保留除錯測資，提交前移除多餘輸出並重新執行。</li>
+<li>按自己的紀錄安排題目順序與時間；卡關時記下具體問題後移到可完成的工作。</li>
+</ul>
+<h3>考後銜接</h3>
+<p>核心仍不穩：依錯誤類型重做第102–108課的新題，隔日再用不同輸入測試，直到能解釋原因。核心已能獨立完成：回到第51–70課練習方法選擇及小資料慢解核對；希望繼續延伸，再按順序選第71–90課的搜尋、樹、堆積及動態規劃。每次只加一個新概念，保留完整測試紀錄。完成120課表示完成這份學習流程，不保證任何考試級分或錄取結果。</p>
+</section><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜相鄰日最大改善</h2><p>改善量是今天減昨天，所以不能用整體最大值減整體最小值代替，兩者可能不是相鄰日期。每一對相鄰資料都是合法候選，先用第一對初始化，才能保留全部變差時的負答案。只有一天時沒有可比較的前日，依題目輸出零，這個情形需要明確分支。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [8, 5, 7]
+print(a[1]-a[0], a[2]-a[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>-3 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入一行1–10000個-10000至10000整數。輸出相鄰日差a[i]-a[i-1]的最大值；只有一筆輸出0。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">8 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">9 6 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>長度至少2時用a[1]-a[0]初始化。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜兩份材料能配成幾組</h2><p>兩份清單中相同品名可以一對一配成組，每件最多使用一次，因此某品名的配對量是兩邊次數較小者。集合交集只能回答有哪些品名，不能回答可配幾組。分別建立兩份頻率表，再加總各鍵的較小次數，沒有出現的品名用零補足，空清單也能自然處理。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = {&quot;x&quot;: 3}
+b = {&quot;x&quot;: 2}
+print(min(a[&quot;x&quot;], b[&quot;x&quot;]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入兩行小寫品名，每行0–10000個，可空。同品名跨兩行一對一配組，每件最多用一次，輸出最多組數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">a a b
+a b b
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">
+a
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第1行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>sum各品名min(count_a,count_b)，用普通迴圈累加。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜同時是列小值與欄大值</h2><p>這題把兩種局部條件合併到同一格：值等於該列最小值，也等於該欄最大值。相等允許多格同時符合，不能只記錄一個最小值所在索引。先預算每列最小及每欄最大，再逐格比較，可以把複雜文字拆成兩個明確判斷；全相等矩陣所有格都成立。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [[2, 3], [1, 4]]
+print(g[0][0] == min(g[0]) and g[0][0] == max(g[0][0], g[1][0]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c（1–100），後r行各c個-1000至1000整數。輸出同時等於所在列最小值且所在欄最大值的格數，可有多格。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2
+2 3
+1 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2 2
+5 5
+5 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>保存row_min與col_max，最後掃所有格。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜預算內有幾對商品</h2><p>兩個不同位置的商品可形成無序配對，重複價格仍代表不同商品。排序後若最小端加最大端不超預算，這個最小端和中間所有位置都能配，因此一次增加右端減左端；若超過就縮右端。這個計數方法需要先說明排序的單調性，再用小資料枚舉核對。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [1, 2, 4]
+left, right, budget = 0, 2, 5
+print(a[left] + a[right] &lt;= budget, right - left)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True 2
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n budget（1≤n≤10000，0≤budget≤200000），第二行n個0–100000價格。輸出i&lt;j且兩價和不超budget的配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 5
+1 2 3 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 10
+5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">3 0
+0 0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>排序雙指標；符合時加right-left後left+=1，否則right-=1。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜完成任務後剩餘多少時間</h2><p>任務依序執行且每項時間為正，所以累積完成時間嚴格遞增。查詢給總可用時間，先用上界找到已完成項數，再減去該前綴取得剩餘時間；剩餘時間可能用在未完成任務上，本題仍稱未用於完整任務的餘額。恰好完成一項時餘額為零，全部完成後則保留多餘時間。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>from bisect import bisect_right
+p = [0, 2, 5]
+budget = 4
+finished = bisect_right(p, budget) - 1
+print(finished, budget - p[finished])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 2
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1–10000），第二行n個1–1000任務時間，不能跳過順序。後q行可用時間t（0–10^7）。逐行輸出能完整完成的任務數，以及t減去這些完整任務總時間的餘額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+2 3 4
+0
+5
+12
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+2 0
+3 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+1
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>上界減一得k，再輸出k與t-prefix[k]。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-119.html">← 第119課</a><a href="courses.html">課程目錄</a><a href="roadmap.html#after-exam">完成120課後 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

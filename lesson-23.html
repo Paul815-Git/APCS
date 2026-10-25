@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第23課｜索引與端點：把邊界說清楚｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 23 / 120 · 教學</p><h1>索引與端點：把邊界說清楚</h1><p class="lead">能在0起算、1起算、閉區間與半開區間間正確轉換。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-07.html">第7課</a>、<a href="lesson-12.html">第12課</a>、<a href="lesson-13.html">第13課</a>、<a href="lesson-17.html">第17課</a>、<a href="lesson-18.html">第18課</a>、<a href="lesson-22.html">第22課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>第17課用1起算閉區間，第18課用0起算半開搜尋範圍。本課比較這兩種慣例，後續視窗、二分與矩陣都會用到。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-23.ipynb" target="_blank" rel="noopener noreferrer">開啟第23課Colab作業本 ↗</a><a href="lesson-23.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜半開區間總和</a><a href="#unit-B">B｜環狀索引</a><a href="#unit-C">C｜端點附近的合法鄰居</a><a href="#unit-D">D｜閉區間內的整數點</a><a href="#unit-E">E｜刪除一段字串</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜半開區間總和</h2><p>區間[l,r)包含l、不含r，因此長度是r-l。當l=r時區間為空，總和為0。沿用前綴p[i]表示前i筆總和時，0起算半開區間直接用p[r]-p[l]；不要再減l-1，否則會套到另一種座標定義。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[3,5,7]
+print(sum(a[1:3]))
+print(sum(a[2:2]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>12
+0
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n q（1≤n,q≤10000），第二行n個整數（絕對值≤1000）；接著q行l r（0≤l≤r≤n），代表0起算半開區間。逐行輸出區間總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 3
+3 5 7
+1 3
+2 2
+0 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">12
+0
+15
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-4
+0 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-4
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>p從[0]開始，每讀一值加到最後前綴；查詢用p[r]-p[l]。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜環狀索引</h2><p>環狀位置離開末尾會回到開頭，用餘數把任何整數位置映射到0到n-1。向左位移可以是負數；在n為正時，Python的餘數仍位於合法範圍。先說清起點是索引還是第幾個位置，不能混用。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n=4
+print((0-1)%n)
+print((3+2)%n)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行1–1000個整數；第二行合法0起算索引start與位移d（|d|≤10^9）。正位移向右、負向左、首尾相接。輸出移動後索引及該位置的值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">10 20 30 40
+0 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 40
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">9
+0 123
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 9
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>位置=(start+d)%len(a)，先算位置再讀值。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜端點附近的合法鄰居</h2><p>一般直線串列與環狀串列不同，首項沒有左鄰、末項沒有右鄰。Python負索引雖能讀值，卻不符合本題的鄰居定義。對每個候選位置先檢查0≤j&lt;n，再加入總和；只有一筆時沒有任何鄰居。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[2,5,8]
+i=0
+for j in [i-1,i+1]:
+    if 0&lt;=j&lt;len(a):
+        print(a[j])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行1–1000個整數，第二行合法0起算索引i。輸出i位置左、右存在的相鄰元素總和，不包含自己；不存在的鄰居忽略。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5 8
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">7
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">2 5 8
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>候選只有i-1與i+1，不能以%把越界位置繞回另一端。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜閉區間內的整數點</h2><p>兩個閉區間相交的左端是兩個起點的較大者，右端是兩個終點的較小者。這次算整數點數，不是連續時間長度，所以合法交集要加1。若右端小於左端，交集為空，不能輸出負的點數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>left=max(1,3)
+right=min(3,5)
+print(max(0,right-left+1))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入l1 r1 l2 r2（-10^9≤l1≤r1≤10^9，另一區間亦同）。輸出同時落在兩個閉區間內的整數個數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">1 3 3 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 2 4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">-2 2 -1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>max(0,min(r1,r2)-max(l1,l2)+1)。先用相接端點與分離區間驗證。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜刪除一段字串</h2><p>題目的第l到第r個字元含兩端，對應Python索引l-1到r-1。刪除後留下左側s[:l-1]與右側s[r:]，兩段接起來即可。字串不可直接刪改某格，建立新字串是自然做法。刪掉全部時仍要輸出換行。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>s=&quot;abcdef&quot;
+l,r=2,4
+print(s[:l-1]+s[r:])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>aef
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行非空小寫英文字串（長度≤10000），第二行合法1起算l r（含兩端）。刪除該範圍後輸出剩餘字串；刪光輸出空行。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">abcdef
+2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">aef
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">a
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">
+</code></pre>
+<p>預期輸出是一個空行（換行），不是完全不輸出。</p>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">abc
+3 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">ab
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>左切片結尾不包含l-1；右切片從r開始，剛好是刪除範圍後的第一個索引。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-22.html">← 第22課</a><a href="courses.html">課程目錄</a><a href="lesson-24.html">第24課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

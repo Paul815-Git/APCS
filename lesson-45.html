@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第45課｜質數篩｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 45 / 120 · 教學</p><h1>質數篩</h1><p class="lead">能預先標記一整段質數，回答列表、區間與相鄰質數問題。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-17.html">第17課</a>、<a href="lesson-43.html">第43課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第43課單數試除及第17課前綴和，本課把許多獨立判斷改成一次預處理，並說明值域大小的限制。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-45.ipynb" target="_blank" rel="noopener noreferrer">開啟第45課Colab作業本 ↗</a><a href="lesson-45.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜把質數的倍數劃掉</a><a href="#unit-B">B｜依值域查表輸出</a><a href="#unit-C">C｜質數表再接前綴計數</a><a href="#unit-D">D｜範圍裡沒有下一個質數</a><a href="#unit-E">E｜找相差二的質數配對</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜把質數的倍數劃掉</h2><p>篩法先假設2到n都是質數，再把已確認質數的倍數劃成False。從p<em>p開始劃，因為更小倍數已有較小因數，早已被處理。當p</em>p&gt;n時，所有合數都已有不大於平方根的因數，因此可以停止。串列索引直接代表數值，所以需要n+1格。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>prime = [True] * 11
+prime[0] = prime[1] = False
+for multiple in range(4, 11, 2):
+    prime[multiple] = False
+print(prime[2], prime[4])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True False
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入n（2–200000）。用質數篩建立0到n的質數表，輸出不超過n的質數數量。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>p從2開始，prime[p]成立才劃p<em>p、p</em>p+p等倍數。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜依值域查表輸出</h2><p>建立篩表後，判斷一個值是否為質數只需讀取prime[value]，不必再試除。逐一走訪索引就能按大小輸出質數。這種方法的成本取決於最大值n，不只取決於質數數量；若n非常大但只有少數查詢，整張表可能不適合，應改回逐筆判斷。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>prime = [False, False, True, True, False, True]
+result = []
+for value in range(len(prime)):
+    if prime[value]:
+        result.append(value)
+print(*result)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>2 3 5
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入n（2–200000）。以篩法輸出所有不超過n的質數，遞增排列在同一行，以空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">12
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2 3 5 7 11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先完成標記，再走訪2..n收集True的索引。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜質數表再接前綴計數</h2><p>把質數記為一、非質數記為零，就能使用已學過的前綴和回答範圍內質數數量。先完成篩表，再建立prefix[x]表示1到x的質數數，查詢[l,r]便是prefix[r]-prefix[l-1]。兩個預處理階段各有責任，不能在篩到一半時就計入尚未劃掉的合數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>prefix = [0, 0, 1, 2, 2, 3]
+print(prefix[5] - prefix[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n q（2≤n≤200000，1≤q≤10000），接著q行l r（1≤l≤r≤n）。逐行輸出閉區間[l,r]內的質數數量。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">10 2
+1 10
+4 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2 1
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>完整篩表後再建p，查詢用p[r]-p[l-1]。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜範圍裡沒有下一個質數</h2><p>尋找範圍內下一個質數時，可能根本找不到，因此答案先設為負一。題目允許n等於零或一，初始化prime[1]前必須確認該索引存在，不能沿用只接受n≥2的版本。掃描起點也必須至少為二，因為零與一不會因為尚未被劃掉就變成質數。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>n = 0
+prime = [True] * (n+1)
+prime[0] = False
+if n &gt;= 1:
+    prime[1] = False
+print(prime[0])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>False
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>輸入n x（0≤x≤n≤200000）。輸出[x,n]中最小的質數，若不存在輸出-1。使用篩法並處理n&lt;2。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">20 14
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">17
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">10 8
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>prime[0]永遠存在；prime[1]需條件保護。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜找相差二的質數配對</h2><p>質數配對可把第二個值直接由第一個值決定：若要相差二，只需檢查p與p+2是否都在質數表中。每對以較小者作代表，因此不會重複。迴圈上限要保證p+2不超過n；同一個質數可以屬於不同配對，例如三、五與五、七是兩對。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>prime_values = {2, 3, 5, 7}
+for p in range(2, 6):
+    if p in prime_values and p+2 in prime_values:
+        print(p, p+2)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 5
+5 7
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入n（2–200000）。輸出滿足2≤p&lt;p+2≤n且兩者皆為質數的配對數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">20
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先篩，再讓p走到n-2，查兩個布林值。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-44.html">← 第44課</a><a href="courses.html">課程目錄</a><a href="lesson-46.html">第46課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

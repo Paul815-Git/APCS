@@ -1,0 +1,119 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第108課｜遞迴識讀與重作：每次呼叫要有進展｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 108 / 120 · 教學</p><h1>遞迴識讀與重作：每次呼叫要有進展</h1><p class="lead">能在小規模輸入追蹤基底、回傳值與呼叫順序。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-71.html">第71課</a>、<a href="lesson-72.html">第72課</a>、<a href="lesson-94.html">第94課</a>、<a href="lesson-107.html">第107課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第94課短遞迴；本課重作不同任務，先手畫三層呼叫再執行，不以深遞迴當作首考必要能力。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-108.ipynb" target="_blank" rel="noopener noreferrer">開啟第108課Colab作業本 ↗</a><a href="lesson-108.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜每次減二的加總</a><a href="#unit-B">B｜反向輸出在回程</a><a href="#unit-C">C｜歐幾里得的交換</a><a href="#unit-D">D｜二分切開再加總</a><a href="#unit-E">E｜保留第一次匹配</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜每次減二的加總</h2><p>遞迴每次減二時，奇數會到一，偶數會到零，所以基底必須同時接住兩條路徑。把零以下回傳零，再加上目前非負數，就能統一處理。觀察參數嚴格縮小是停止的證據；只寫參數等於零，卻讓奇數一路越過零，會造成無法終止。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def total(n):
+    if n &lt;= 0:
+        return 0
+    return n + total(n - 2)
+print(total(5))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>9
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入n（0–100）。用遞迴求n+(n-2)+(n-4)+…直到下一項不為正，輸出總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">12
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>n&lt;=0回傳0，每次遞迴n-2。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜反向輸出在回程</h2><p>若先遞迴處理下一個索引，等回來才輸出目前值，印出的順序就會反轉。基底索引等於長度時直接返回，表示沒有值可印。這題不用切片複製剩餘陣列，參數只傳索引，能更清楚看見每層共用同一份資料、但各自保留不同索引的關係。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def show(a, i):
+    if i == len(a):
+        return
+    show(a, i + 1)
+    print(a[i])
+show([2, 5], 0)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+2
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入一行1–100個-1000至1000整數。用索引遞迴從後往前逐行輸出所有值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 5 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+5
+2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>遞迴呼叫放在print前面。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜歐幾里得的交換</h2><p>最大公因數的遞迴把問題換成第二個數及餘數，直到第二個數為零。餘數比正除數小，因此參數持續縮小；回傳的是剩下那個數。輸入允許第一個數較小，也允許其中一個為零，不必自行先排序，但兩個都是零的情形由規格排除。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
+print(gcd(18, 12))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>6
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>輸入a b（0≤a,b≤10^9，至少一個非零）。手寫遞迴最大公因數函式並輸出結果。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">18 12
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">6
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>b==0回傳a，否則gcd(b,a%b)。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜二分切開再加總</h2><p>分治加總把索引區間拆成左右兩半，各自回傳總和後相加。空區間回傳零，單元素直接回傳該值，才能讓所有分支停止。區間仍採左閉右開，中點屬於右半邊；兩半不重疊且完整覆蓋原區間，是確認沒有重複計算或遺漏元素的關鍵。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def total(a, lo, hi):
+    if lo == hi:
+        return 0
+    if hi - lo == 1:
+        return a[lo]
+    mid = (lo + hi) // 2
+    return total(a, lo, mid) + total(a, mid, hi)
+print(total([1, 3, 5], 0, 3))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>9
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（0–1000），第二行n個-1000至1000整數，n=0為空行。使用左右區間分治遞迴輸出總和。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+1 -3 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>單元素與空區間各有基底，兩半相加。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜保留第一次匹配</h2><p>線性遞迴搜尋每層處理一個位置，先檢查空範圍，再判斷當前值是否符合，最後才交給下一層。這個順序保證回傳第一次出現的位置，也避免先遞迴到底才意外保留最後一次。本題限制長度很小，用來檢查回傳流程，不是推薦大型資料採用深遞迴。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>def find(a, t, i):
+    if i == len(a):
+        return -1
+    if a[i] == t:
+        return i
+    return find(a, t, i + 1)
+print(find([4, 2, 4], 4, 0))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n（0–100），第二行n個-100至100整數，第三行t（-100至100）。以遞迴輸出t第一次出現的0起算索引，沒有則-1。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+4 2 4
+4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<p>輸入共3行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>符合就直接return i，不再呼叫下一層。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-107.html">← 第107課</a><a href="courses.html">課程目錄</a><a href="lesson-109.html">第109課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

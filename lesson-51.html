@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第51課｜前綴計數與加權｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 51 / 120 · 教學</p><h1>前綴計數與加權</h1><p class="lead">能把條件或權重轉為數值，建立可重複使用的前綴資訊。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-17.html">第17課</a>、<a href="lesson-20.html">第20課</a>、<a href="lesson-27.html">第27課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第17課前綴和與第20課區間預算查詢，本課不重教基本總和，改把條件、類別與權重放進前綴表。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-51.ipynb" target="_blank" rel="noopener noreferrer">開啟第51課Colab作業本 ↗</a><a href="lesson-51.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜區間奇數有幾個</a><a href="#unit-B">B｜每筆紀錄先乘權重</a><a href="#unit-C">C｜三種類別各自有一張表</a><a href="#unit-D">D｜平均比較不必使用小數</a><a href="#unit-E">E｜總件數與銷售額一起查</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜區間奇數有幾個</h2><p>每次查詢都掃描整個區間，最壞需要n乘q次判斷。若先把奇數轉成一、偶數轉成零，再建立前綴和，區間相減就能得到奇數數量。前綴表存的是計數而不是原數值總和；負奇數對二的餘數也不為零，所以同一條件能處理正負輸入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>p = [0]
+for value in [3, 4, -5]:
+    flag = 0
+    if value % 2 != 0:
+        flag = 1
+    p.append(p[-1] + flag)
+print(p[3] - p[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n q（1–100000），第二行n個整數（-10^6–10^6），接著q行l r（1≤l≤r≤n）。逐行輸出位置l到r的奇數個數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">4 2
+3 4 -5 0
+1 3
+2 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先建0/1前綴表，查詢用p[r]-p[l-1]。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜每筆紀錄先乘權重</h2><p>加權總和可以先把每筆資料轉成「值乘權重」，再使用普通前綴和。權重屬於該筆紀錄，必須在建立前綴表時就乘好，不能查詢後把區間值總和乘權重總和，那會多算跨紀錄的乘積。資料不變且查詢很多時，這個預處理才有價值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>values, weights = [4, 7], [2, 3]
+p = [0]
+for i in range(2):
+    p.append(p[-1] + values[i] * weights[i])
+print(p[-1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>29
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行n q（1–100000），第二行n個值a（-1000–1000），第三行n個權重w（0–1000），接著q行合法1起算閉區間l r。逐行輸出sum(a[i]*w[i])。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+4 7 -2
+2 3 5
+1 2
+2 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">29
+11
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+9
+0
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>建立p時加入a[i]*w[i]，查詢仍做兩個端點相減。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜三種類別各自有一張表</h2><p>一個前綴數字不能同時保留三種分類的數量，所以為每種類別分別建立一張計數表。讀到一個字元時，三張表都往前延伸，其中一張加一，其餘加零。查詢時分別相減就得到三種數量；三者總和應等於區間長度，可作為自我檢查。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a = [0, 1, 1, 1]
+b = [0, 0, 1, 1]
+c = [0, 0, 0, 1]
+print(a[3]-a[1], b[3]-b[1], c[3]-c[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>0 1 1
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n q（1–100000），第二行長度n、只含A/B/C的字串。接著q行合法1起算l r。逐行輸出該區間A、B、C個數，以空格分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 2
+ABACA
+2 4
+1 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 1 1
+3 1 1
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+B
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用字典把類別對應到各自的前綴串列，每一位都append三次。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜平均比較不必使用小數</h2><p>區間平均是否至少為t，可以把平均式兩邊乘以正的區間長度，改成總和≥t乘長度。這樣只用整數，不會因為小數表示出現誤差。區間長度是r-l+1，單一元素時為一而不是零；資料可為負數，但長度始終正，所以不等號方向不變。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>total, length, target = 9, 3, 3
+print(total &gt;= target * length)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n q（1–100000），第二行n個整數（-1000–1000）。接著q行l r t，區間合法且-1000≤t≤1000。若該區間平均≥t輸出YES，否則NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+-3 0 6
+1 3 1
+1 1 -2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-5
+1 1 -5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>前綴取得total，再比較total與t*(r-l+1)。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜總件數與銷售額一起查</h2><p>同一區間可能需要多種統計，應各建一張前綴表，而不是查詢時重新掃描。數量前綴累加件數，金額前綴累加件數乘單價，兩者單位不同。查詢同時輸出它們可直接看出資料意義；即使某筆賣出零件，位置仍存在，不能從序列中刪去。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>quantity, price = 3, 8
+print(quantity, quantity * price)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 24
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行n q（1–100000），接著n行qty price（0≤qty≤1000，0≤price≤10000），再接q行合法1起算區間l r。逐行輸出區間總件數與總銷售額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3 2
+2 10
+0 99
+3 5
+1 3
+2 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">5 35
+0 0
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+1 0
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>p_qty與p_money都從[0]開始，讀每筆資料時同步延伸。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-50.html">← 第50課</a><a href="courses.html">課程目錄</a><a href="lesson-52.html">第52課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

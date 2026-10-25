@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第104課｜矩陣模擬重練：先畫一張小表｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 104 / 120 · 教學</p><h1>矩陣模擬重練：先畫一張小表</h1><p class="lead">能把來源位置與目的位置分開，完成變換與逐步指令。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-36.html">第36課</a>、<a href="lesson-38.html">第38課</a>、<a href="lesson-93.html">第93課</a>、<a href="lesson-98.html">第98課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第98課同步更新；本課改用移動、交換與對稱檢查的新題，先用非方形矩陣驗證座標公式。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-104.ipynb" target="_blank" rel="noopener noreferrer">開啟第104課Colab作業本 ↗</a><a href="lesson-104.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜每列循環右移</a><a href="#unit-B">B｜交換兩欄</a><a href="#unit-C">C｜順時針旋轉長方形</a><a href="#unit-D">D｜左右鏡像是否相同</a><a href="#unit-E">E｜開關燈逐步操作</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜每列循環右移</h2><p>循環右移要讓每個原元素恰好出現一次，不能移動時覆蓋還沒讀取的元素。先把位移對欄數取模，再切開尾段與前段接回，就能處理大位移。位移為零時特別容易把切片正負零搞混，因此可直接使用分界欄數減位移的寫法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>row = [1, 2, 3]
+k = 1
+print(*(row[len(row)-k:] + row[:len(row)-k]))</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 1 2
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行r c k（1≤r,c≤30，0≤k≤10^9），後r行各c個-100至100整數。每列循環右移k格後輸出矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 1
+1 2 3
+4 5 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 1 2
+6 4 5
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 100
+7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">7
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>k%=c，分界位置為c-k。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜交換兩欄</h2><p>交換欄代表每一列都要交換同樣兩個位置；只交換外層兩個元素則變成交換列。Python 的同時賦值會先取得右邊兩個舊值，再一起寫回，所以不需要額外暫存變數。兩個欄號相同時應保持原樣，這也是合法操作，不應被判成錯誤輸入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>row = [1, 2, 3]
+a, b = 0, 2
+row[a], row[b] = row[b], row[a]
+print(*row)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3 2 1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行各c個-100至100整數，最後一行a b為合法0起算欄號，可相同。交換a、b兩欄並輸出矩陣。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2 3
+4 5 6
+0 2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 2 1
+6 5 4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+9
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">9
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>對每列做row[a],row[b]=row[b],row[a]。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜順時針旋轉長方形</h2><p>旋轉後列數與欄數交換，所以方形範例不足以驗證維度是否正確。順時針旋轉的新一列來自原本一欄，由下往上讀取。先固定原欄，再讓原列反向走訪，就能直接組好每一列輸出；不用在舊矩陣中原地交換，避免尚未使用的值被覆蓋。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [[1, 2, 3], [4, 5, 6]]
+for c in range(3):
+    row = []
+    for r in range(1, -1, -1):
+        row.append(g[r][c])
+    print(*row)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>4 1
+5 2
+6 3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行各c個-100至100整數。輸出順時針旋轉90度後的c行，每行r個值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2 3
+4 5 6
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4 1
+5 2
+6 3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+-2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-2
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>新列固定原欄，原列由r-1遞減到0。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜左右鏡像是否相同</h2><p>檢查左右對稱時，每列左邊的元素要與同列右邊對應位置比較，列與列之間沒有互相交換。可以直接把每列與反向副本比較，也可以只比一半。奇數欄中央格會對到自己，永遠不造成不對稱；找到一列失敗後仍須把後續輸入讀完。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>row = [1, 2, 1]
+print(row == row[::-1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行r c（1–30），後r行各c個-100至100整數。若整張矩陣左右鏡射後不變，輸出YES，否則NO。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+1 2 1
+3 4 5
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">NO
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">YES
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>每列皆須row==row[::-1]；不要提早停止讀取。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜開關燈逐步操作</h2><p>翻轉表示零變一、一變零，重複兩次會回到原狀。列指令與欄指令都直接改目前矩陣，交叉格可能被翻轉多次，不能只記錄是否曾被操作。先確認每條指令指定的是哪個維度，再走另一個維度；最後統計亮燈數，能驗證所有操作是否完整套用。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>g = [[0, 0], [0, 0]]
+for j in range(2):
+    g[0][j] = 1 - g[0][j]
+for i in range(2):
+    g[i][1] = 1 - g[i][1]
+print(*g[0])
+print(*g[1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1 0
+0 1
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行r c q（1≤r,c≤30，0≤q≤100），燈初始全0。後q行R i或C j，翻轉指定列或欄，索引0起算且合法。輸出最後亮燈總數。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 2 2
+R 0
+C 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 2
+R 0
+C 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>g[x][y]=1-g[x][y]，每條指令依序執行。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-103.html">← 第103課</a><a href="courses.html">課程目錄</a><a href="lesson-105.html">第105課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

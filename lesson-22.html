@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第22課｜把題意改寫成可執行規格｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 22 / 120 · 教學</p><h1>把題意改寫成可執行規格</h1><p class="lead">能先列輸入、判斷條件、更新及輸出，再處理多步規則。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-04.html">第4課</a>、<a href="lesson-12.html">第12課</a>、<a href="lesson-16.html">第16課</a>、<a href="lesson-20.html">第20課</a>、<a href="lesson-21.html">第21課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>你已會寫if與迴圈；本課的新增能力是準確轉譯規則，避免會用工具卻做錯題目。每題先寫一份四欄規格表再動手。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-22.ipynb" target="_blank" rel="noopener noreferrer">開啟第22課Colab作業本 ↗</a><a href="lesson-22.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜門檻與整數折扣</a><a href="#unit-B">B｜分段收費不是整批改價</a><a href="#unit-C">C｜同分規則也屬於題意</a><a href="#unit-D">D｜文字座標與程式索引</a><a href="#unit-E">E｜接受或拒絕的交易</a><a href="#assignment">完成標準與保存</a></nav><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜門檻與整數折扣</h2><p>先區分滿額前與滿額後的規則，再確認金額如何取整。當題目說「總價乘9後整除10」，就應直接用整數計算，不自行改為四捨五入。門檻恰好相等必須屬於滿額分支，測試時用門檻前後各一個值。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>total=101
+print(total*9//10)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>90
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>輸入p n（單價0–10000，數量0–1000）。原價為p<em>n；原價至少1000時應付為原價</em>9//10，否則原價付款。輸出應付金額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">250 4
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">900
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">999 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">999
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>先算total，判斷的是原價，不是單價或打折後金額。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜分段收費不是整批改價</h2><p>分段收費的每一段分別計算，例如前10單位與超過10的單位使用不同單價。不能因總量超過門檻就把前面的單位也改成新價格。先用10與11手算，比較兩個答案應只差一個後段單位價格。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>amount=12
+first=min(amount,10)
+extra=max(0,amount-10)
+print(first*3+extra*5)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>40
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>輸入用量n（0–10^9）。前10單位每單位3元，超過10的部分每單位5元。輸出總費用。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">10
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">30
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">11
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">35
+</code></pre>
+<p><strong>測試3輸入</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>前段min(n,10)，後段max(0,n-10)，各乘對應單價後相加。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜同分規則也屬於題意</h2><p>排名題要先確定比較順序，不是看到最高總分就停止。先比總分，再比某一科，最後用編號作唯一決定。把三個比較條件放進tuple，逐欄比較能避免複雜的巢狀if。本題只找第一名，不必排序所有資料。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>first=(150,80,-2)
+second=(150,75,-1)
+print(first&gt;second)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–1000），接著n行各有兩科分數a b（0–100），編號按輸入順序從1開始。總分高者優先，同總分第一科高者優先，再同分編號小者優先。輸出第一名編號。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+75 75
+80 70
+80 70
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+0 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>比較鍵可用(a+b,a,-編號)，選最大；初始化由第一筆取得。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜文字座標與程式索引</h2><p>第12課內部座標從0開始，但題目可能用第1列、第1欄。輸入後統一減1，比在每個存取處臨時修正容易檢查。輸出只需值，不要額外印出座標或矩陣。單列單欄能檢查轉換是否少減或多減一次。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>a=[[7,8],[9,10]]
+r,c=2,1
+print(a[r-1][c-1])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>9
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行R C q（1≤R,C≤50，1≤q≤1000）；接著R行各C個整數（絕對值≤1000），再q行合法1起算r c。逐行輸出指定格子的值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3 2
+1 2 3
+4 5 6
+2 1
+1 3
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">4
+3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1 1
+-1
+1 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">-1
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>輸入r、c後減1；矩陣讀入R行，不能把R與C對調。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜接受或拒絕的交易</h2><p>模擬規格要分清「嘗試更新」與「更新成功」。餘額不夠時，這筆交易完全不發生，不能先扣完再把負數歸零。每一筆都要輸出狀態，使手算可逐步對照，而不只看最後結果。剛好扣到0仍然合法。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>balance=5
+x=-6
+if balance+x&gt;=0:
+    balance+=x
+print(balance)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>5
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>第一行b n（0≤b≤10^9，1≤n≤1000），接著n行整數變動x（絕對值≤10^9）。若b+x非負就接受並更新；否則拒絕、餘額不變。每筆輸出OK或REJECT與當時餘額，以空白分隔。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">5 3
+-6
+-5
+2
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">REJECT 5
+OK 0
+OK 2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">OK 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>用候選餘額b+x判斷；只有OK分支賦值，兩分支都輸出當下餘額。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-21.html">← 第21課</a><a href="courses.html">課程目錄</a><a href="lesson-23.html">第23課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>

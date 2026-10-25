@@ -1,0 +1,113 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#234c3d"><title>第117課｜卷二講評與策略：先守住能驗證的核心｜APCS自學教室</title><link rel="stylesheet" href="teaching.css"><link rel="stylesheet" href="course-extension.css"></head><body><a class="skip" href="#main">跳到主要內容</a><header><div><a class="brand" href="courses.html">APCS <span>自學教室</span></a><a href="roadmap.html">課程銜接路線</a><a href="index.html">考試與升學指南 ↗</a></div></header><main id="main"><p class="eyebrow">LESSON 117 / 120 · 教學</p><h1>卷二講評與策略：先守住能驗證的核心</h1><p class="lead">能以可核對的小步驟修正初始狀態、索引與查詢規則。</p><p class="meta">建議：90–120 分鐘，可分兩次<br>先備：<a href="lesson-113.html">第113課</a>、<a href="lesson-116.html">第116課</a></p><aside class="bridge"><strong>從哪裡接續？</strong><p>承接第116課卷二；五個新任務分別處理累積下限、矩陣欄位、排隊時間、紀錄合併與消除狀態。</p>
+</aside><div class="workflow"><span>01 看一段講義與預測範例</span><span>02 Colab完成對應A–E題</span><span>03 新測資與隔日重作</span></div><div class="actions"><a class="button" href="https://colab.research.google.com/github/Paul815-Git/APCS/blob/main/lesson-117.ipynb" target="_blank" rel="noopener noreferrer">開啟第117課Colab作業本 ↗</a><a href="lesson-117.ipynb" download>下載作業本</a></div><p class="small">先選「檔案 → 在雲端硬碟中儲存副本」。講義與作業本保留兩個分頁；若新教材尚未上傳GitHub，先下載ipynb並在Colab上傳。無需GPU或額外套件。每題是一份獨立程式，不依賴上一題變數。</p><nav class="contents" aria-label="本課單元"><a href="#unit-A">A｜需要多少起始準備金</a><a href="#unit-B">B｜總量最大的欄</a><a href="#unit-C">C｜最久等待的人</a><a href="#unit-D">D｜最後一次紀錄才有效</a><a href="#unit-E">E｜相鄰反向操作互相抵消</a><a href="#assignment">完成標準與保存</a></nav><section id="worksheet"><h2>本課操作與紀錄</h2><p>對每個失敗先分類：讀錯規格、狀態初始化、索引端點、資料表示、時間不足或輸出格式。選一個最小失敗輸入，手算出中間狀態；先修能明確驗證的原因，再重新跑已有測資。下一次作答先完成自己能說明正確性的題目；卡住時保存目前版本與未通過案例，再換題，不把反覆盲改當成進度。</p>
+</section><section id="unit-A"><p class="eyebrow">UNIT A / E</p><h2>A｜需要多少起始準備金</h2><p>最低累積變化決定需要多少起始準備金，讓整個過程從不低於零。先假設從零開始，追蹤所有前綴的最低值，若最低為負，補上其相反數即可。最終總和可能為正仍需要準備金，因此只看結尾不夠；空變化序列不需準備金，答案自然為零。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>prefix, lowest = 0, 0
+for x in [-3, 5, -1]:
+    prefix += x
+    lowest = min(lowest, prefix)
+print(-lowest)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-A"><p class="eyebrow">COLAB PRACTICE A</p><h3>A題｜自己完成一份程式</h3><p>第一行n（0–10000），第二行n個-1000至1000變化量，n=0為空行。輸出使每個時刻餘額都≥0所需最少非負起始金額。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+-3 5 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">0
+
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0
+</code></pre>
+<p>輸入共2行；第2行是空行，仍須按Enter送出，請勿省略。</p>
+<details class="feedback"><summary>需要時再看提示</summary><p>最低前綴包含起始0，答案為-lowest。</p>
+</details><p class="handoff">切到自己的Colab，完成A題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-B"><p class="eyebrow">UNIT B / E</p><h2>B｜總量最大的欄</h2><p>矩陣欄加總要讓每列的第j個值累加到同一個欄位計數器，而不是每讀一列就把答案重設。所有欄總和完成後再選最大欄，同量時保留較小索引。初始化最佳欄為零號欄而不是把最佳總量設零，才能正確處理每欄都為負數的情況。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>totals = [-5, -2, -2]
+best = 0
+for j in range(1, len(totals)):
+    if totals[j] &gt; totals[best]:
+        best = j
+print(best)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>1
+</pre></details><aside class="task" id="task-B"><p class="eyebrow">COLAB PRACTICE B</p><h3>B題｜自己完成一份程式</h3><p>第一行r c（1–100），後r行各c個-1000至1000整數。輸出欄總和最大者的0起算欄號及總和，同和選較小欄號。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">2 3
+-3 -1 -1
+-2 -1 -1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 -2
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1 1
+0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">0 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>totals[j]+=row[j]，全部讀完後選答案。</p>
+</details><p class="handoff">切到自己的Colab，完成B題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-C"><p class="eyebrow">UNIT C / E</p><h2>C｜最久等待的人</h2><p>完成時間與等待時間不是同一個量。每人的等待是服務開始減到達，自己的服務時長不算等待；服務開始仍取目前完成時間與到達時間較大者。保存最長等待及其輸入編號，平手保留較早到達次序。中間有空檔的人等待為零，不可把空閒時間計入。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>finish, arrival = 7, 4
+start = max(finish, arrival)
+print(start - arrival)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>3
+</pre></details><aside class="task" id="task-C"><p class="eyebrow">COLAB PRACTICE C</p><h3>C題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行a d（0≤a≤100000，1≤d≤1000），a非遞減，依輸入先後服務。輸出等待最久者的1起算編號與等待時間，同等待選較早編號。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+0 4
+1 2
+2 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">3 4
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+9 1
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">1 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>wait=max(finish,a)-a，算完才更新finish。</p>
+</details><p class="handoff">切到自己的Colab，完成C題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-D"><p class="eyebrow">UNIT D / E</p><h2>D｜最後一次紀錄才有效</h2><p>不是所有重複名稱都應累加。本題每次紀錄代表完整的新設定，後來一筆覆蓋前一筆；若沿用配送加總模板，就會把歷史設定全部疊在一起。先確認資料是增量還是最新狀態，再決定字典更新方式。最後輸出順序仍按名稱排序，和覆蓋規則互不衝突。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>latest = {}
+latest[&quot;a&quot;] = 3
+latest[&quot;a&quot;] = 7
+print(latest[&quot;a&quot;])</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>7
+</pre></details><aside class="task" id="task-D"><p class="eyebrow">COLAB PRACTICE D</p><h3>D題｜自己完成一份程式</h3><p>第一行n（1–1000），後n行小寫裝置名與設定值-1000至1000。同裝置只有最後一次設定有效。按名稱遞增逐行輸出名稱與最後值。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">3
+b 2
+a 3
+b 7
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">a 3
+b 7
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">1
+x 0
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">x 0
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>直接latest[name]=value，不做加法。</p>
+</details><p class="handoff">切到自己的Colab，完成D題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="unit-E"><p class="eyebrow">UNIT E / E</p><h2>E｜相鄰反向操作互相抵消</h2><p>這題相鄰的操作若互為反向就抵消，消除後新形成的相鄰關係還可能繼續抵消。堆疊隨時保存已處理前綴的簡化結果，只比較目前指令與頂端即可。反向對由字典明確列出，不能只看字元不同就消除；例如U與R並不是反向。</p>
+<p class="small">先手算輸出，追蹤關鍵變數，再展開結果核對；能說明原因後才開始練習。</p><div class="sample"><div class="code-label">教學範例 · Python</div><pre><code>opposite = {&quot;U&quot;:&quot;D&quot;, &quot;D&quot;:&quot;U&quot;, &quot;L&quot;:&quot;R&quot;, &quot;R&quot;:&quot;L&quot;}
+print(opposite[&quot;U&quot;] == &quot;D&quot;)</code></pre></div><details class="feedback"><summary>展開範例結果</summary><pre>True
+</pre></details><aside class="task" id="task-E"><p class="eyebrow">COLAB PRACTICE E</p><h3>E題｜自己完成一份程式</h3><p>輸入長度0–10000的UDLR字串。從左到右處理，若新指令與保留序列尾端互為UD或LR反向對，消除尾端且不加入新指令，否則加入。輸出最終字串，全空印EMPTY。</p>
+<p><strong>測試1輸入</strong></p>
+<pre><code class="language-text">ULRDUR
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">UR
+</code></pre>
+<p><strong>測試2輸入</strong></p>
+<pre><code class="language-text">UD
+</code></pre>
+<p><strong>預期輸出</strong></p>
+<pre><code class="language-text">EMPTY
+</code></pre>
+<details class="feedback"><summary>需要時再看提示</summary><p>stack[-1]==opposite[ch]時pop，其餘append。</p>
+</details><p class="handoff">切到自己的Colab，完成E題後回講義。另設計一組題目允許的邊界測資，保留手算預期與執行結果。</p></aside></section><section id="assignment"><h2>完成標準與保存</h2><ol><li>完成A–E五份獨立程式，能說明每個重要變數的意思。</li><li>通過公開測試，另提供合法的新測資；標記使用提示的題號。</li><li>把至少C–E各存成一個.py檔，在電腦從頭執行。暫無電腦先記錄待補，不省略日後操作。</li><li>隔日收起提示重作不熟的題，記錄讀題、寫程式、除錯時間。</li></ol><p>有老師時，依指定管道繳交自己的Drive副本並授予檢視或加註權限。自學者保存紀錄即可。網站不保存作答、不自動評分；你的舊副本不會隨教材更新而改變。</p></section><div class="endnav"><a href="lesson-116.html">← 第116課</a><a href="courses.html">課程目錄</a><a href="lesson-118.html">第118課 →</a></div></main><footer>接續原第1–20課的Python自學課程 · 原創練習 · <a href="courses.html">課程目錄</a> · <a href="roadmap.html#sources">來源與學習說明</a></footer></body></html>
